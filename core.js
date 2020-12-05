@@ -1,5 +1,6 @@
 const prompt = require("prompt-sync")();
 const { spawn } = require("child_process");
+const fs = require("fs");
 
 class Core {
     constructor() {
@@ -88,6 +89,18 @@ class Core {
         }
     }
 
+    async inLocationAsync(path, asyncAction) {
+        this.pushLocation(path);
+        await asyncAction();
+        this.popLocation();
+    }
+
+    inLocation(path, action) {
+        this.pushLocation(path);
+        action();
+        this.popLocation();
+    }
+
     pushLocation(path) {
         const wd = process.cwd();
         this.locationHistory.push(wd);
@@ -102,6 +115,18 @@ class Core {
         } else {
             this.showError("There is no location to pop");
         }
+    }
+
+    /**
+     *
+     * @param {string} file
+     */
+    readTextFile(file) {
+        return fs.readFileSync(file, { encoding: "utf-8" }).toString();
+    }
+
+    writeTextFile(tempFile, data) {
+        fs.writeFileSync(tempFile, data, { encoding: "utf-8" });
     }
 }
 module.exports = new Core();
