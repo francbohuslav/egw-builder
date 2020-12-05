@@ -111,13 +111,23 @@ async function run() {
         branch = prompt("Branch: ");
     }
     process.chdir(`../${branch}/`);
-    const isBuild = false && core.ask("Build?");
-    const isModel = false && core.ask("Generate metamodel?");
+    const isBuild = core.ask("Build?");
+    const isModel = core.ask("Generate metamodel?");
 
     printProjectsVersions();
     const newVersion = prompt("Set version [enter = no change]: ");
     if (newVersion) {
         setProjectsVersions(newVersion);
+    }
+
+    if (isBuild) {
+        core.showMessage("Starting docker...");
+        await core.inLocationAsync("uu_energygateway_datagatewayg01/docker/egw-tests", async () => {
+            await core.runCommand("docker-compose up -d");
+        });
+        await core.inLocationAsync("uu_energygateway_ftpendpointg01/docker/egw-tests", async () => {
+            await core.runCommand("docker-compose up -d");
+        });
     }
 
     for (const row of projects) {
