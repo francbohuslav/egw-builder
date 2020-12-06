@@ -1,5 +1,5 @@
 const prompt = require("prompt-sync")();
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const fs = require("fs");
 
 class Core {
@@ -21,6 +21,10 @@ class Core {
             question = question + " Default=" + defaultValue;
         }
         let answer = prompt(question + " ");
+        if (answer === null) {
+            // CTRL + C
+            this.showError("Terminated by user");
+        }
         answer = answer.toUpperCase();
         if (!defaultValue) {
             return answer === "" || answer === "Y";
@@ -59,13 +63,17 @@ class Core {
                 args = args.split(" ");
             }
         }
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+            let stdOut = "";
+            let stdErr = "";
             const context = spawn(command, args);
             context.stdout.on("data", (data) => {
+                stdOut += data.toString();
                 console.log(data.toString());
             });
 
             context.stderr.on("data", (data) => {
+                stdErr += data.toString();
                 if (data.toString().toLowerCase().indexOf("warn") > -1) {
                     console.log("\x1b[33m%s\x1b[0m", data);
                 } else {
@@ -78,8 +86,30 @@ class Core {
             });
 
             context.on("close", (code) => {
-                resolve(code);
+                if (code) {
+                    reject({ code, stdOut, stdErr });
+                } else {
+                    resolve({ stdOut, stdErr });
+                }
             });
+        });
+    }
+
+    runCommandNoWait(command, ...args) {
+        if (!args || args.length === 0) {
+            if (command.indexOf(" ") > -1) {
+                args = command.split(" ");
+                command = args.shift();
+            }
+        } else {
+            if (typeof args === "string") {
+                args = args.split(" ");
+            }
+        }
+        spawn(command, args, {
+            detached: true,
+            shell: true,
+            stdio: "ignore",
         });
     }
 
