@@ -157,12 +157,18 @@ async function run() {
             branch = prompt("Branch: ");
         }
         process.chdir(`../${branch}/`);
-        const isClearDocker = false && core.ask("Clear docker?");
-        const isBuild = false && core.ask("Build?");
-        const isModel = false && core.ask("Generate metamodel?");
+        printProjectsVersions();
+        const newVersion = prompt("Set version [enter = no change]: ");
+        if (newVersion && newVersion.match(/^\d/)) {
+            setProjectsVersions(newVersion);
+        }
 
-        const isApp = false && core.ask("Run app?");
-        const isAppInit = false && core.ask("Run init commands?");
+        const isClearDocker = core.ask("Clear docker?");
+        const isBuild = core.ask("Build?");
+        const isModel = core.ask("Generate metamodel?");
+
+        const isApp = core.ask("Run app?");
+        const isAppInit = core.ask("Run init commands?");
         let yourUid = "";
         if (isAppInit) {
             yourUid = prompt("Your UID: ");
@@ -170,7 +176,7 @@ async function run() {
                 this.showError("Terminated by user");
             }
         }
-        const isTests =  core.ask("Run tests?");
+        const isTests = core.ask("Run tests?");
         let isTestsMR = false;
         let isTestsEMAIL = false;
         let isTestsFTP = false;
@@ -178,12 +184,6 @@ async function run() {
             isTestsMR = core.ask("Which tests? Message Registry?");
             isTestsEMAIL = core.ask("... E-mail?");
             isTestsFTP = core.ask("... FTP?");
-        }
-
-        printProjectsVersions();
-        const newVersion = false && prompt("Set version [enter = no change]: ");
-        if (newVersion && newVersion.match(/^\d/)) {
-            setProjectsVersions(newVersion);
         }
 
         if (isClearDocker) {
