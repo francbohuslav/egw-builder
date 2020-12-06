@@ -110,6 +110,43 @@ function setProjectsVersions(newVersion) {
     }
 }
 
+async function runInitCommands(project, yourUid) {
+    const { stdOut } = await core.runCommand(
+        "docker",
+        "run",
+        "--rm",
+        "-v",
+        process.cwd() + ":/jmeter",
+        "egaillardon/jmeter-plugins",
+        ...("-n -t init-tests.jmx -l logs/results.csv -j logs/logs.log -Juid=" + yourUid).split(" ")
+    );
+    if (stdOut.match(/Err:\s+[1-9]/g)) {
+        core.showError(`Init commands of ${project} failed`);
+    }
+}
+
+async function stopComposer() {
+    try {
+        await core.runCommand("docker-compose down");
+    } catch (e) {
+        // Errors ignored
+    }
+}
+
+async function runTests(testFile) {
+    if (fs.existsSync("results.csv")) {
+        fs.unlinkSync("results.csv");
+    }
+    if (fs.existsSync("logs.log")) {
+        fs.unlinkSync("logs.log");
+    }
+    const rest = ("-n -t " + testFile + " -l logs/results.csv -j logs/logs.log -Jhost=host.docker.internal").split(" ");
+    const { stdOut } = await core.runCommand("docker", "run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest);
+    if (stdOut.match(/Err:\s+[1-9]/g)) {
+        core.showError(`Tests in file ${testFile} failed`);
+    }
+}
+
 async function run() {
     try {
         let [branch] = process.argv.slice(2);
@@ -125,40 +162,39 @@ async function run() {
         const isModel = false && core.ask("Generate metamodel?");
 
         const isApp = false && core.ask("Run app?");
-        const isAppInit = true || core.ask("Run init commands?");
-        //const isTests = false && core.ask("Run tests?");
+        const isAppInit = false && core.ask("Run init commands?");
+        let yourUid = "";
+        if (isAppInit) {
+            yourUid = prompt("Your UID: ");
+            if (!yourUid) {
+                this.showError("Terminated by user");
+            }
+        }
+        const isTests =  core.ask("Run tests?");
+        let isTestsMR = false;
+        let isTestsEMAIL = false;
+        let isTestsFTP = false;
+        if (isTests) {
+            isTestsMR = core.ask("Which tests? Message Registry?");
+            isTestsEMAIL = core.ask("... E-mail?");
+            isTestsFTP = core.ask("... FTP?");
+        }
 
         printProjectsVersions();
         const newVersion = false && prompt("Set version [enter = no change]: ");
-        if (newVersion) {
+        if (newVersion && newVersion.match(/^\d/)) {
             setProjectsVersions(newVersion);
         }
 
         if (isClearDocker) {
             core.showMessage("Clearing docker...");
-            await core.inLocationAsync("uu_energygateway_ftpendpointg01/docker/egw-tests", async () => {
-                try {
-                    await core.runCommand("docker-compose down");
-                } catch (e) {
-                    // Errors ignored
-                }
-            });
-            await core.inLocationAsync("uu_energygateway_datagatewayg01/docker/egw-tests", async () => {
-                try {
-                    await core.runCommand("docker-compose down");
-                } catch (e) {
-                    // Errors ignored
-                }
-            });
+            await core.inLocationAsync("uu_energygateway_datagatewayg01/docker/egw-tests", stopComposer);
+            await core.inLocationAsync("uu_energygateway_ftpendpointg01/docker/egw-tests", stopComposer);
         }
         if (isBuild || isApp) {
             core.showMessage("Starting docker...");
-            await core.inLocationAsync("uu_energygateway_datagatewayg01/docker/egw-tests", async () => {
-                await core.runCommand("docker-compose up -d");
-            });
-            await core.inLocationAsync("uu_energygateway_ftpendpointg01/docker/egw-tests", async () => {
-                await core.runCommand("docker-compose up -d");
-            });
+            await core.inLocationAsync("uu_energygateway_datagatewayg01/docker/egw-tests", async () => await core.runCommand("docker-compose up -d"));
+            await core.inLocationAsync("uu_energygateway_ftpendpointg01/docker/egw-tests", async () => await core.runCommand("docker-compose up -d"));
         }
 
         for (const row of projects) {
@@ -182,31 +218,23 @@ async function run() {
         }
         if (isAppInit) {
             await core.inLocationAsync("uu_energygateway_datagatewayg01\\uu_energygateway_datagatewayg01-server\\src\\test\\jmeter\\", async () => {
-                const { stdOut } = await core.runCommand(
-                    "docker",
-                    "run",
-                    "--rm",
-                    "-v",
-                    process.cwd() + ":/tests/",
-                    "justb4/jmeter",
-                    "-n -t /tests/init-tests.jmx -l /tests/results.csv -j /tests/logs.log"
-                );
-                if (stdOut.match(/Err:\s+[1-9]/g)) {
-                    core.showError("Init commands of Datagateway failed");
-                }
+                await runInitCommands("Datagateway", yourUid);
             });
             await core.inLocationAsync("uu_energygateway_messageregistryg01\\uu_energygateway_messageregistryg01-server\\src\\test\\jmeter\\", async () => {
-                const { stdOut } = await core.runCommand(
-                    "docker",
-                    "run",
-                    "--rm",
-                    "-v",
-                    process.cwd() + ":/tests/",
-                    "justb4/jmeter",
-                    "-n -t /tests/init-tests.jmx -l /tests/results.csv -j /tests/logs.log"
-                );
-                if (stdOut.match(/Err:\s+[1-9]/g)) {
-                    core.showError("Init commands of MessageRegistry failed");
+                await runInitCommands("Message Registry", yourUid);
+            });
+        }
+
+        if (isTests) {
+            await core.inLocationAsync("uu_energygateway_messageregistryg01\\uu_energygateway_messageregistryg01-server\\src\\test\\jmeter\\", async () => {
+                if (isTestsMR) {
+                    await runTests("message-registry.jmx");
+                }
+                if (isTestsFTP) {
+                    await runTests("ftp_endpoint.jmx");
+                }
+                if (isTestsEMAIL) {
+                    await runTests("email_endpoint.jmx");
                 }
             });
         }
