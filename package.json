@@ -9,6 +9,7 @@
     "author": "Bohuslav Franc",
     "license": "ISC",
     "dependencies": {
+        "csv-parse": "^4.14.1",
         "prompt-sync": "^4.2.0"
     },
     "devDependencies": {

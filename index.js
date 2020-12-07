@@ -1,6 +1,7 @@
 const prompt = require("prompt-sync")();
 const core = require("./core");
 const fs = require("fs");
+const parseCsv = require("csv-parse/lib/sync");
 
 const projects = [
     ["uu_energygateway_datagatewayg01", "uu_energygateway_datagatewayg01-server"],
@@ -134,16 +135,27 @@ async function stopComposer() {
 }
 
 async function runTests(testFile) {
-    if (fs.existsSync("results.csv")) {
-        fs.unlinkSync("results.csv");
+    if (fs.existsSync("logs/results.csv")) {
+        fs.unlinkSync("logs/results.csv");
     }
-    if (fs.existsSync("logs.log")) {
-        fs.unlinkSync("logs.log");
+    if (fs.existsSync("logs/logs.log")) {
+        fs.unlinkSync("logs/logs.log");
     }
     const rest = ("-n -t " + testFile + " -l logs/results.csv -j logs/logs.log -Jhost=host.docker.internal").split(" ");
-    const { stdOut } = await core.runCommand("docker", "run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest);
-    if (stdOut.match(/Err:\s+[1-9]/g)) {
-        core.showError(`Tests in file ${testFile} failed`);
+    await core.runCommand("docker", "run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest);
+    const steps = parseCsv(core.readTextFile("logs/results.csv")).slice(1);
+    const failed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
+    const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
+    if (newPassed.length) {
+        core.showMessage("There are tests marked as failing, but already passed. Remove task code from test name.");
+        console.log(newPassed.map((step) => step[2]));
+    }
+    if (failed.length) {
+        core.showMessage("There are failed tests. Create task in Sprintman and add code at end of test name. E.g. 'some test - T123'.");
+        console.log(failed.map((step) => step[2]));
+    }
+    if (newPassed.length || failed.length) {
+        core.showError("Tests failed. Watch message above or results.csv");
     }
 }
 
