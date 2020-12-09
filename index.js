@@ -26,12 +26,12 @@ const projects = [
     { code: "DG", folder: config.folders.DG, server: "uu_energygateway_datagatewayg01-server" },
     { code: "MR", folder: config.folders.MR, server: "uu_energygateway_messageregistryg01-server", hi: "uu_energygateway_messageregistryg01-hi" },
     { code: "FTP", folder: config.folders.FTP, server: "uu_energygatewayg01_ftpendpoint-server" },
-    { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server" },
     { code: "EMAIL", folder: config.folders.EMAIL, server: "uu_energygatewayg01_emailendpoint-server" },
+    { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server" },
 ];
 
-const [DG, MR, FTP, , EMAIL] = projects;
-const runableProjects = [DG, MR, FTP, EMAIL];
+const [DG, MR, FTP, EMAIL, ECP] = projects;
+const runableProjects = [DG, MR, FTP, EMAIL, ECP];
 
 /**
  *
@@ -209,24 +209,31 @@ async function run() {
             core.showMessage("Syntaxe");
             console.log(process.argv.join(" ") + " [OPTIONS]");
             console.log("Options:");
-            console.log("  -folder <name>    - Name of folder where all projects are stored. Mandatory.");
-            console.log("  -version <ver>    - Version to be stored in build.gradle, uucloud-developmnet.json,...etc.");
-            console.log("  -clear            - Clears docker");
-            console.log("  -build            - Builds app");
-            console.log("  -metamodel        - Generates metamodel");
-            console.log("  -run              - Runs Dateway and Message Registry");
-            console.log("  -init <your-uid>  - Runs init commands of app (create workspace, set permissions)");
+            console.log("  -folder <name>    - Name of folder where all projects are stored, mandatory.");
+            console.log("  -version <ver>    - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
+            console.log("  -clear            - Shutdown and remove docker containers.");
+            console.log("  -build            - Builds apps by gradle.");
+            console.log("  -metamodel        - Regenerates metamodel for Business Territory.");
+            console.log("  -runDG            - Runs Datagateway");
+            console.log("  -runMR            - Runs Message Registry");
+            console.log("  -runFTP           - Runs FTP endpoint");
+            console.log("  -runEMAIL         - Runs E-mail endpoint");
+            console.log("  -runECP           - Runs ECP endpoint");
+            console.log("  -init <your-uid>  - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -testMR           - Tests Message Registry by jmeter");
             console.log("  -testFTP          - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL        - Tests E-mail endpoint by jmeter");
             console.log("");
-            console.log("You will be asked interactively if there is none of option (expcept folder) used on command line");
+            console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
 
         let folder = cmd.folder;
 
         if (!folder) {
             folder = prompt("Folder: ");
+        }
+        if (!folder) {
+            core.showError("Terminated by user");
         }
         core.showMessage(`Using folder ${folder}`);
         process.chdir(folder);
@@ -252,7 +259,7 @@ async function run() {
         const isBuild = cmd.getCmdValue("build", "Build?");
         const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
 
-        const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL;
+        const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
         if (!isRun && !cmd.interactively) {
             console.log("Run app? no");
         }

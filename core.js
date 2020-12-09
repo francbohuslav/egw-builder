@@ -43,7 +43,7 @@ class Core {
 
     showError(message) {
         console.log("\x1b[31m%s\x1b[0m", message);
-        prompt("press ENTER to continue ");
+        //rompt("press ENTER to continue ");
         process.exit(1);
     }
 

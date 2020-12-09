@@ -53,6 +53,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-runecp") {
+                this.runECP = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-init") {
                 this.init = true;
                 this.uid = pars.shift();
