@@ -5,9 +5,10 @@
     "main": "index.js",
     "scripts": {
         "start": "node ./index.js -folder ../release_1_1",
-        "cleanBuildAndRun": "node ./index.js -folder ../release_1_1 -clear -build -run",
+        "cleanBuild": "node ./index.js -folder ../release_1_1 -clear -build -metamodel",
+        "run": "node ./index.js -folder ../release_1_1 -runDG -runMR -runEMAIL -runFTP",
         "init": "node ./index.js -folder ../release_1_1 -init 12-8835-1",
-        "test": "node ./index.js -folder ../release_1_1 -testMR"
+        "test": "node ./index.js -folder ../release_1_1 -testMR -testFTP -testEMAIL"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",

@@ -19,6 +19,13 @@
             "script": "init",
             "problemMatcher": [],
             "label": "npm: init"
+        },
+        {
+            "type": "npm",
+            "script": "run",
+            "problemMatcher": [],
+            "label": "npm: run",
+            "detail": "node ./index.js -folder ../release_1_1 -run"
         }
     ]
 }

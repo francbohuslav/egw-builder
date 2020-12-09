@@ -33,8 +33,23 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-run") {
-                this.run = true;
+            if (ar == "-rundg") {
+                this.runDG = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-runmr") {
+                this.runMR = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-runftp") {
+                this.runFTP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-runemail") {
+                this.runEMAIL = true;
                 this.interactively = false;
                 continue;
             }

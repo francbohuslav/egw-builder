@@ -75,9 +75,9 @@ class Core {
             context.stderr.on("data", (data) => {
                 stdErr += data.toString();
                 if (data.toString().toLowerCase().indexOf("warn") > -1) {
-                    console.log("\x1b[33m%s\x1b[0m", data);
+                    console.log("\x1b[33m%s\x1b[0m", data.toString());
                 } else {
-                    console.log("\x1b[31m%s\x1b[0m", data);
+                    console.log("\x1b[31m%s\x1b[0m", data.toString());
                 }
             });
 
@@ -125,6 +125,10 @@ class Core {
         this.popLocation();
     }
 
+    /**
+     * @param {string} path
+     * @param {function} action
+     */
     inLocation(path, action) {
         this.pushLocation(path);
         action();
