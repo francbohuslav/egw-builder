@@ -1,12 +1,24 @@
 {
-	"version": "2.0.0",
-	"tasks": [
+    "version": "2.0.0",
+    "tasks": [
         {
             "type": "npm",
             "script": "start",
             "problemMatcher": [],
-            "label": "npm: start",
-            "detail": "node ./index.js"
+            "label": "npm: start"
+        },
+        {
+            "type": "npm",
+            "script": "cleanBuildAndRun",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "npm: cleanBuildAndRun"
+        },
+        {
+            "type": "npm",
+            "script": "init",
+            "problemMatcher": [],
+            "label": "npm: init"
         }
     ]
 }

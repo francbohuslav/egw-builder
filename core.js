@@ -1,5 +1,5 @@
 const prompt = require("prompt-sync")();
-const { spawn, exec } = require("child_process");
+const { spawn } = require("child_process");
 const fs = require("fs");
 
 class Core {

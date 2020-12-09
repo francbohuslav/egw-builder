@@ -4,7 +4,10 @@
     "description": "Scripts for building, testing and release EnergyGateway",
     "main": "index.js",
     "scripts": {
-        "start": "node ./index.js release_1_1"
+        "start": "node ./index.js -folder ../release_1_1",
+        "cleanBuildAndRun": "node ./index.js -folder ../release_1_1 -clear -build -run",
+        "init": "node ./index.js -folder ../release_1_1 -init 12-8835-1",
+        "test": "node ./index.js -folder ../release_1_1 -testMR"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",

@@ -2,6 +2,7 @@ const prompt = require("prompt-sync")();
 const core = require("./core");
 const fs = require("fs");
 const parseCsv = require("csv-parse/lib/sync");
+const CommandLine = require("./command-line");
 
 const projects = [
     ["uu_energygateway_datagatewayg01", "uu_energygateway_datagatewayg01-server"],
@@ -161,41 +162,77 @@ async function runTests(testFile) {
 
 async function run() {
     try {
-        let [branch] = process.argv.slice(2);
-
-        core.showMessage(`Using branch ${branch}`);
-
-        if (!branch) {
-            branch = prompt("Branch: ");
+        const cmd = new CommandLine(process.argv.slice(2));
+        if (process.argv.length == 2) {
+            core.showMessage("Syntaxe");
+            console.log(process.argv.join(" ") + " [OPTIONS]");
+            console.log("Options:");
+            console.log("  -folder <name>    - Name of folder where all projects are stored. Mandatory.");
+            console.log("  -version <ver>    - Version to be stored in build.gradle, uucloud-developmnet.json,...etc.");
+            console.log("  -clear            - Clears docker");
+            console.log("  -build            - Builds app");
+            console.log("  -metamodel        - Generates metamodel");
+            console.log("  -run              - Runs Dateway and Message Registry");
+            console.log("  -init <your-uid>  - Runs init commands of app (create workspace, set permissions)");
+            console.log("  -testMR           - Tests Message Registry by jmeter");
+            console.log("  -testFTP          - Tests FTP endpoint by jmeter");
+            console.log("  -testEMAIL        - Tests E-mail endpoint by jmeter");
+            console.log("");
+            console.log("You will be asked interactively if there is none of option (expcept folder) used on command line");
         }
-        process.chdir(`../${branch}/`);
-        printProjectsVersions();
-        const newVersion = prompt("Set version [enter = no change]: ");
-        if (newVersion && newVersion.match(/^\d/)) {
-            setProjectsVersions(newVersion);
+
+        let folder = cmd.folder;
+
+        if (!folder) {
+            folder = prompt("Folder: ");
         }
+        core.showMessage(`Using folder ${folder}`);
+        process.chdir(folder);
+        if (cmd.interactively) {
+            printProjectsVersions();
+        }
+        // console.log(cmd);
+        // console.log(cmd.version);
 
-        const isClearDocker = core.ask("Clear docker?");
-        const isBuild = core.ask("Build?");
-        const isModel = core.ask("Generate metamodel?");
-
-        const isApp = core.ask("Run app?");
-        const isAppInit = core.ask("Run init commands?");
-        let yourUid = "";
-        if (isAppInit) {
-            yourUid = prompt("Your UID: ");
-            if (!yourUid) {
-                this.showError("Terminated by user");
+        const newVersion = cmd.interactively ? prompt("Set version [enter = no change]: ") : cmd.version;
+        if (!cmd.interactively) {
+            if (cmd.version) {
+                console.log("Set version to " + cmd.version);
+            } else {
+                console.log("Set version? no");
             }
         }
-        const isTests = core.ask("Run tests?");
-        let isTestsMR = false;
-        let isTestsEMAIL = false;
-        let isTestsFTP = false;
-        if (isTests) {
-            isTestsMR = core.ask("Which tests? Message Registry?");
-            isTestsEMAIL = core.ask("... E-mail?");
-            isTestsFTP = core.ask("... FTP?");
+        if (newVersion === null) {
+            core.showError("Terminated by user");
+        }
+
+        const isClearDocker = cmd.getCmdValue("clear", "Clear docker?");
+        const isBuild = cmd.getCmdValue("build", "Build?");
+        const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
+
+        const isApp = cmd.getCmdValue("run", "Run app?");
+        const isAppInit = cmd.uid ? true : cmd.getCmdValue("init", "Run init commands?");
+        let yourUid = "";
+        if (isAppInit) {
+            if (cmd.uid) {
+                console.log("Run init commands? yes");
+                console.log("Your OID: " + cmd.uid);
+            }
+            yourUid = cmd.uid || prompt("Your UID: ");
+            if (!yourUid) {
+                core.showError("Terminated by user");
+            }
+        }
+        const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testMR || cmd.testFTP || cmd.testEMAIL;
+        if (!isTests && !cmd.interactively) {
+            console.log("Run tests? no");
+        }
+        const isTestsMR = isTests && cmd.getCmdValue("testMR", "Which tests? Message Registry?");
+        const isTestsEMAIL = isTests && cmd.getCmdValue("testFTP", "... FTP?");
+        const isTestsFTP = isTests && cmd.getCmdValue("testEMAIL", "... E-mail?");
+
+        if (newVersion && newVersion.match(/^\d/)) {
+            setProjectsVersions(newVersion);
         }
 
         if (isClearDocker) {
