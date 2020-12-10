@@ -15,6 +15,7 @@ if (fs.existsSync("./config.js")) {
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
+ * @property {string} testFile e.g. "message-registr.jmx"
  */
 
 //TODO: BF: readme.md
@@ -24,9 +25,15 @@ if (fs.existsSync("./config.js")) {
  */
 const projects = [
     { code: "DG", folder: config.folders.DG, server: "uu_energygateway_datagatewayg01-server" },
-    { code: "MR", folder: config.folders.MR, server: "uu_energygateway_messageregistryg01-server", hi: "uu_energygateway_messageregistryg01-hi" },
-    { code: "FTP", folder: config.folders.FTP, server: "uu_energygatewayg01_ftpendpoint-server" },
-    { code: "EMAIL", folder: config.folders.EMAIL, server: "uu_energygatewayg01_emailendpoint-server" },
+    {
+        code: "MR",
+        folder: config.folders.MR,
+        server: "uu_energygateway_messageregistryg01-server",
+        hi: "uu_energygateway_messageregistryg01-hi",
+        testFile: "message-registry.jmx",
+    },
+    { code: "FTP", folder: config.folders.FTP, server: "uu_energygatewayg01_ftpendpoint-server", testFile: "ftp_endpoint.jmx" },
+    { code: "EMAIL", folder: config.folders.EMAIL, server: "uu_energygatewayg01_emailendpoint-server", testFile: "email_endpoint.jmx" },
     { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server" },
 ];
 
@@ -150,15 +157,14 @@ function setProjectsVersions(newVersion) {
  */
 async function runInitCommands(projectCode, yourUid) {
     const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
-    const { stdOut } = await core.runCommand(
-        "docker",
+    const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...("-n -t " + initFile + " -l logs/results.csv -j logs/logs.log -Juid=" + yourUid).split(" ")
-    );
+        ...("-n -t " + initFile + " -l logs/results.csv -j logs/logs.log -Juid=" + yourUid).split(" "),
+    ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
     }
@@ -177,7 +183,7 @@ async function stopComposer() {
  * @param {string} testFile
  */
 async function runTests(project, testFile) {
-    core.showMessage("Running tests for " + project.code);
+    core.showMessage("Running tests for " + project.code + "...");
     if (fs.existsSync("logs/results.csv")) {
         fs.unlinkSync("logs/results.csv");
     }
@@ -185,21 +191,11 @@ async function runTests(project, testFile) {
         fs.unlinkSync("logs/logs.log");
     }
     const rest = ("-n -t " + testFile + " -l logs/results.csv -j logs/logs.log -Jhost=host.docker.internal").split(" ");
-    await core.runCommand("docker", "run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest);
+    await core.runCommand("docker", ["run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest]);
     const steps = parseCsv(core.readTextFile("logs/results.csv")).slice(1);
     const failed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
     const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
-    if (newPassed.length) {
-        core.showMessage("There are tests marked as failing, but already passed. Remove task code from test name.");
-        console.log(newPassed.map((step) => step[2]));
-    }
-    if (failed.length) {
-        core.showMessage("There are failed tests. Create task in Sprintman and add code at end of test name. E.g. 'some test - T123'.");
-        console.log(failed.map((step) => step[2]));
-    }
-    if (newPassed.length || failed.length) {
-        core.showError("Tests failed for " + project.code + ". Watch message above or results.csv");
-    }
+    return { failed, newPassed };
 }
 
 async function run() {
@@ -290,21 +286,27 @@ async function run() {
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "Which tests? Message Registry?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... E-mail?");
-
+        //TODO: BF: init detekovat kdyz se nepvoed
+        //TODO: BF: umet detekvoat ze nabehla apliakce
+        //TODO: BF: testy neuakzovat jmeter stdout a umoznit aby bezely testy dal
         if (newVersion && newVersion.match(/^\d/)) {
             setProjectsVersions(newVersion);
         }
 
         if (isClearDocker) {
             core.showMessage("Clearing docker...");
-            for (const project of [DG, FTP, EMAIL]) {
-                await core.inLocationAsync(project.folder + "/docker/egw-tests", stopComposer);
+            for (const project of runableProjects) {
+                if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
+                    await core.inLocationAsync(project.folder + "/docker/egw-tests", stopComposer);
+                }
             }
         }
         if (isBuild || isRun) {
             core.showMessage("Starting docker...");
-            for (const project of [DG, FTP, EMAIL]) {
-                await core.inLocationAsync(project.folder + "/docker/egw-tests", async () => await core.runCommand("docker-compose up -d"));
+            for (const project of runableProjects) {
+                if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
+                    await core.inLocationAsync(project.folder + "/docker/egw-tests", async () => await core.runCommand("docker-compose up -d"));
+                }
             }
         }
 
@@ -337,14 +339,30 @@ async function run() {
 
         if (isTests) {
             await core.inLocationAsync(MR.folder + "/" + MR.server + "/src/test/jmeter/", async () => {
-                if (isTestsMR) {
-                    await runTests(MR, "message-registry.jmx");
+                const failed = {};
+                const newPassed = {};
+                for (const project of [isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
+                    if (project) {
+                        const report = await runTests(project, project.testFile);
+                        if (report.failed.length) {
+                            failed[project.code] = report.failed.map((step) => step[2]);
+                        }
+                        if (report.newPassed.length) {
+                            newPassed[project.code] = report.newPassed.map((step) => step[2]);
+                        }
+                    }
                 }
-                if (isTestsFTP) {
-                    await runTests(FTP, "ftp_endpoint.jmx");
+
+                if (Object.keys(newPassed).length) {
+                    core.showMessage("There are tests marked as failing, but already passed. Remove task code from test name.");
+                    console.log(newPassed);
                 }
-                if (isTestsEMAIL) {
-                    await runTests(EMAIL, "email_endpoint.jmx");
+                if (Object.keys(failed).length) {
+                    core.showMessage("There are failed tests. Create task in Sprintman and add code at end of test name. E.g. 'some test - T123'.");
+                    console.log(failed);
+                }
+                if (Object.keys(failed).length || Object.keys(newPassed).length) {
+                    core.showError("Tests failed. Watch message above.");
                 }
             });
         }

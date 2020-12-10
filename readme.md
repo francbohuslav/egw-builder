@@ -31,6 +31,10 @@ Default folder structure:
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
+## Instalation
+
+Install node modules by command `npm i`
+
 ---
 
 ## Usage
@@ -54,7 +58,7 @@ Run command `node index`.
     -testFTP          - Tests FTP endpoint by jmeter
     -testEMAIL        - Tests E-mail endpoint by jmeter
 
-You will be asked interactively if there is none of option (expcept folder) used on command line.
+You will be asked interactively if there is none of options (except folder) used on command line.
 
 ---
 

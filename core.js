@@ -41,10 +41,12 @@ class Core {
         console.log("\x1b[36m%s\x1b[0m", message);
     }
 
-    showError(message) {
+    showError(message, exit = true) {
         console.log("\x1b[31m%s\x1b[0m", message);
         //rompt("press ENTER to continue ");
-        process.exit(1);
+        if (exit) {
+            process.exit(1);
+        }
     }
 
     /**
@@ -52,7 +54,7 @@ class Core {
      * @param {string} command
      * @param {string[]} args
      */
-    async runCommand(command, ...args) {
+    async runCommand(command, args, options) {
         if (!args || args.length === 0) {
             if (command.indexOf(" ") > -1) {
                 args = command.split(" ");
@@ -69,7 +71,9 @@ class Core {
             const context = spawn(command, args);
             context.stdout.on("data", (data) => {
                 stdOut += data.toString();
-                console.log(data.toString());
+                if (!options || !options.disableStdOut) {
+                    console.log(data.toString());
+                }
             });
 
             context.stderr.on("data", (data) => {
@@ -95,7 +99,7 @@ class Core {
         });
     }
 
-    runCommandNoWait(command, ...args) {
+    runCommandNoWait(command, args) {
         if (!args || args.length === 0) {
             if (command.indexOf(" ") > -1) {
                 args = command.split(" ");

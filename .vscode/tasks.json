@@ -9,13 +9,6 @@
         },
         {
             "type": "npm",
-            "script": "cleanBuildAndRun",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "npm: cleanBuildAndRun"
-        },
-        {
-            "type": "npm",
             "script": "init",
             "problemMatcher": [],
             "label": "npm: init"
@@ -26,6 +19,13 @@
             "problemMatcher": [],
             "label": "npm: run",
             "detail": "node ./index.js -folder ../release_1_1 -run"
+        },
+        {
+            "type": "npm",
+            "script": "cleanBuild",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "npm: cleanBuild"
         }
     ]
 }
