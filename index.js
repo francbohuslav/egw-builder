@@ -18,8 +18,6 @@ if (fs.existsSync("./config.js")) {
  * @property {string} testFile e.g. "message-registr.jmx"
  */
 
-//TODO: BF: readme.md
-
 /**
  * @type {IProject[]}
  */
@@ -163,7 +161,7 @@ async function runInitCommands(projectCode, yourUid) {
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...("-n -t " + initFile + " -l logs/results.csv -j logs/logs.log -Juid=" + yourUid).split(" "),
+        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/results.csv -j jmeter/logs/logs.log -Juid=" + yourUid).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -183,7 +181,6 @@ async function stopComposer() {
  * @param {string} testFile
  */
 async function runTests(project, testFile) {
-    core.showMessage("Running tests for " + project.code + "...");
     if (fs.existsSync("logs/results.csv")) {
         fs.unlinkSync("logs/results.csv");
     }
@@ -286,9 +283,7 @@ async function run() {
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "Which tests? Message Registry?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... E-mail?");
-        //TODO: BF: init detekovat kdyz se nepvoed
         //TODO: BF: umet detekvoat ze nabehla apliakce
-        //TODO: BF: testy neuakzovat jmeter stdout a umoznit aby bezely testy dal
         if (newVersion && newVersion.match(/^\d/)) {
             setProjectsVersions(newVersion);
         }
@@ -321,28 +316,38 @@ async function run() {
 
         if (isRun) {
             core.showMessage("Starting app...");
+            let index = 0;
             for (const project of runableProjects) {
-                if (isRunPerProject[project.code]) {
-                    core.inLocation(project.folder, () => {
-                        core.runCommandNoWait('start "' + project.code + '" /MAX gradlew start -x test');
-                    });
-                }
+                setTimeout(() => {
+                    if (isRunPerProject[project.code]) {
+                        core.showMessage("..." + project.code);
+                        core.inLocation(project.folder, () => {
+                            core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
+                        });
+                    }
+                }, index * 1000);
+                index++;
             }
         }
         if (isRunInit) {
+            core.showMessage("Starting inits...");
             for (const project of runableProjects) {
-                await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/jmeter/", async () => {
+                core.showMessage("..." + project.code);
+                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
+                await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
                     await runInitCommands(project.code, yourUid);
                 });
             }
         }
 
         if (isTests) {
+            core.showMessage("Starting tests...");
             await core.inLocationAsync(MR.folder + "/" + MR.server + "/src/test/jmeter/", async () => {
                 const failed = {};
                 const newPassed = {};
                 for (const project of [isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
+                        core.showMessage("..." + project.code);
                         const report = await runTests(project, project.testFile);
                         if (report.failed.length) {
                             failed[project.code] = report.failed.map((step) => step[2]);

@@ -17,8 +17,7 @@
             "type": "npm",
             "script": "run",
             "problemMatcher": [],
-            "label": "npm: run",
-            "detail": "node ./index.js -folder ../release_1_1 -run"
+            "label": "npm: run"
         },
         {
             "type": "npm",
