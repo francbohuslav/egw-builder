@@ -2,12 +2,14 @@
 
 Cleaner, builder, initializer, tester of EnergyGateway
 
-Home page: <https://github.com/francbohuslav/egw-builder> \
+Home page: <https://github.com/francbohuslav/egw-builder>  
 Skype: [cis_franc](skype:cis_franc), E-mail: [bohuslav.franc@unicornuniverse.eu](bohuslav.franc@unicornuniverse.eu)
+
+---
 
 ## Preparation
 
-[Node.js](https://nodejs.org/) must be installed. Sorry, but for now it works only on Windows. \
+[Node.js](https://nodejs.org/) must be installed. Sorry, but for now it works only on Windows.  
 Builder was fully tested with EGW version 1.1. Sprint should work also, but maybe `init` and `test*` will not work. Support for sprint will be done soon.
 
 Builder supports this EGW projects, which are hosted in UU Codebase GIT repository:
@@ -28,6 +30,8 @@ Default folder structure:
 -   `uu_energygateway_ecpendpointg01` - repository of ECP endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
+
+---
 
 ## Usage
 
@@ -51,6 +55,8 @@ Run command `node index`.
     -testEMAIL        - Tests E-mail endpoint by jmeter
 
 You will be asked interactively if there is none of option (expcept folder) used on command line.
+
+---
 
 ## Common scenarios
 
