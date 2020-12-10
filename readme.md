@@ -31,9 +31,12 @@ Default folder structure:
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
+---
+
 ## Instalation
 
-Install node modules by command `npm i`
+1. Clone GIT repository https://github.com/francbohuslav/egw-builder.git.
+2. Install node modules by command `npm i` from folder of builder.
 
 ---
 
