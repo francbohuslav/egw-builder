@@ -1,5 +1,6 @@
 const prompt = require("prompt-sync")();
 const core = require("./core");
+const path = require("path");
 const fs = require("fs");
 const parseCsv = require("csv-parse/lib/sync");
 const CommandLine = require("./command-line");
@@ -161,7 +162,9 @@ async function runInitCommands(projectCode, yourUid) {
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/results.csv -j jmeter/logs/logs.log -Juid=" + yourUid).split(" "),
+        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/results" + projectCode + ".csv -j jmeter/logs/logs" + projectCode + ".log -Juid=" + yourUid).split(
+            " "
+        ),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -181,15 +184,17 @@ async function stopComposer() {
  * @param {string} testFile
  */
 async function runTests(project, testFile) {
-    if (fs.existsSync("logs/results.csv")) {
-        fs.unlinkSync("logs/results.csv");
+    const resultsFile = "logs/results" + project.code + ".csv";
+    const logFile = "logs/logs" + project.code + ".csv";
+    fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
+    fs.existsSync(logFile) && fs.unlinkSync(logFile);
+    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
+    if (!fs.existsSync(ftpDataDir)) {
+        core.showError(ftpDataDir + " does not exists");
     }
-    if (fs.existsSync("logs/logs.log")) {
-        fs.unlinkSync("logs/logs.log");
-    }
-    const rest = ("-n -t " + testFile + " -l logs/results.csv -j logs/logs.log -Jhost=host.docker.internal").split(" ");
-    await core.runCommand("docker", ["run", "--rm", "-v", process.cwd() + ":/jmeter", "egaillardon/jmeter-plugins", ...rest]);
-    const steps = parseCsv(core.readTextFile("logs/results.csv")).slice(1);
+    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal -Jftp_data_dir=/ftpdata").split(" ");
+    await core.runCommand("docker", ["run", "--rm", "-v", process.cwd() + ":/jmeter", "-v", ftpDataDir + ":/ftpdata", "egaillardon/jmeter-plugins", ...rest]);
+    const steps = parseCsv(core.readTextFile(resultsFile)).slice(1);
     const failed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
     const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
     return { failed, newPassed };
