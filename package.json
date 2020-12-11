@@ -14,7 +14,8 @@
     "license": "ISC",
     "dependencies": {
         "csv-parse": "^4.14.1",
-        "prompt-sync": "^4.2.0"
+        "prompt-sync": "^4.2.0",
+        "request": "^2.88.2"
     },
     "devDependencies": {
         "eslint": "^7.15.0",

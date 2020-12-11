@@ -67,15 +67,11 @@ You will be asked interactively if there is none of options (except folder) used
 
 ## Common scenarios
 
-Some cases must be executed separately. For example `init` and `test*` can be executed only if applications run and are ready to receive commands. Below there are some common scenarios.
+Below there are some common scenarios.
 
-**Clean, build and run** - for the first time, or if you want to start from scratch.
+**Clean, build, run and init** - for the first time, or if you want to start from scratch.
 
-    node index -folder ../sprint -clear -build -runDG -runMR
-
-**Call init commands** - need to run after `clean`. Applications must be running before this command.
-
-    node index -folder ../sprint -init 12-8835-1
+    node index -folder ../sprint -clear -build -runDG -runMR -init 12-8835-1
 
 **Run tests** - should be called before pushing of your changes to git.
 
@@ -85,6 +81,4 @@ Some cases must be executed separately. For example `init` and `test*` can be ex
 
 **uuCloud or Nexus** - prepare everything to deploy app.
 
-    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -runDG -runMR -runFTP -runEMAIL -runECP
-    // wait for applications are ready
-    node index -folder ../sprint -init 12-8835-1 -testMR -testFTP -testEMAIL
+    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -runDG -runMR -runFTP -runEMAIL -runECP -init 12-8835-1 -testMR -testFTP -testEMAIL

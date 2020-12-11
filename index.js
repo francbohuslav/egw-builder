@@ -3,6 +3,9 @@ const core = require("./core");
 const path = require("path");
 const fs = require("fs");
 const parseCsv = require("csv-parse/lib/sync");
+const request = require("request");
+const util = require("util");
+const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 
 let config = require("./config.default");
@@ -23,17 +26,33 @@ if (fs.existsSync("./config.js")) {
  * @type {IProject[]}
  */
 const projects = [
-    { code: "DG", folder: config.folders.DG, server: "uu_energygateway_datagatewayg01-server" },
+    { code: "DG", folder: config.folders.DG, server: "uu_energygateway_datagatewayg01-server", port: 8094, webname: "uu-energygateway-datagatewayg01" },
     {
         code: "MR",
         folder: config.folders.MR,
         server: "uu_energygateway_messageregistryg01-server",
+        port: 8093,
+        webname: "uu-energygateway-messageregistryg01",
         hi: "uu_energygateway_messageregistryg01-hi",
         testFile: "message-registry.jmx",
     },
-    { code: "FTP", folder: config.folders.FTP, server: "uu_energygatewayg01_ftpendpoint-server", testFile: "ftp_endpoint.jmx" },
-    { code: "EMAIL", folder: config.folders.EMAIL, server: "uu_energygatewayg01_emailendpoint-server", testFile: "email_endpoint.jmx" },
-    { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server" },
+    {
+        code: "FTP",
+        folder: config.folders.FTP,
+        server: "uu_energygatewayg01_ftpendpoint-server",
+        port: 8095,
+        webname: "uu-energygatewayg01-ftpendpoint",
+        testFile: "ftp_endpoint.jmx",
+    },
+    {
+        code: "EMAIL",
+        folder: config.folders.EMAIL,
+        server: "uu_energygatewayg01_emailendpoint-server",
+        port: 8096,
+        webname: "uu-energygatewayg01-emailendpoint",
+        testFile: "email_endpoint.jmx",
+    },
+    { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server", port: 8097, webname: "uu-energygatewayg01-ecpendpoint" },
 ];
 
 const [DG, MR, FTP, EMAIL, ECP] = projects;
@@ -149,12 +168,36 @@ function setProjectsVersions(newVersion) {
     }
 }
 
+async function waitForApplicationIsReady(project) {
+    const seconds = 60;
+    for (let counter = seconds; counter > 0; counter -= 2) {
+        try {
+            await requestAsync(
+                `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/getProductInfo`,
+                { json: true }
+            );
+            if (counter != seconds) {
+                console.log("...ready!");
+            }
+            return;
+        } catch (err) {
+            // Do not care
+        }
+        console.log("Web is not ready, waiting... " + counter + " seconds left");
+        await core.delay(2000);
+    }
+    core.showError("Application is not ready");
+}
+
 /**
  *
  * @param {IProject} project
  * @param {string} yourUid
  */
-async function runInitCommands(projectCode, yourUid) {
+async function runInitCommands(project, yourUid) {
+    await waitForApplicationIsReady(project);
+
+    const projectCode = project.code;
     const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
     const { stdOut } = await core.runCommand("docker", [
         "run",
@@ -184,6 +227,8 @@ async function stopComposer() {
  * @param {string} testFile
  */
 async function runTests(project, testFile) {
+    await waitForApplicationIsReady(project);
+
     const resultsFile = "logs/results" + project.code + ".csv";
     const logFile = "logs/logs" + project.code + ".csv";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
@@ -285,10 +330,12 @@ async function run() {
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
-        const isTestsMR = isTests && cmd.getCmdValue("testMR", "Which tests? Message Registry?");
+        if (isTests) {
+            console.log("Which tests?");
+        }
+        const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
-        const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... E-mail?");
-        //TODO: BF: umet detekvoat ze nabehla apliakce
+        const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
         if (newVersion && newVersion.match(/^\d/)) {
             setProjectsVersions(newVersion);
         }
@@ -337,7 +384,7 @@ async function run() {
                 core.showMessage("..." + project.code);
                 // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                 await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
-                    await runInitCommands(project.code, yourUid);
+                    await runInitCommands(project, yourUid);
                 });
             }
         }
@@ -361,7 +408,7 @@ async function run() {
                 }
 
                 if (Object.keys(newPassed).length) {
-                    core.showMessage("There are tests marked as failing, but already passed. Remove task code from test name.");
+                    core.showMessage("There are tests marked as failed, but already passed. Remove task code from test name.");
                     console.log(newPassed);
                 }
                 if (Object.keys(failed).length) {
