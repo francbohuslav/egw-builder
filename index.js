@@ -321,17 +321,14 @@ async function run() {
 
         if (isRun) {
             core.showMessage("Starting app...");
-            let index = 0;
             for (const project of runableProjects) {
-                setTimeout(() => {
-                    if (isRunPerProject[project.code]) {
-                        core.showMessage("..." + project.code);
-                        core.inLocation(project.folder, () => {
-                            core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
-                        });
-                    }
-                }, index * 1000);
-                index++;
+                if (isRunPerProject[project.code]) {
+                    core.showMessage("..." + project.code);
+                    core.inLocation(project.folder, () => {
+                        core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
+                    });
+                }
+                await core.delay(1000);
             }
         }
         if (isRunInit) {
