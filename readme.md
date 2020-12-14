@@ -66,6 +66,7 @@ Run command `node index`.
     -initEMAIL           - Runs init commands of E-mail endpoint
     -initECP             - Runs init commands of ECP endpoint
 
+    -test                - Tests all subApps by jmeter
     -testMR              - Tests Message Registry by jmeter
     -testFTP             - Tests FTP endpoint by jmeter
     -testEMAIL           - Tests E-mail endpoint by jmeter

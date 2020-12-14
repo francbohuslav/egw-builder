@@ -106,6 +106,13 @@ class CommandLine {
                 continue;
             }
 
+            if (ar == "-test") {
+                this.testMR = true;
+                this.testMR = true;
+                this.testEMAIL = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-testmr") {
                 this.testMR = true;
                 this.interactively = false;

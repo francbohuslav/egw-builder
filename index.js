@@ -65,7 +65,11 @@ const runableProjects = [DG, MR, FTP, EMAIL, ECP];
  * @param {IProject} project
  */
 async function buildProject(project) {
+    if (await killProject(project)) {
+        console.log("Killed running app");
+    }
     if (project.code === "MR") {
+        console.log("npm i");
         await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
             await core.runCommand("cmd /C npm i");
         });
@@ -325,6 +329,7 @@ async function run() {
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
             console.log("");
+            console.log("  -test                - Tests all subApps by jmeter");
             console.log("  -testMR              - Tests Message Registry by jmeter");
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
@@ -449,6 +454,9 @@ async function run() {
             for (const project of runableProjects) {
                 if (isRunPerProject[project.code]) {
                     core.showMessage("..." + project.code);
+                    if (await killProject(project)) {
+                        console.log("Killed previous");
+                    }
                     core.inLocation(project.folder, () => {
                         core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
                     });
@@ -469,7 +477,7 @@ async function run() {
             }
             core.showMessage("Killing apps...");
             const killedApps = [];
-            for (const project of [ECP, FTP, EMAIL]) {
+            for (const project of [FTP, EMAIL, ECP]) {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("..." + project.code);
                     if (await killProject(project)) {
