@@ -9,6 +9,7 @@ const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 
 let config = require("./config.default");
+const { Cipher } = require("crypto");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -20,6 +21,8 @@ if (fs.existsSync("./config.js")) {
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
  * @property {string} testFile e.g. "message-registr.jmx"
+ * @property {string} port e.g. 8093
+ * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
  */
 
 /**
@@ -215,6 +218,39 @@ async function runInitCommands(project, yourUid) {
     }
 }
 
+/**
+ * @param {IProject} project
+ */
+async function killProject(project) {
+    const processId = await core.getProcessIdByPort(project.port);
+    if (!processId) {
+        console.log(`Port ${project.port} is not used. Nothing to kill, maybe tomorrow.`);
+        return false;
+    }
+    const res = await core.runCommand(
+        "wmic",
+        ["process", "where", "Name='java.exe' or Name='cmd.exe' or Name='conhost.exe'", "Get", "ProcessId,ParentProcessId"],
+        { disableStdOut: true }
+    );
+    const lines = res.stdOut.split(/[\r\n]+/);
+    const colNames = lines[0].trim().split(/\s+/);
+    if (colNames[0] !== "ParentProcessId") {
+        core.showError("Sorry, wrong columns", false);
+    }
+    const parentIds = {};
+    lines.forEach((line) => {
+        const [parentId, processId] = line.trim().split(/\s+/);
+        parentIds[processId] = parentId;
+    });
+    let topProcessId = processId;
+    while (parentIds[parentIds[topProcessId]]) {
+        topProcessId = parentIds[topProcessId];
+    }
+    console.log(`Killing process tree ${processId}.`);
+    await core.runCommand(`taskkill /F /T /PID ${topProcessId}`);
+    return true;
+}
+
 async function stopComposer() {
     try {
         await core.runCommand("docker-compose down");
@@ -385,7 +421,7 @@ async function run() {
         }
 
         if (isRun) {
-            core.showMessage("Starting app...");
+            core.showMessage("Starting apps...");
             for (const project of runableProjects) {
                 if (isRunPerProject[project.code]) {
                     core.showMessage("..." + project.code);
@@ -404,6 +440,24 @@ async function run() {
                 await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
                     await runInitCommands(project, yourUid);
                 });
+            }
+            core.showMessage("Killing apps...");
+            const killedApps = [];
+            for (const project of [ECP, FTP, EMAIL]) {
+                core.showMessage("..." + project.code);
+                if (await killProject(project)) {
+                    killedApps.push(project);
+                }
+            }
+            if (killedApps.length) {
+                core.showMessage("Starting killed apps again...");
+                for (const project of killedApps) {
+                    core.showMessage("..." + project.code);
+                    core.inLocation(project.folder, () => {
+                        core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
+                    });
+                    await core.delay(1000);
+                }
             }
         }
 

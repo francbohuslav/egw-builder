@@ -17,7 +17,7 @@
                 "name": "Launch Program",
                 "skipFiles": ["<node_internals>/**"],
                 "program": "index.js",
-                "args": ["-folder", "../release_1_1", "-testEMAIL"]
+                "args": ["-folder", "../release_1_1", "-init", "12-8835-1"]
             }
         ]
     }

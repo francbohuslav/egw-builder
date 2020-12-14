@@ -174,6 +174,17 @@ class Core {
     writeTextFile(tempFile, data) {
         fs.writeFileSync(tempFile, data, { encoding: "utf-8" });
     }
+
+    async getProcessIdByPort(port) {
+        const data = await this.runCommand(`netstat -ano`, undefined, { disableStdOut: true });
+        const lines = data.stdOut.split(/[\r\n]+/);
+        const portLines = lines.filter((line) => line.indexOf("0.0.0.0:" + port) > -1);
+        const match = portLines[0] && portLines[0].match(/\d+$/);
+        if (match) {
+            return match[0];
+        }
+        return false;
+    }
 }
 module.exports = new Core();
 
