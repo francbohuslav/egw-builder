@@ -169,19 +169,20 @@ function setProjectsVersions(newVersion) {
 }
 
 async function waitForApplicationIsReady(project) {
-    const seconds = 60;
+    const seconds = 120;
+    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/ignoreThisRequest`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
-            await requestAsync(
-                `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/getProductInfo`,
-                { json: true }
-            );
+            await requestAsync(url, { json: true });
             if (counter != seconds) {
                 console.log("...ready!");
             }
             return;
         } catch (err) {
             // Do not care
+        }
+        if (counter == seconds) {
+            console.log("Pinging url " + url);
         }
         console.log("Web is not ready, waiting... " + counter + " seconds left");
         await core.delay(2000);
@@ -230,15 +231,32 @@ async function runTests(project, testFile) {
     await waitForApplicationIsReady(project);
 
     const resultsFile = "logs/results" + project.code + ".csv";
-    const logFile = "logs/logs" + project.code + ".csv";
+    const logFile = "logs/logs" + project.code + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
     const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal -Jftp_data_dir=/ftpdata").split(" ");
-    await core.runCommand("docker", ["run", "--rm", "-v", process.cwd() + ":/jmeter", "-v", ftpDataDir + ":/ftpdata", "egaillardon/jmeter-plugins", ...rest]);
+    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal").split(" ");
+    if (project == FTP) {
+        rest.push("-Jftp_data_dir=/ftpdata");
+    }
+    if (project == EMAIL) {
+        rest.push("-Jsmtp_host=smtp");
+        rest.push("-Jsmtp_port=80");
+    }
+    await core.runCommand("docker", [
+        "run",
+        "--rm",
+        "-v",
+        process.cwd() + ":/jmeter",
+        "-v",
+        ftpDataDir + ":/ftpdata",
+        "--network=egw-tests_default",
+        "egaillardon/jmeter-plugins",
+        ...rest,
+    ]);
     const steps = parseCsv(core.readTextFile(resultsFile)).slice(1);
     const failed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
     const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
