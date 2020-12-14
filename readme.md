@@ -46,20 +46,29 @@ Run command `node index`.
 
 ### Options
 
-    -folder <name>    - Name of folder where all projects are stored, mandatory.
-    -version <ver>    - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.
-    -clear            - Shutdown and remove docker containers.
-    -build            - Builds apps by gradle.
-    -metamodel        - Regenerates metamodel for Business Territory.
-    -runDG            - Runs Datagateway
-    -runMR            - Runs Message Registry
-    -runFTP           - Runs FTP endpoint
-    -runEMAIL         - Runs E-mail endpoint
-    -runECP           - Runs ECP endpoint
-    -init <your-uid>  - Runs init commands of all apps (creates workspace, sets permissions)
-    -testMR           - Tests Message Registry by jmeter
-    -testFTP          - Tests FTP endpoint by jmeter
-    -testEMAIL        - Tests E-mail endpoint by jmeter
+    -folder <name>       - Name of folder where all projects are stored, mandatory.
+    -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.
+    -clear               - Shutdown and remove docker containers.
+    -build               - Builds apps by gradle.
+    -metamodel           - Regenerates metamodel for Business Territory.
+
+    -run                 - Runs all subApps
+    -runDG               - Runs Datagateway
+    -runMR               - Runs Message Registry
+    -runFTP              - Runs FTP endpoint
+    -runEMAIL            - Runs E-mail endpoint
+    -runECP              - Runs ECP endpoint
+
+    -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)
+    -initDG              - Runs init commands of Datagateway
+    -initMR <your-uid>   - Runs init commands of Message Registry
+    -initFTP             - Runs init commands of FTP endpoint
+    -initEMAIL           - Runs init commands of E-mail endpoint
+    -initECP             - Runs init commands of ECP endpoint
+
+    -testMR              - Tests Message Registry by jmeter
+    -testFTP             - Tests FTP endpoint by jmeter
+    -testEMAIL           - Tests E-mail endpoint by jmeter
 
 You will be asked interactively if there is none of options (except folder) used on command line.
 

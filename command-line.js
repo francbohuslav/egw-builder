@@ -33,6 +33,16 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+
+            if (ar == "-run") {
+                this.runDG = true;
+                this.runMR = true;
+                this.runFTP = true;
+                this.runEMAIL = true;
+                this.runECP = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-rundg") {
                 this.runDG = true;
                 this.interactively = false;
@@ -58,12 +68,44 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+
             if (ar == "-init") {
-                this.init = true;
+                this.initDG = true;
+                this.initMR = true;
+                this.initFTP = true;
+                this.initEMAIL = true;
+                this.initECP = true;
                 this.uid = pars.shift();
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-initdg") {
+                this.initDG = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initmr") {
+                this.initMR = true;
+                this.uid = pars.shift();
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initftp") {
+                this.initFTP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initemail") {
+                this.initEMAIL = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initecp") {
+                this.initECP = true;
+                this.interactively = false;
+                continue;
+            }
+
             if (ar == "-testmr") {
                 this.testMR = true;
                 this.interactively = false;

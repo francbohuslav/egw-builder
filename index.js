@@ -9,7 +9,6 @@ const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 
 let config = require("./config.default");
-const { Cipher } = require("crypto");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -306,20 +305,29 @@ async function run() {
             core.showMessage("Syntaxe");
             console.log(process.argv.join(" ") + " [OPTIONS]");
             console.log("Options:");
-            console.log("  -folder <name>    - Name of folder where all projects are stored, mandatory.");
-            console.log("  -version <ver>    - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
-            console.log("  -clear            - Shutdown and remove docker containers.");
-            console.log("  -build            - Builds apps by gradle.");
-            console.log("  -metamodel        - Regenerates metamodel for Business Territory.");
-            console.log("  -runDG            - Runs Datagateway");
-            console.log("  -runMR            - Runs Message Registry");
-            console.log("  -runFTP           - Runs FTP endpoint");
-            console.log("  -runEMAIL         - Runs E-mail endpoint");
-            console.log("  -runECP           - Runs ECP endpoint");
-            console.log("  -init <your-uid>  - Runs init commands of all apps (creates workspace, sets permissions)");
-            console.log("  -testMR           - Tests Message Registry by jmeter");
-            console.log("  -testFTP          - Tests FTP endpoint by jmeter");
-            console.log("  -testEMAIL        - Tests E-mail endpoint by jmeter");
+            console.log("  -folder <name>       - Name of folder where all projects are stored, mandatory.");
+            console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
+            console.log("  -clear               - Shutdown and remove docker containers.");
+            console.log("  -build               - Builds apps by gradle.");
+            console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
+            console.log("");
+            console.log("  -run                 - Runs all subApps");
+            console.log("  -runDG               - Runs Datagateway");
+            console.log("  -runMR               - Runs Message Registry");
+            console.log("  -runFTP              - Runs FTP endpoint");
+            console.log("  -runEMAIL            - Runs E-mail endpoint");
+            console.log("  -runECP              - Runs ECP endpoint");
+            console.log("");
+            console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
+            console.log("  -initDG              - Runs init commands of Datagateway");
+            console.log("  -initMR <your-uid>   - Runs init commands of Message Registry");
+            console.log("  -initFTP             - Runs init commands of FTP endpoint");
+            console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
+            console.log("  -initECP             - Runs init commands of ECP endpoint");
+            console.log("");
+            console.log("  -testMR              - Tests Message Registry by jmeter");
+            console.log("  -testFTP             - Tests FTP endpoint by jmeter");
+            console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -356,6 +364,7 @@ async function run() {
         const isBuild = cmd.getCmdValue("build", "Build?");
         const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
 
+        // Runs
         const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
         if (!isRun && !cmd.interactively) {
             console.log("Run app? no");
@@ -368,11 +377,24 @@ async function run() {
             isRunPerProject[project.code] = isRun && cmd.getCmdValue("run" + project.code, "... " + project.code + "?");
         }
 
-        const isRunInit = cmd.uid ? true : cmd.getCmdValue("init", "Run init commands?");
-        let yourUid = "";
+        // Inits
+        const isRunInit = cmd.interactively
+            ? cmd.getCmdValue("init", "Run init app?")
+            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP;
+        if (!isRunInit && !cmd.interactively) {
+            console.log("Run app? no");
+        }
         if (isRunInit) {
+            console.log("Which app?");
+        }
+        const isInitPerProject = {};
+        for (const project of runableProjects) {
+            isInitPerProject[project.code] = isRunInit && cmd.getCmdValue("init" + project.code, "... " + project.code + "?");
+        }
+
+        let yourUid = "";
+        if (isInitPerProject["MR"]) {
             if (cmd.uid) {
-                console.log("Run init commands? yes");
                 console.log("Your OID: " + cmd.uid);
             }
             yourUid = cmd.uid || prompt("Your UID: ");
@@ -380,6 +402,8 @@ async function run() {
                 core.showError("Terminated by user");
             }
         }
+
+        // Tests
         const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testMR || cmd.testFTP || cmd.testEMAIL;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
@@ -435,18 +459,22 @@ async function run() {
         if (isRunInit) {
             core.showMessage("Starting inits...");
             for (const project of runableProjects) {
-                core.showMessage("..." + project.code);
-                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
-                    await runInitCommands(project, yourUid);
-                });
+                if (isInitPerProject[project.code]) {
+                    core.showMessage("..." + project.code);
+                    // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
+                    await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
+                        await runInitCommands(project, yourUid);
+                    });
+                }
             }
             core.showMessage("Killing apps...");
             const killedApps = [];
             for (const project of [ECP, FTP, EMAIL]) {
-                core.showMessage("..." + project.code);
-                if (await killProject(project)) {
-                    killedApps.push(project);
+                if (isInitPerProject[project.code]) {
+                    core.showMessage("..." + project.code);
+                    if (await killProject(project)) {
+                        killedApps.push(project);
+                    }
                 }
             }
             if (killedApps.length) {
