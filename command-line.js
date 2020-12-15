@@ -108,7 +108,7 @@ class CommandLine {
 
             if (ar == "-test") {
                 this.testMR = true;
-                this.testMR = true;
+                this.testFTP = true;
                 this.testEMAIL = true;
                 this.interactively = false;
                 continue;
