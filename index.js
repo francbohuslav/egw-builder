@@ -389,7 +389,7 @@ async function run() {
             ? cmd.getCmdValue("init", "Run init app?")
             : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP;
         if (!isRunInit && !cmd.interactively) {
-            console.log("Run app? no");
+            console.log("Run init app? no");
         }
         if (isRunInit) {
             console.log("Which app?");
