@@ -9,6 +9,7 @@ const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 
 let config = require("./config.default");
+const { showError } = require("./core");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -227,7 +228,7 @@ async function runInitCommands(project, yourUid) {
 async function killProject(project) {
     const processId = await core.getProcessIdByPort(project.port);
     if (!processId) {
-        console.log(`Port ${project.port} is not used. Nothing to kill, maybe tomorrow.`);
+        console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
         return false;
     }
     const res = await core.runCommand(
@@ -297,9 +298,10 @@ async function runTests(project, testFile) {
         ...rest,
     ]);
     const steps = parseCsv(core.readTextFile(resultsFile)).slice(1);
-    const failed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
+    const knownFailed = steps.filter((step) => step[7] !== "true" && step[2].match(/\sT[0-9]+$/));
+    const newFailed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
     const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
-    return { failed, newPassed };
+    return { newFailed, newPassed, knownFailed };
 }
 
 async function run() {
@@ -500,17 +502,21 @@ async function run() {
         if (isTests) {
             core.showMessage("Starting tests...");
             await core.inLocationAsync(MR.folder + "/" + MR.server + "/src/test/jmeter/", async () => {
-                const failed = {};
+                const knownFailed = {};
+                const newFailed = {};
                 const newPassed = {};
                 for (const project of [isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
                         core.showMessage("..." + project.code);
                         const report = await runTests(project, project.testFile);
-                        if (report.failed.length) {
-                            failed[project.code] = report.failed.map((step) => step[2]);
+                        if (report.newFailed.length) {
+                            newFailed[project.code] = report.newFailed.map((step) => step[2]);
                         }
                         if (report.newPassed.length) {
                             newPassed[project.code] = report.newPassed.map((step) => step[2]);
+                        }
+                        if (report.knownFailed.length) {
+                            knownFailed[project.code] = report.knownFailed.map((step) => step[2]);
                         }
                     }
                 }
@@ -519,12 +525,40 @@ async function run() {
                     core.showMessage("There are tests marked as failed, but already passed. Remove task code from test name.");
                     console.log(newPassed);
                 }
-                if (Object.keys(failed).length) {
+                if (Object.keys(newFailed).length) {
                     core.showMessage("There are failed tests. Create task in Sprintman and add code at end of test name. E.g. 'some test - T123'.");
-                    console.log(failed);
+                    console.log(newFailed);
                 }
-                if (Object.keys(failed).length || Object.keys(newPassed).length) {
+                if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
                     core.showError("Tests failed. Watch message above.");
+                }
+                if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
+                    core.showSuccess("All tests passed as expected.");
+                    core.showSuccess("");
+                    core.showSuccess("            ████                ");
+                    core.showSuccess("          ███ ██                ");
+                    core.showSuccess("          ██   █                ");
+                    core.showSuccess("          ██   ██               ");
+                    core.showSuccess("           ██   ███             ");
+                    core.showSuccess("            ██    ██            ");
+                    core.showSuccess("            ██     ███          ");
+                    core.showSuccess("             ██      ██         ");
+                    core.showSuccess("        ███████       ██        ");
+                    core.showSuccess("     █████              ███ ██  ");
+                    core.showSuccess("    ██     ████          ██████ ");
+                    core.showSuccess("    ██  ████  ███             ██");
+                    core.showSuccess("    ██        ███             ██");
+                    core.showSuccess("     ██████████ ███           ██");
+                    core.showSuccess("     ██        ████           ██");
+                    core.showSuccess("     ███████████  ██          ██");
+                    core.showSuccess("       ██       ████     ██████ ");
+                    core.showSuccess("       ██████████ ██    ███ ██  ");
+                    core.showSuccess("          ██     ████ ███       ");
+                    core.showSuccess("          █████████████         ");
+                    core.showSuccess("");
+                }
+                if (Object.keys(knownFailed).length) {
+                    core.showWarning(`Some tests are marked as failed in ${Object.keys(knownFailed).join(", ")}.`);
                 }
             });
         }

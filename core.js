@@ -41,6 +41,14 @@ class Core {
         console.log("\x1b[36m%s\x1b[0m", message);
     }
 
+    showSuccess(message) {
+        console.log("\x1b[32m%s\x1b[0m", message);
+    }
+
+    showWarning(message) {
+        console.log("\x1b[33m%s\x1b[0m", message);
+    }
+
     showError(message, exit = true) {
         console.log("\x1b[31m%s\x1b[0m", message);
         //rompt("press ENTER to continue ");
