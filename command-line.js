@@ -28,6 +28,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-unittests") {
+                this.unitTests = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-metamodel") {
                 this.metamodel = true;
                 this.interactively = false;

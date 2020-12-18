@@ -9,7 +9,6 @@ const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 
 let config = require("./config.default");
-const { showError } = require("./core");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -65,7 +64,7 @@ const runableProjects = [DG, MR, FTP, EMAIL, ECP];
  *
  * @param {IProject} project
  */
-async function buildProject(project) {
+async function buildProject(project, isUnitTests) {
     if (await killProject(project)) {
         console.log("Killed running app");
     }
@@ -77,13 +76,16 @@ async function buildProject(project) {
     }
 
     await core.inLocationAsync(project.folder, async () => {
-        await core.runCommand("gradle build -x test");
+        let command = `cmd /C gradle build`;
+        if (!isUnitTests) {
+            command += " -x test";
+        }
+        await core.runCommand(command);
+
         if (project.code === "MR") {
             fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
         }
     });
-
-    core.showMessage(`${project.code} - ok`);
 }
 
 function getNormalizedString(file) {
@@ -98,7 +100,13 @@ async function generateModel(project) {
     await core.inLocationAsync(`${project.folder}/${project.server}/src/main/resources/config`, async () => {
         const tempFile = "metamodel-1.0.new.json";
         fs.copyFileSync("metamodel-1.0.json", tempFile);
-        await core.runCommand("metamodel-generatorg01.cmd -p profiles.json -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors");
+        const code = await core.runCommand(
+            "metamodel-generatorg01.cmd -p profiles.json -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors"
+        );
+        if (code.stdOut.indexOf("Profiles are not same !!!") > -1) {
+            fs.unlinkSync(tempFile);
+            core.showError("Error during metamodel");
+        }
         const data = core.readTextFile(tempFile).replace(/uu-energygateway.*?\//g, "");
         core.writeTextFile(tempFile, data);
         if (getNormalizedString("metamodel-1.0.json") === getNormalizedString(tempFile)) {
@@ -176,7 +184,7 @@ function setProjectsVersions(newVersion) {
 }
 
 async function waitForApplicationIsReady(project) {
-    const seconds = 120;
+    const seconds = 180;
     const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/ignoreThisRequest`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
@@ -315,6 +323,7 @@ async function run() {
             console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
             console.log("  -clear               - Shutdown and remove docker containers.");
             console.log("  -build               - Builds apps by gradle.");
+            console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
             console.log("");
             console.log("  -run                 - Runs all subApps");
@@ -369,6 +378,7 @@ async function run() {
 
         const isClearDocker = cmd.getCmdValue("clear", "Clear docker?");
         const isBuild = cmd.getCmdValue("build", "Build?");
+        const isUnitTests = cmd.getCmdValue("unittests", "Build or run with unit tests?");
         const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
 
         // Runs
@@ -377,7 +387,7 @@ async function run() {
             console.log("Run app? no");
         }
         if (isRun) {
-            console.log("Which app?");
+            console.log("Which app to run?");
         }
         const isRunPerProject = {};
         for (const project of runableProjects) {
@@ -392,7 +402,7 @@ async function run() {
             console.log("Run init app? no");
         }
         if (isRunInit) {
-            console.log("Which app?");
+            console.log("Which init?");
         }
         const isInitPerProject = {};
         for (const project of runableProjects) {
@@ -444,9 +454,12 @@ async function run() {
 
         for (const project of projects) {
             if (isBuild) {
-                await buildProject(project);
+                core.showMessage(`Building ${project.code} ...`);
+                await buildProject(project, isUnitTests);
+                core.showMessage(`${project.code} - build ok`);
             }
             if (isModel) {
+                core.showMessage(`Metamodel of ${project.code} ...`);
                 await generateModel(project);
             }
         }
@@ -460,7 +473,12 @@ async function run() {
                         console.log("Killed previous");
                     }
                     core.inLocation(project.folder, () => {
-                        core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
+                        let command = `start "${project.code}" /MIN gradlew start`;
+                        // If build is present, unit tests are executed by it
+                        if (!isUnitTests || isBuild) {
+                            command += " -x test";
+                        }
+                        core.runCommandNoWait(command);
                     });
                 }
                 await core.delay(1000);
@@ -492,7 +510,12 @@ async function run() {
                 for (const project of killedApps) {
                     core.showMessage("..." + project.code);
                     core.inLocation(project.folder, () => {
-                        core.runCommandNoWait('start "' + project.code + '" /MIN gradlew start -x test');
+                        let command = `start "${project.code}" /MIN gradlew start`;
+                        // If build or run is present, unit tests are executed by it
+                        if (!isUnitTests || isBuild || isRun) {
+                            command += " -x test";
+                        }
+                        core.runCommandNoWait(command);
                     });
                     await core.delay(1000);
                 }

@@ -50,6 +50,7 @@ Run command `node index`.
     -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.
     -clear               - Shutdown and remove docker containers.
     -build               - Builds apps by gradle.
+    -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
 
     -run                 - Runs all subApps
