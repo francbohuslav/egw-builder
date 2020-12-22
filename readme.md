@@ -66,6 +66,7 @@ Run command `node index`.
     -initFTP             - Runs init commands of FTP endpoint
     -initEMAIL           - Runs init commands of E-mail endpoint
     -initECP             - Runs init commands of ECP endpoint
+    -initASYNC           - Runs init commands of AsyncJob server
 
     -test                - Tests all subApps by jmeter
     -testMR              - Tests Message Registry by jmeter

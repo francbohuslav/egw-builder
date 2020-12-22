@@ -80,6 +80,7 @@ class CommandLine {
                 this.initFTP = true;
                 this.initEMAIL = true;
                 this.initECP = true;
+                this.initASYNC = true;
                 this.uid = pars.shift();
                 this.interactively = false;
                 continue;
@@ -107,6 +108,11 @@ class CommandLine {
             }
             if (ar == "-initecp") {
                 this.initECP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initasync") {
+                this.initASYNC = true;
                 this.interactively = false;
                 continue;
             }

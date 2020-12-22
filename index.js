@@ -230,13 +230,28 @@ async function runInitCommands(project, yourUid) {
     }
 }
 
+async function runInitCommandsAsyncJob() {
+    const initFile = "init-tests_ASYNC_JOB.jmx";
+    const { stdOut } = await core.runCommand("docker", [
+        "run",
+        "--rm",
+        "-v",
+        process.cwd() + ":/jmeter",
+        "egaillardon/jmeter-plugins",
+        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/resultsASYNC.csv -j jmeter/logs/logsASYNC.log").split(" "),
+    ]);
+    if (stdOut.match(/Err:\s+[1-9]/g)) {
+        core.showError(`Init commands of ASYNC failed`);
+    }
+}
+
 /**
  * @param {IProject} project
  */
 async function killProject(project) {
     const processId = await core.getProcessIdByPort(project.port);
     if (!processId) {
-        console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
+        //console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
         return false;
     }
     const res = await core.runCommand(
@@ -339,6 +354,7 @@ async function run() {
             console.log("  -initFTP             - Runs init commands of FTP endpoint");
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
+            console.log("  -initASYNC           - Runs init commands of AsyncJob server");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
             console.log("  -testMR              - Tests Message Registry by jmeter");
@@ -397,7 +413,7 @@ async function run() {
         // Inits
         const isRunInit = cmd.interactively
             ? cmd.getCmdValue("init", "Run init app?")
-            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP;
+            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initASYNC;
         if (!isRunInit && !cmd.interactively) {
             console.log("Run init app? no");
         }
@@ -408,6 +424,7 @@ async function run() {
         for (const project of runableProjects) {
             isInitPerProject[project.code] = isRunInit && cmd.getCmdValue("init" + project.code, "... " + project.code + "?");
         }
+        isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
 
         let yourUid = "";
         if (isInitPerProject["MR"]) {
@@ -494,6 +511,13 @@ async function run() {
                         await runInitCommands(project, yourUid);
                     });
                 }
+            }
+            if (isInitPerProject.ASYNC) {
+                core.showMessage("...AsyncJob");
+                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
+                await core.inLocationAsync(DG.folder + "/" + DG.server + "/src/test/", async () => {
+                    await runInitCommandsAsyncJob();
+                });
             }
             core.showMessage("Killing apps...");
             const killedApps = [];
