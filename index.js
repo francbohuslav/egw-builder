@@ -76,7 +76,7 @@ async function buildProject(project, isUnitTests) {
     }
 
     await core.inLocationAsync(project.folder, async () => {
-        let command = `cmd /C gradlew build`;
+        let command = `cmd /C gradlew clean build`;
         if (!isUnitTests) {
             command += " -x test";
         }
