@@ -503,6 +503,13 @@ async function run() {
         }
         if (isRunInit) {
             core.showMessage("Starting inits...");
+            if (isInitPerProject.ASYNC) {
+                core.showMessage("...AsyncJob");
+                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
+                await core.inLocationAsync(DG.folder + "/" + DG.server + "/src/test/", async () => {
+                    await runInitCommandsAsyncJob();
+                });
+            }
             for (const project of runableProjects) {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("..." + project.code);
@@ -511,13 +518,6 @@ async function run() {
                         await runInitCommands(project, yourUid);
                     });
                 }
-            }
-            if (isInitPerProject.ASYNC) {
-                core.showMessage("...AsyncJob");
-                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                await core.inLocationAsync(DG.folder + "/" + DG.server + "/src/test/", async () => {
-                    await runInitCommandsAsyncJob();
-                });
             }
             core.showMessage("Killing apps...");
             const killedApps = [];
