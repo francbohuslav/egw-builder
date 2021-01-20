@@ -228,9 +228,16 @@ async function runInitCommands(project, yourUid) {
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/results" + projectCode + ".csv -j jmeter/logs/logs" + projectCode + ".log -Juid=" + yourUid).split(
-            " "
-        ),
+        ...(
+            "-n -t jmeter/" +
+            initFile +
+            " -l jmeter/logs/results" +
+            projectCode +
+            ".csv -j jmeter/logs/logs" +
+            projectCode +
+            ".log -Jhost=host.docker.internal -Juid=" +
+            yourUid
+        ).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -308,7 +315,7 @@ async function runTests(project, testFile) {
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal").split(" ");
+    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder").split(" ");
     if (project == FTP) {
         rest.push("-Jftp_data_dir=/ftpdata");
     }
@@ -382,6 +389,10 @@ async function run() {
         }
         core.showMessage(`Using folder ${folder}`);
         process.chdir(folder);
+        const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost`);
+        if (isVersion11) {
+            core.showMessage("This is 1.1.* version, apps will be restarted after init.");
+        }
         if (cmd.interactively) {
             printProjectsVersions();
         }
@@ -465,7 +476,7 @@ async function run() {
             core.showMessage("Clearing docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(project.folder + "/docker/egw-tests", stopComposer);
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
                 }
             }
         }
@@ -473,7 +484,7 @@ async function run() {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(project.folder + "/docker/egw-tests", async () => await core.runCommand("docker-compose up -d"));
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
                 }
             }
         }
@@ -515,7 +526,7 @@ async function run() {
             if (isInitPerProject.ASYNC) {
                 core.showMessage("...AsyncJob");
                 // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                await core.inLocationAsync(DG.folder + "/" + DG.server + "/src/test/", async () => {
+                await core.inLocationAsync(`${DG.folder}/${DG.server}/src/test/`, async () => {
                     await runInitCommandsAsyncJob();
                 });
             }
@@ -523,41 +534,43 @@ async function run() {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("..." + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                    await core.inLocationAsync(project.folder + "/" + project.server + "/src/test/", async () => {
+                    await core.inLocationAsync(`${project.folder}/${project.server}/src/test/`, async () => {
                         await runInitCommands(project, yourUid);
                     });
                 }
             }
-            core.showMessage("Killing apps...");
-            const killedApps = [];
-            for (const project of [FTP, EMAIL, ECP]) {
-                if (isInitPerProject[project.code]) {
-                    core.showMessage("..." + project.code);
-                    if (await killProject(project)) {
-                        killedApps.push(project);
+            if (isVersion11) {
+                core.showMessage("Killing apps...");
+                const killedApps = [];
+                for (const project of [FTP, EMAIL, ECP]) {
+                    if (isInitPerProject[project.code]) {
+                        core.showMessage("..." + project.code);
+                        if (await killProject(project)) {
+                            killedApps.push(project);
+                        }
                     }
                 }
-            }
-            if (killedApps.length) {
-                core.showMessage("Starting killed apps again...");
-                for (const project of killedApps) {
-                    core.showMessage("..." + project.code);
-                    core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN gradlew start`;
-                        // If build or run is present, unit tests are executed by it
-                        if (!isUnitTests || isBuild || isRun) {
-                            command += " -x test";
-                        }
-                        core.runCommandNoWait(command);
-                    });
-                    await core.delay(1000);
+                if (killedApps.length) {
+                    core.showMessage("Starting killed apps again...");
+                    for (const project of killedApps) {
+                        core.showMessage(`...${project.code}`);
+                        core.inLocation(project.folder, () => {
+                            let command = `start "${project.code}" /MIN gradlew start`;
+                            // If build or run is present, unit tests are executed by it
+                            if (!isUnitTests || isBuild || isRun) {
+                                command += " -x test";
+                            }
+                            core.runCommandNoWait(command);
+                        });
+                        await core.delay(1000);
+                    }
                 }
             }
         }
 
         if (isTests) {
             core.showMessage("Starting tests...");
-            await core.inLocationAsync(MR.folder + "/" + MR.server + "/src/test/jmeter/", async () => {
+            await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
                 const knownFailed = {};
                 const newFailed = {};
                 const newPassed = {};

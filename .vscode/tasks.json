@@ -32,6 +32,13 @@
             "group": "test",
             "problemMatcher": [],
             "label": "npm: test"
+        },
+        {
+            "type": "npm",
+            "script": "custom",
+            "problemMatcher": [],
+            "label": "npm: custom",
+            "detail": "node ./index.js -folder ../sprint -clean -run -init 12-8835-1 -testMR -testFTP -testEMAIL"
         }
     ]
 }
