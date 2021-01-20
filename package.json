@@ -8,7 +8,7 @@
         "cleanBuild": "node ./index.js -folder ../release_1_1 -clear -build -metamodel",
         "run": "node ./index.js -folder ../release_1_1 -runDG -runMR -runEMAIL -runFTP -runECP",
         "init": "node ./index.js -folder ../release_1_1 -init 12-8835-1",
-        "test": "node ./index.js -folder ../release_1_1 -testMR -testFTP -testEMAIL"
+        "test": "node ./index.js -folder ../release_1_1 -testDG -testMR -testFTP -testEMAIL"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",

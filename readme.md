@@ -69,6 +69,7 @@ Run command `node index`.
     -initASYNC           - Runs init commands of AsyncJob server
 
     -test                - Tests all subApps by jmeter
+    -testDG              - Tests Datagateway by jmeter
     -testMR              - Tests Message Registry by jmeter
     -testFTP             - Tests FTP endpoint by jmeter
     -testEMAIL           - Tests E-mail endpoint by jmeter
@@ -89,8 +90,8 @@ Below there are some common scenarios.
 
     node index -folder ../sprint -runDG -runMR -runFTP -runEMAIL
     // wait for applications are ready
-    node index -folder ../sprint -testMR -testFTP -testEMAIL
+    node index -folder ../sprint -test
 
 **uuCloud or Nexus** - prepare everything to deploy app.
 
-    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -runDG -runMR -runFTP -runEMAIL -runECP -init 12-8835-1 -testMR -testFTP -testEMAIL
+    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -run -init 12-8835-1 -test

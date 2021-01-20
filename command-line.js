@@ -118,9 +118,15 @@ class CommandLine {
             }
 
             if (ar == "-test") {
+                this.testDG = true;
                 this.testMR = true;
                 this.testFTP = true;
                 this.testEMAIL = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-testdg") {
+                this.testDG = true;
                 this.interactively = false;
                 continue;
             }

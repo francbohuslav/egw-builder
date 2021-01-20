@@ -28,7 +28,14 @@ if (fs.existsSync("./config.js")) {
  * @type {IProject[]}
  */
 const projects = [
-    { code: "DG", folder: config.folders.DG, server: "uu_energygateway_datagatewayg01-server", port: 8094, webname: "uu-energygateway-datagatewayg01" },
+    {
+        code: "DG",
+        folder: config.folders.DG,
+        server: "uu_energygateway_datagatewayg01-server",
+        port: 8094,
+        webname: "uu-energygateway-datagatewayg01",
+        testFile: "datagateway.jmx",
+    },
     {
         code: "MR",
         folder: config.folders.MR,
@@ -357,6 +364,7 @@ async function run() {
             console.log("  -initASYNC           - Runs init commands of AsyncJob server");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
+            console.log("  -testDG              - Tests Datagateway by jmeter");
             console.log("  -testMR              - Tests Message Registry by jmeter");
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
@@ -438,13 +446,14 @@ async function run() {
         }
 
         // Tests
-        const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testMR || cmd.testFTP || cmd.testEMAIL;
+        const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
         if (isTests) {
             console.log("Which tests?");
         }
+        const isTestsDG = isTests && cmd.getCmdValue("testDG", "... DG?");
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
@@ -552,7 +561,7 @@ async function run() {
                 const knownFailed = {};
                 const newFailed = {};
                 const newPassed = {};
-                for (const project of [isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
+                for (const project of [isTestsDG ? DG : null, isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
                         core.showMessage("..." + project.code);
                         const report = await runTests(project, project.testFile);
