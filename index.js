@@ -392,7 +392,7 @@ async function run() {
         }
         core.showMessage(`Using folder ${folder}`);
         process.chdir(folder);
-        const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost`);
+        const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
         if (isVersion11) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
