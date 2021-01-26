@@ -318,7 +318,7 @@ async function runTests(project, testFile) {
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder").split(" ");
+    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder.cfg").split(" ");
     if (project == FTP) {
         rest.push("-Jftp_data_dir=/ftpdata");
     }
