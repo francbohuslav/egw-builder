@@ -225,22 +225,17 @@ async function runInitCommands(project, yourUid) {
 
     const projectCode = project.code;
     const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
+    const resultsFile = "jmeter/logs/initResults" + projectCode + ".csv";
+    const logFile = "jmeter/logs/initLogs" + projectCode + ".log";
+    fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
+    fs.existsSync(logFile) && fs.unlinkSync(logFile);
     const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...(
-            "-n -t jmeter/" +
-            initFile +
-            " -l jmeter/logs/results" +
-            projectCode +
-            ".csv -j jmeter/logs/logs" +
-            projectCode +
-            ".log -Jhost=host.docker.internal -Juid=" +
-            yourUid
-        ).split(" "),
+        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal -Juid=" + yourUid).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -249,13 +244,17 @@ async function runInitCommands(project, yourUid) {
 
 async function runInitCommandsAsyncJob() {
     const initFile = "init-tests_ASYNC_JOB.jmx";
+    const resultsFile = "jmeter/logs/initResultsASYNC.csv";
+    const logFile = "jmeter/logs/initLogsASYNC.log";
+    fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
+    fs.existsSync(logFile) && fs.unlinkSync(logFile);
     const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
         "-v",
         process.cwd() + ":/jmeter",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l jmeter/logs/resultsASYNC.csv -j jmeter/logs/logsASYNC.log").split(" "),
+        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -307,18 +306,20 @@ async function stopComposer() {
  * @param {IProject} project
  * @param {string} testFile
  */
-async function runTests(project, testFile) {
+async function runTests(project, testFile, isVersion11) {
     await waitForApplicationIsReady(project);
 
-    const resultsFile = "logs/results" + project.code + ".csv";
-    const logFile = "logs/logs" + project.code + ".log";
+    const resultsFile = "logs/testResults" + project.code + ".csv";
+    const logFile = "logs/testLogs" + project.code + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
     const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    const rest = ("-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder.cfg").split(" ");
+    let restStr = "-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " ";
+    restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
+    const rest = restStr.split(" ");
     if (project == FTP) {
         rest.push("-Jftp_data_dir=/ftpdata");
     }
@@ -467,7 +468,7 @@ async function run() {
         if (isTests) {
             console.log("Which tests?");
         }
-        const isTestsDG = isTests && cmd.getCmdValue("testDG", "... DG?");
+        const isTestsDG = !isVersion11 && isTests && cmd.getCmdValue("testDG", "... DG?");
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
@@ -580,7 +581,7 @@ async function run() {
                 for (const project of [isTestsDG ? DG : null, isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
                         core.showMessage("..." + project.code);
-                        const report = await runTests(project, project.testFile);
+                        const report = await runTests(project, project.testFile, isVersion11);
                         if (report.newFailed.length) {
                             newFailed[project.code] = report.newFailed.map((step) => step[2]);
                         }
