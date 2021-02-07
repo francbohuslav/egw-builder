@@ -1,4 +1,5 @@
 $isError = $False
+$isRunning = $False
 $stackTraceLine = 0
 $color = "";
 ForEach ($row in $input) {
@@ -18,6 +19,7 @@ ForEach ($row in $input) {
     }
     if ($row.Contains("Started SubAppRunner")) {
         $color = "Yellow"
+        $isRunning = $True
     }
     else {
         if ($row.Contains("MessageBrokerPublisher")) {
@@ -33,6 +35,12 @@ ForEach ($row in $input) {
         }
     }
     else {
-        Write-Host -ForegroundColor $color $row
+        if ($isRunning) {
+            Write-Host -ForegroundColor "Yellow" -NoNewline "| "
+            Write-Host -ForegroundColor $color $row
+        }
+        else {
+            Write-Host -ForegroundColor $color $row
+        }
     }
 }
