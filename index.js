@@ -13,6 +13,8 @@ if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
 
+const builderDir = __dirname;
+
 /**
  * @typedef {Object} IProject Project
  * @property {string} code one of DG, MR, EMAIL, ECP, FTP
@@ -514,7 +516,7 @@ async function run() {
                         console.log("Killed previous");
                     }
                     core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN gradlew start`;
+                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir}`;
                         // If build is present, unit tests are executed by it
                         if (!isUnitTests || isBuild) {
                             command += " -x test";
