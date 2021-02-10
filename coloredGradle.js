@@ -33,8 +33,14 @@ function printLine(line) {
     if (line.indexOf("Started SubAppRunner") > -1) {
         color = "33";
         isRunning = true;
+    } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
+        color = "36";
+    } else if (isRunning && (line.indexOf("IncomingMessageReceivedConsumer") > -1 || line.indexOf("DefaultIncomingMessageRecognizer") > -1)) {
+        color = "44";
+    } else if (isRunning && (line.match(/started.*route/) || line.match(/finished.*route/))) {
+        color = "90";
     } else {
-        color = line.indexOf("MessageBrokerPublisher") > -1 ? "36" : "37";
+        color = "37";
     }
 
     if (isError) {
@@ -47,6 +53,10 @@ function printLine(line) {
         console.log("\x1b[%sm%s\x1b[0m", color, line);
     }
 }
+
+// for (let i = 0; i < 200; i++) {
+//     console.log("\x1b[%sm%s\x1b[0m", i, i + "text");
+// }
 
 /*
 Colors reference
@@ -67,6 +77,7 @@ FgBlue = "\x1b[34m"
 FgMagenta = "\x1b[35m"
 FgCyan = "\x1b[36m"
 FgWhite = "\x1b[37m"
+FgGray = "\x1b[90m"
 
 BgBlack = "\x1b[40m"
 BgRed = "\x1b[41m"
