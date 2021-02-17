@@ -24,7 +24,36 @@ class CommandLine {
                 continue;
             }
             if (ar == "-build") {
-                this.build = true;
+                this.buildDG = true;
+                this.buildMR = true;
+                this.buildFTP = true;
+                this.buildEMAIL = true;
+                this.buildECP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-builddg") {
+                this.buildDG = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-buildmr") {
+                this.buildMR = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-buildftp") {
+                this.buildFTP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-buildemail") {
+                this.buildEMAIL = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-buildecp") {
+                this.buildECP = true;
                 this.interactively = false;
                 continue;
             }

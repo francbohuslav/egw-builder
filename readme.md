@@ -49,9 +49,16 @@ Run command `node index`.
     -folder <name>       - Name of folder where all projects are stored, mandatory.
     -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.
     -clear               - Shutdown and remove docker containers.
-    -build               - Builds apps by gradle.
     -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
+
+    -build               - Builds apps by gradle
+    -build               - Builds all apps by gradle
+    -buildDG             - Builds Datagateway
+    -buildMR             - Builds Message Registry
+    -buildFTP            - Builds FTP endpoint
+    -buildEMAIL          - Builds E-mail endpoint
+    -buildECP            - Builds ECP endpoint
 
     -run                 - Runs all subApps
     -runDG               - Runs Datagateway

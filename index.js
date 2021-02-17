@@ -357,9 +357,15 @@ async function run() {
             console.log("  -folder <name>       - Name of folder where all projects are stored, mandatory.");
             console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
             console.log("  -clear               - Shutdown and remove docker containers.");
-            console.log("  -build               - Builds apps by gradle.");
             console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
+            console.log("");
+            console.log("  -build               - Builds all apps by gradle");
+            console.log("  -buildDG             - Builds Datagateway");
+            console.log("  -buildMR             - Builds Message Registry");
+            console.log("  -buildFTP            - Builds FTP endpoint");
+            console.log("  -buildEMAIL          - Builds E-mail endpoint");
+            console.log("  -buildECP            - Builds ECP endpoint");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -418,9 +424,23 @@ async function run() {
         }
 
         const isClearDocker = cmd.getCmdValue("clear", "Clear docker?");
-        const isBuild = cmd.getCmdValue("build", "Build?");
-        const isUnitTests = cmd.getCmdValue("unittests", "Build or run with unit tests?");
         const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
+
+        // Build
+        const isBuild = cmd.interactively
+            ? cmd.getCmdValue("build", "Build app?")
+            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP;
+        if (!isBuild && !cmd.interactively) {
+            console.log("Build app? no");
+        }
+        if (isBuild) {
+            console.log("Which app to build?");
+        }
+        const isBuildPerProject = {};
+        for (const project of projects) {
+            isBuildPerProject[project.code] = isBuild && cmd.getCmdValue("build" + project.code, "... " + project.code + "?");
+        }
+        const isUnitTests = isBuild && cmd.getCmdValue("unittests", "Build or run with unit tests?");
 
         // Runs
         const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
@@ -495,15 +515,18 @@ async function run() {
             }
         }
 
-        for (const project of projects) {
-            if (isBuild) {
-                core.showMessage(`Building ${project.code} ...`);
-                await buildProject(project, isUnitTests);
-                core.showMessage(`${project.code} - build ok`);
-            }
-            if (isModel) {
-                core.showMessage(`Metamodel of ${project.code} ...`);
-                await generateModel(project);
+        if (isBuild) {
+            core.showMessage("Building apps...");
+            for (const project of projects) {
+                if (isModel) {
+                    core.showMessage(`Metamodel of ${project.code} ...`);
+                    await generateModel(project);
+                }
+                if (isBuildPerProject[project.code]) {
+                    core.showMessage(`Building ${project.code} ...`);
+                    await buildProject(project, isUnitTests);
+                    core.showMessage(`${project.code} - build ok`);
+                }
             }
         }
 
