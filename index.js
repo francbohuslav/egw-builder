@@ -399,6 +399,7 @@ async function run() {
         if (!folder) {
             core.showError("Terminated by user");
         }
+        folder = path.resolve(folder);
         core.showMessage(`Using folder ${folder}`);
         process.chdir(folder);
         const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
@@ -539,7 +540,7 @@ async function run() {
                         console.log("Killed previous");
                     }
                     core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir}`;
+                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${path.join(folder, project.code + ".log")}`;
                         // If build is present, unit tests are executed by it
                         if (!isUnitTests || isBuild) {
                             command += " -x test";

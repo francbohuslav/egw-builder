@@ -1,9 +1,22 @@
-const stdin = process.openStdin();
+const fs = require("fs");
+const os = require("os");
 
-stdin.on("data", function (chunk) {
-    const lines = chunk.toString().split(/[\r\n]+/);
-    lines.forEach((line) => {
-        printLine(line.replace(/\s+$/, ""));
+const stdin = process.openStdin();
+const logFile = process.argv[2];
+if (fs.existsSync(logFile)) {
+    fs.unlinkSync(logFile);
+}
+
+fs.open(logFile, "w", function (err, fd) {
+    if (err) {
+        throw "could not open file: " + err;
+    }
+
+    stdin.on("data", function (chunk) {
+        const lines = chunk.toString().split(/[\r\n]+/);
+        lines.forEach((line) => {
+            printLine(line.replace(/\s+$/, ""), fd);
+        });
     });
 });
 
@@ -15,7 +28,7 @@ let color = "";
  *
  * @param {string} line input line
  */
-function printLine(line) {
+function printLine(line, fd) {
     if (line.trim() === "") {
         return;
     }
@@ -46,12 +59,26 @@ function printLine(line) {
     if (isError) {
         if (stackTraceLine < 5) {
             console.log("\x1b[31m%s\x1b[0m", line);
+            logToFile(fd, line);
         }
     } else if (isRunning) {
         console.log("\x1b[33m| \x1b[0m\x1b[%sm%s\x1b[0m", color, line);
+        logToFile(fd, "| " + line);
     } else {
         console.log("\x1b[%sm%s\x1b[0m", color, line);
+        logToFile(fd, line);
     }
+}
+
+/**
+ *
+ * @param {number} fd
+ * @param {string} line
+ */
+function logToFile(fd, line) {
+    fs.appendFile(fd, line + os.EOL, function (err) {
+        if (err) throw "error writing file: " + err;
+    });
 }
 
 // for (let i = 0; i < 200; i++) {

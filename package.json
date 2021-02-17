@@ -1,6 +1,6 @@
 {
     "name": "egw-builder",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Scripts for building, testing and release EnergyGateway",
     "main": "index.js",
     "scripts": {
