@@ -540,7 +540,10 @@ async function run() {
                         console.log("Killed previous");
                     }
                     core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${path.join(folder, project.code + ".log")}`;
+                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${path.join(
+                            folder,
+                            "log-" + project.code + ".log"
+                        )}`;
                         // If build is present, unit tests are executed by it
                         if (!isUnitTests || isBuild) {
                             command += " -x test";
