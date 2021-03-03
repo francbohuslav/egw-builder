@@ -54,24 +54,34 @@ function printLine(line, fd) {
     ) {
         // Incoming messsage
         color = "44";
-    } else if (isRunning && (line.match(/started.*route/) || line.match(/finished.*route/))) {
+    } else if (isRunning && (line.match(/started.*route/i) || line.match(/finished.*route/i))) {
+        // Unimportant message
         color = "90";
     } else {
         color = "37";
     }
 
+    const shortLine = shortText(line);
+
     if (isError) {
         if (stackTraceLine < 5) {
-            console.log("\x1b[31m%s\x1b[0m", line);
+            console.log("\x1b[31m%s\x1b[0m", shortLine);
             logToFile(fd, line);
         }
     } else if (isRunning) {
-        console.log("\x1b[33m| \x1b[0m\x1b[%sm%s\x1b[0m", color, line);
+        console.log("\x1b[33m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
         logToFile(fd, "| " + line);
     } else {
-        console.log("\x1b[%sm%s\x1b[0m", color, line);
+        console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
         logToFile(fd, line);
     }
+}
+
+function shortText(line) {
+    line = line.replace(/(\suu\.)\S+(\.[^\s.]+)/g, "$1.$2");
+    line = line.replace(/(\sorg\.)\S+(\.[^\s.]+)/g, "$1.$2");
+    line = line.replace(/11111111111111111111111111111111/g, "11...11");
+    return line;
 }
 
 /**
