@@ -48,7 +48,11 @@ function printLine(line, fd) {
         isRunning = true;
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
         color = "36";
-    } else if (isRunning && (line.indexOf("IncomingMessageReceivedConsumer") > -1 || line.indexOf("DefaultIncomingMessageRecognizer") > -1)) {
+    } else if (
+        (isRunning && (line.indexOf("IncomingMessageReceivedConsumer") > -1 || line.indexOf("DefaultIncomingMessageRecognizer") > -1)) ||
+        line.indexOf("New message arrived") > -1
+    ) {
+        // Incoming messsage
         color = "44";
     } else if (isRunning && (line.match(/started.*route/) || line.match(/finished.*route/))) {
         color = "90";
