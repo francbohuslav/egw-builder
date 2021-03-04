@@ -24,6 +24,7 @@ let isError = false;
 let isRunning = false;
 let stackTraceLine = 0;
 let color = "";
+let prevLineTime = new Date().getTime();
 /**
  *
  * @param {string} line input line
@@ -61,20 +62,23 @@ function printLine(line, fd) {
         color = "37";
     }
 
+    logToFile(fd, line);
     const shortLine = shortText(line);
 
+    const now = new Date().getTime();
+    if (now - prevLineTime > 10 * 1000) {
+        console.log();
+    }
     if (isError) {
         if (stackTraceLine < 5) {
             console.log("\x1b[31m%s\x1b[0m", shortLine);
-            logToFile(fd, line);
         }
     } else if (isRunning) {
         console.log("\x1b[33m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
-        logToFile(fd, "| " + line);
     } else {
         console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
-        logToFile(fd, line);
     }
+    prevLineTime = now;
 }
 
 function shortText(line) {

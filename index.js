@@ -136,10 +136,12 @@ function printProjectVersion(project) {
         versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
         versions["build.gradle"] = core.readTextFile("build.gradle").match(/version '(\S+)'/)[1];
         versions["uucloud-development.json"] = JSON.parse(core.readTextFile(project.server + "/config/uucloud-development.json")).uuSubApp.version;
-        versions["metamodel-1.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json")).version.replace(
-            "-beta",
-            "-SNAPSHOT"
-        );
+        if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
+            versions["metamodel-1.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json")).version.replace(
+                "-beta",
+                "-SNAPSHOT"
+            );
+        }
         if (fs.existsSync(MR.hi + "/package.json")) {
             versions["package.json"] = JSON.parse(core.readTextFile(MR.hi + "/package.json")).version;
         }
