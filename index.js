@@ -537,7 +537,7 @@ async function run() {
             core.showMessage("Starting apps...");
             for (const project of runableProjects) {
                 if (isRunPerProject[project.code]) {
-                    core.showMessage("..." + project.code);
+                    core.showMessage("Starting " + project.code);
                     if (await killProject(project)) {
                         console.log("Killed previous");
                     }
@@ -559,7 +559,7 @@ async function run() {
         if (isRunInit) {
             core.showMessage("Starting inits...");
             if (isInitPerProject.ASYNC) {
-                core.showMessage("...AsyncJob");
+                core.showMessage("Init AsyncJob");
                 // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                 await core.inLocationAsync(`${DG.folder}/${DG.server}/src/test/`, async () => {
                     await runInitCommandsAsyncJob();
@@ -567,7 +567,7 @@ async function run() {
             }
             for (const project of runableProjects) {
                 if (isInitPerProject[project.code]) {
-                    core.showMessage("..." + project.code);
+                    core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                     await core.inLocationAsync(`${project.folder}/${project.server}/src/test/`, async () => {
                         await runInitCommands(project, yourUid);
@@ -579,7 +579,7 @@ async function run() {
                 const killedApps = [];
                 for (const project of [FTP, EMAIL, ECP]) {
                     if (isInitPerProject[project.code]) {
-                        core.showMessage("..." + project.code);
+                        core.showMessage(`Killing ${project.code}`);
                         if (await killProject(project)) {
                             killedApps.push(project);
                         }
@@ -588,7 +588,7 @@ async function run() {
                 if (killedApps.length) {
                     core.showMessage("Starting killed apps again...");
                     for (const project of killedApps) {
-                        core.showMessage(`...${project.code}`);
+                        core.showMessage(`Starting ${project.code}`);
                         core.inLocation(project.folder, () => {
                             let command = `start "${project.code}" /MIN gradlew start`;
                             // If build or run is present, unit tests are executed by it
@@ -611,7 +611,7 @@ async function run() {
                 const newPassed = {};
                 for (const project of [isTestsDG ? DG : null, isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
-                        core.showMessage("..." + project.code);
+                        core.showMessage(`Testing ${project.code}`);
                         const report = await runTests(project, project.testFile, isVersion11);
                         if (report.newFailed.length) {
                             newFailed[project.code] = report.newFailed.map((step) => step[2]);
