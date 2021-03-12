@@ -542,7 +542,7 @@ async function run() {
                         console.log("Killed previous");
                     }
                     core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${path.join(
+                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
                             folder,
                             "log-" + project.code + ".log"
                         )}`;

@@ -2,11 +2,12 @@ const fs = require("fs");
 const os = require("os");
 
 const stdin = process.openStdin();
-const logFile = process.argv[2];
+const projectCode = process.argv[2];
+const logFile = process.argv[3];
 if (fs.existsSync(logFile)) {
     fs.unlinkSync(logFile);
 }
-
+title("starting");
 fs.open(logFile, "w", function (err, fd) {
     if (err) {
         throw "could not open file: " + err;
@@ -47,6 +48,7 @@ function printLine(line, fd) {
     if (line.indexOf("Started SubAppRunner") > -1) {
         color = "33";
         isRunning = true;
+        title("");
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
         color = "36";
     } else if (
@@ -98,6 +100,10 @@ function logToFile(fd, line) {
     fs.appendFile(fd, line + os.EOL, function (err) {
         if (err) throw "error writing file: " + err;
     });
+}
+
+function title(message) {
+    process.stdout.write(String.fromCharCode(27) + "]0;" + projectCode + " " + message + String.fromCharCode(7));
 }
 
 // for (let i = 0; i < 200; i++) {
