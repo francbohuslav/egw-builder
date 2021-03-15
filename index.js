@@ -306,6 +306,21 @@ async function stopComposer() {
     }
 }
 
+async function removeMongoDockers() {
+    const { stdOut } = await core.runCommand("docker container ls -a --filter name=egw-tests_mongo");
+    const containerIds = stdOut
+        .split("\n")
+        .slice(1) // remove header
+        .map((l) => l.split(" ")[0]) // take id
+        .filter((id) => id.length > 10); // remove empty line
+    for (const id of containerIds) {
+        console.log("Stop docker ...");
+        await core.runCommand("docker container stop " + id);
+        console.log("Remove docker ...");
+        await core.runCommand("docker container rm " + id);
+    }
+}
+
 /**
  * @param {IProject} project
  * @param {string} testFile
@@ -506,6 +521,9 @@ async function run() {
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
                     await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
+                }
+                if (project.code == "DG") {
+                    await removeMongoDockers();
                 }
             }
         }
