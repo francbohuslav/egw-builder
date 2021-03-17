@@ -17,7 +17,7 @@ const builderDir = __dirname;
 
 /**
  * @typedef {Object} IProject Project
- * @property {string} code one of DG, MR, EMAIL, ECP, FTP
+ * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
@@ -64,10 +64,11 @@ const projects = [
         testFile: "email_endpoint.jmx",
     },
     { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server", port: 8097, webname: "uu-energygatewayg01-ecpendpoint" },
+    { code: "IEC", folder: config.folders.IEC, server: "uu_energygatewayg01_iecendpoint-server", port: 8097, webname: "uu-energygatewayg01-iecendpoint" },
 ];
 
-const [DG, MR, FTP, EMAIL, ECP] = projects;
-const runableProjects = [DG, MR, FTP, EMAIL, ECP];
+const [DG, MR, FTP, EMAIL, ECP, IEC] = projects;
+const runableProjects = [DG, MR, FTP, EMAIL, ECP, IEC];
 
 /**
  *
@@ -383,6 +384,7 @@ async function run() {
             console.log("  -buildFTP            - Builds FTP endpoint");
             console.log("  -buildEMAIL          - Builds E-mail endpoint");
             console.log("  -buildECP            - Builds ECP endpoint");
+            console.log("  -buildIEC            - Builds IEC endpoint");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -390,6 +392,7 @@ async function run() {
             console.log("  -runFTP              - Runs FTP endpoint");
             console.log("  -runEMAIL            - Runs E-mail endpoint");
             console.log("  -runECP              - Runs ECP endpoint");
+            console.log("  -runIEC              - Runs IEC endpoint");
             console.log("");
             console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");
@@ -397,6 +400,7 @@ async function run() {
             console.log("  -initFTP             - Runs init commands of FTP endpoint");
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
+            console.log("  -initIEC             - Runs init commands of IEC endpoint");
             console.log("  -initASYNC           - Runs init commands of AsyncJob server");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
@@ -447,7 +451,7 @@ async function run() {
         // Build
         const isBuild = cmd.interactively
             ? cmd.getCmdValue("build", "Build app?")
-            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP;
+            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP || cmd.buildIEC;
         if (!isBuild && !cmd.interactively) {
             console.log("Build app? no");
         }
@@ -461,7 +465,7 @@ async function run() {
         const isUnitTests = isBuild && cmd.getCmdValue("unittests", "Build or run with unit tests?");
 
         // Runs
-        const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
+        const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC;
         if (!isRun && !cmd.interactively) {
             console.log("Run app? no");
         }
@@ -476,7 +480,7 @@ async function run() {
         // Inits
         const isRunInit = cmd.interactively
             ? cmd.getCmdValue("init", "Run init app?")
-            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initASYNC;
+            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC || cmd.initASYNC;
         if (!isRunInit && !cmd.interactively) {
             console.log("Run init app? no");
         }

@@ -29,6 +29,7 @@ class CommandLine {
                 this.buildFTP = true;
                 this.buildEMAIL = true;
                 this.buildECP = true;
+                this.buildIEC = true;
                 this.interactively = false;
                 continue;
             }
@@ -57,6 +58,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-buildiec") {
+                this.buildIEC = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-unittests") {
                 this.unitTests = true;
                 this.interactively = false;
@@ -74,6 +80,7 @@ class CommandLine {
                 this.runFTP = true;
                 this.runEMAIL = true;
                 this.runECP = true;
+                this.runIEC = true;
                 this.interactively = false;
                 continue;
             }
@@ -102,6 +109,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-runiec") {
+                this.runIEC = true;
+                this.interactively = false;
+                continue;
+            }
 
             if (ar == "-init") {
                 this.initDG = true;
@@ -109,6 +121,7 @@ class CommandLine {
                 this.initFTP = true;
                 this.initEMAIL = true;
                 this.initECP = true;
+                this.initIEC = true;
                 this.initASYNC = true;
                 this.uid = pars.shift();
                 this.interactively = false;
@@ -137,6 +150,11 @@ class CommandLine {
             }
             if (ar == "-initecp") {
                 this.initECP = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initeiec") {
+                this.initIEC = true;
                 this.interactively = false;
                 continue;
             }

@@ -19,6 +19,7 @@ Builder supports this EGW projects, which are hosted in UU Codebase GIT reposito
 -   FTP endpoint
 -   E-mail endpoint
 -   ECP endpoint
+-   IEC endpoint
 
 Default folder structure:
 
@@ -28,6 +29,7 @@ Default folder structure:
 -   `uu_energygateway_ftpendpointg01` - repository of FTP endpoint
 -   `uu_energygateway_emailendpointg01` - repository of E-mail endpoint
 -   `uu_energygateway_ecpendpointg01` - repository of ECP endpoint
+-   `uu_energygateway_iecendpointg01` - repository of IEC endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
@@ -59,6 +61,7 @@ Run command `node index`.
     -buildFTP            - Builds FTP endpoint
     -buildEMAIL          - Builds E-mail endpoint
     -buildECP            - Builds ECP endpoint
+    -buildIEC            - Builds IEC endpoint
 
     -run                 - Runs all subApps
     -runDG               - Runs Datagateway
@@ -66,6 +69,7 @@ Run command `node index`.
     -runFTP              - Runs FTP endpoint
     -runEMAIL            - Runs E-mail endpoint
     -runECP              - Runs ECP endpoint
+    -runIEC              - Runs IEC endpoint
 
     -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)
     -initDG              - Runs init commands of Datagateway
@@ -73,6 +77,7 @@ Run command `node index`.
     -initFTP             - Runs init commands of FTP endpoint
     -initEMAIL           - Runs init commands of E-mail endpoint
     -initECP             - Runs init commands of ECP endpoint
+    -initIEC             - Runs init commands of IEC endpoint
     -initASYNC           - Runs init commands of AsyncJob server
 
     -test                - Tests all subApps by jmeter

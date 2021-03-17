@@ -9,5 +9,6 @@ module.exports = {
         FTP: "uu_energygateway_ftpendpointg01",
         EMAIL: "uu_energygateway_emailendpointg01",
         ECP: "uu_energygateway_ecpendpointg01",
+        IEC: "uu_energygateway_iecendpointg01",
     },
 };
