@@ -168,10 +168,11 @@ function setProjectVersion(project, newVersion) {
         json.uuSubApp.version = newVersion;
         core.writeTextFile(project.server + "/config/uucloud-development.json", JSON.stringify(json, null, 2));
 
-        json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json"));
-        json.version = newVersion.replace("SNAPSHOT", "beta");
-        core.writeTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json", JSON.stringify(json, null, 2));
-
+        if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
+            json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json"));
+            json.version = newVersion.replace("SNAPSHOT", "beta");
+            core.writeTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json", JSON.stringify(json, null, 2));
+        }
         let content = core.readTextFile("build.gradle");
         content = content.replace(/version '.*'/, `version '${newVersion}'`);
         core.writeTextFile("build.gradle", content);
