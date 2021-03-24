@@ -64,7 +64,7 @@ const projects = [
         testFile: "email_endpoint.jmx",
     },
     { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server", port: 8097, webname: "uu-energygatewayg01-ecpendpoint" },
-    { code: "IEC", folder: config.folders.IEC, server: "uu_energygatewayg01_wsiecendpoint-server", port: 8097, webname: "uu-energygateway-wsiecendpointg01" },
+    { code: "IEC", folder: config.folders.IEC, server: "uu_energygatewayg01_wsiecendpoint-server", port: 8098, webname: "uu-energygateway-wsiecendpointg01" },
 ];
 
 const [DG, MR, FTP, EMAIL, ECP, IEC] = projects;
