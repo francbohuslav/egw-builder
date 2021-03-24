@@ -153,7 +153,7 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-initeiec") {
+            if (ar == "-initiec") {
                 this.initIEC = true;
                 this.interactively = false;
                 continue;
