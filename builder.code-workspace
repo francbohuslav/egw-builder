@@ -19,6 +19,14 @@
                 "program": "index.js",
                 "args": ["-folder", "../sprint", "-runDG"]
             }
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Launch Program",
+                "skipFiles": ["<node_internals>/**"],
+                "program": "index.js",
+                "args": ["-folder", "../sprint", "-runDG"]
+            }
         ]
     }
 }

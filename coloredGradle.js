@@ -1,5 +1,6 @@
 const fs = require("fs");
 const os = require("os");
+const entities = require("html-entities");
 
 const stdin = process.openStdin();
 const projectCode = process.argv[2];
@@ -34,13 +35,32 @@ function printLine(line, fd) {
     if (line.trim() === "") {
         return;
     }
-    if (line.match(/^\S+\s\S+\sERROR/)) {
+
+    // create tomcat log as gradle log
+    if (line.indexOf("|") != -1) {
+        line = line.substr(line.indexOf("|") + 1).trim();
+    }
+    if (line.indexOf("{") != -1) {
+        const severity = line
+            .substr(0, line.indexOf("{"))
+            .replace("TRACE_LOG", "")
+            .replace(/[^A-Z]+/g, "");
+        line = line.substr(line.indexOf("{")).trim();
+        try {
+            const json = JSON.parse(line);
+            line = `${json.eventTime.split("T")[1]} ${severity} ${json.logger} ${entities.decode(json.message)}`;
+        } catch (ex) {
+            // console.log("\x1b[31m%s\x1b[0m", "Builder console error " + ex + " for next line");
+        }
+    }
+
+    if (line.match(/^\S+\sERROR/)) {
         isError = true;
         stackTraceLine = 0;
     } else if (line.match(/^\s+at\s/)) {
         isError = true;
         stackTraceLine++;
-    } else if (line.match(/^\S+\s\[\S+\]\s/)) {
+    } else {
         isError = false;
         stackTraceLine = 0;
     }

@@ -34,7 +34,7 @@ const projects = [
         code: "DG",
         folder: config.folders.DG,
         server: "uu_energygateway_datagatewayg01-server",
-        port: 8094,
+        port: 8080,
         webname: "uu-energygateway-datagatewayg01",
         testFile: "datagateway.jmx",
     },
@@ -42,7 +42,7 @@ const projects = [
         code: "MR",
         folder: config.folders.MR,
         server: "uu_energygateway_messageregistryg01-server",
-        port: 8093,
+        port: 8080,
         webname: "uu-energygateway-messageregistryg01",
         hi: "uu_energygateway_messageregistryg01-hi",
         testFile: "message-registry.jmx",
@@ -51,7 +51,7 @@ const projects = [
         code: "FTP",
         folder: config.folders.FTP,
         server: "uu_energygatewayg01_ftpendpoint-server",
-        port: 8095,
+        port: 8080,
         webname: "uu-energygatewayg01-ftpendpoint",
         testFile: "ftp_endpoint.jmx",
     },
@@ -59,7 +59,7 @@ const projects = [
         code: "EMAIL",
         folder: config.folders.EMAIL,
         server: "uu_energygatewayg01_emailendpoint-server",
-        port: 8096,
+        port: 8080,
         webname: "uu-energygatewayg01-emailendpoint",
         testFile: "email_endpoint.jmx",
     },
@@ -94,6 +94,10 @@ async function buildProject(project, isUnitTests) {
         if (project.code === "MR") {
             fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
         }
+    });
+    await core.inLocationAsync(project.folder + "/docker/image/builder", async () => {
+        fs.copyFileSync(`../../../${project.server}/build/libs/${project.server}.war`, `temp/${project.server}.war`);
+        await core.runCommand(`docker build -t energy-gateway/${project.code.toLowerCase()} .`);
     });
 }
 
@@ -270,32 +274,36 @@ async function runInitCommandsAsyncJob() {
  * @param {IProject} project
  */
 async function killProject(project) {
-    const processId = await core.getProcessIdByPort(project.port);
-    if (!processId) {
-        //console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
-        return false;
-    }
-    const res = await core.runCommand(
-        "wmic",
-        ["process", "where", "Name='java.exe' or Name='cmd.exe' or Name='conhost.exe'", "Get", "ProcessId,ParentProcessId"],
-        { disableStdOut: true }
-    );
-    const lines = res.stdOut.split(/[\r\n]+/);
-    const colNames = lines[0].trim().split(/\s+/);
-    if (colNames[0] !== "ParentProcessId") {
-        core.showError("Sorry, wrong columns", false);
-    }
-    const parentIds = {};
-    lines.forEach((line) => {
-        const [parentId, processId] = line.trim().split(/\s+/);
-        parentIds[processId] = parentId;
+    //TODO: BF: kill musi pres docker down
+    // const processId = await core.getProcessIdByPort(project.port);
+    // if (!processId) {
+    //     //console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
+    //     return false;
+    // }
+    // const res = await core.runCommand(
+    //     "wmic",
+    //     ["process", "where", "Name='java.exe' or Name='cmd.exe' or Name='conhost.exe'", "Get", "ProcessId,ParentProcessId"],
+    //     { disableStdOut: true }
+    // );
+    // const lines = res.stdOut.split(/[\r\n]+/);
+    // const colNames = lines[0].trim().split(/\s+/);
+    // if (colNames[0] !== "ParentProcessId") {
+    //     core.showError("Sorry, wrong columns", false);
+    // }
+    // const parentIds = {};
+    // lines.forEach((line) => {
+    //     const [parentId, processId] = line.trim().split(/\s+/);
+    //     parentIds[processId] = parentId;
+    // });
+    // let topProcessId = processId;
+    // while (parentIds[parentIds[topProcessId]]) {
+    //     topProcessId = parentIds[topProcessId];
+    // }
+    // console.log(`Killing process tree ${processId}.`);
+    // await core.runCommand(`taskkill /F /T /PID ${topProcessId}`);
+    await core.inLocationAsync(path.join(project.folder, "/docker/image/egw"), async () => {
+        await core.runCommand("docker-compose down");
     });
-    let topProcessId = processId;
-    while (parentIds[parentIds[topProcessId]]) {
-        topProcessId = parentIds[topProcessId];
-    }
-    console.log(`Killing process tree ${processId}.`);
-    await core.runCommand(`taskkill /F /T /PID ${topProcessId}`);
     return true;
 }
 
@@ -338,7 +346,7 @@ async function runTests(project, testFile, isVersion11) {
         core.showError(ftpDataDir + " does not exists");
     }
     let restStr = "-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " ";
-    restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
+    restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_tomcat_builder.cfg";
     const rest = restStr.split(" ");
     if (project == FTP) {
         rest.push("-Jftp_data_dir=/ftpdata");
@@ -459,7 +467,7 @@ async function run() {
         for (const project of projects) {
             isBuildPerProject[project.code] = isBuild && cmd.getCmdValue("build" + project.code, "... " + project.code + "?");
         }
-        const isUnitTests = isBuild && cmd.getCmdValue("unittests", "Build or run with unit tests?");
+        const isUnitTests = isBuild && cmd.getCmdValue("unitTests", "Build or run with unit tests?");
 
         // Runs
         const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
@@ -557,18 +565,18 @@ async function run() {
             for (const project of runableProjects) {
                 if (isRunPerProject[project.code]) {
                     core.showMessage("Starting " + project.code);
-                    if (await killProject(project)) {
-                        console.log("Killed previous");
-                    }
-                    core.inLocation(project.folder, () => {
-                        let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
+                    await killProject(project);
+                    core.inLocation(path.join(project.folder, "docker/image/egw"), () => {
+                        //TODO: BF: colors konzole nema spravny format
+                        const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
                             folder,
                             "log-" + project.code + ".log"
                         )}`;
                         // If build is present, unit tests are executed by it
-                        if (!isUnitTests || isBuild) {
-                            command += " -x test";
-                        }
+                        //TODO: BF: musi se to resit?
+                        // if (!isUnitTests || isBuild) {
+                        //     command += " -x test";
+                        // }
                         core.runCommandNoWait(command);
                     });
                 }
