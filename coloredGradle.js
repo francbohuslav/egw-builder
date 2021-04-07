@@ -84,10 +84,16 @@ function printLine(line, fd) {
 }
 
 function shortText(line) {
+    // Replace thread in []
     line = line.replace(/^(\S+)\s\[\S+\]/g, "$1");
-    line = line.replace(/(\suu\.)\S+(\.[^\s.]+)/g, "$1.$2");
-    line = line.replace(/(\sorg\.)\S+(\.[^\s.]+)/g, "$1.$2");
     line = line.replace(/11111111111111111111111111111111/g, "11...11");
+    // Do not short errors
+    if (!line.match(/^\s+at/)) {
+        // Shorten uu namespace
+        line = line.replace(/(\suu\.)\S+(\.[^\s.]+)/g, "$1.$2");
+        // Shorten org namespace
+        line = line.replace(/(\sorg\.)\S+(\.[^\s.]+)/g, "$1.$2");
+    }
     return line;
 }
 

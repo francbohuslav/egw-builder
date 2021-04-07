@@ -1,10 +1,27 @@
-11:20:32.737 [main] INFO  uu.energygateway.datagateway.SubAppRunner - Started SubAppRunner in 17.971 seconds (JVM running for 18.918)
-11:21:23.052 [http-nio-8094-exec-1] INFO  extractOutgoingMessageMetadataSubRoute - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Started ExtractMessageMetadataOutgoingSubRoute route
-11:21:23.052 [http-nio-8094-exec-1] INFO  uu.energygateway.datagateway.datadistribution.processor.DataDistributionMessageMetadataExtractorProcessorBean - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Starting message metadata extraction
-11:21:23.056 [http-nio-8094-exec-1] INFO  uu.energygateway.datagateway.datadistribution.processor.DataDistributionMessageMetadataExtractorProcessorBean - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Message metadata extracted using extractor `defaultJsonMessageMetadataExtractor`
-11:21:23.056 [http-nio-8094-exec-1] INFO  uu.energygateway.datagateway.datadistribution.processor.DataDistributionMessageMetadataExtractorProcessorBean - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Finishing message metadata extraction
-11:21:23.056 [http-nio-8094-exec-1] INFO  extractOutgoingMessageMetadataSubRoute - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Finished ExtractMessageMetadataOutgoingSubRoute route
-11:21:23.139 [http-nio-8094-exec-1] INFO  uu.energygateway.datagateway.datagathering.processor.CreateMessageProcessorBean - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Message updated
-11:21:23.140 [http-nio-8094-exec-1] INFO  transformMessageToExternalFormatSubRoute - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Started TransformMessageToExternalFormatSubRoute route
-11:21:23.171 [http-nio-8094-exec-1] INFO  uu.energygateway.datagateway.datadistribution.processor.DataDistributionMessageTransformerProcessorBean - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Message transformed with `defaultJsonMessageTransformer`
-11:21:23.172 [http-nio-8094-exec-1] INFO  transformMessageToExternalFormatSubRoute - AWID: 11111111111111111111111111111111 | MessageId: 603f6322df79675d4868cd72 | Finished TransformMessageToExternalFormatSubRoute route
+09:57:41.437 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using StrickHostKeyChecking: no
+09:57:52.459 [http-nio-8095-exec-4] INFO  org.apache.camel.component.file.remote.SftpOperations - Known host file not configured, using user known host file: C:\Users\franc/.ssh/known_hosts
+09:57:52.459 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using known hosts information from file: C:\Users\franc/.ssh/known_hosts
+09:57:52.466 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using StrickHostKeyChecking: no
+09:58:02.483 [http-nio-8095-exec-4] WARN  org.apache.camel.component.file.remote.SftpConsumer - Error auto creating directory: data/perf_incoming due Cannot connect to sftp://guest@localhost:2223. This exception is ignored.
+org.apache.camel.component.file.GenericFileOperationFailedException: Cannot connect to sftp://guest@localhost:2223
+	at org.apache.camel.component.file.remote.SftpOperations.connect(SftpOperations.java:150) ~[camel-ftp-2.25.2.jar:2.25.2]
+	at org.apache.camel.component.file.remote.RemoteFileConsumer.connectIfNecessary(RemoteFileConsumer.java:197) ~[camel-ftp-2.25.2.jar:2.25.2]
+	at org.apache.camel.component.file.remote.SftpConsumer.doStart(SftpConsumer.java:59) ~[camel-ftp-2.25.2.jar:2.25.2]
+	at org.apache.camel.support.ServiceSupport.start(ServiceSupport.java:72) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.util.ServiceHelper.startService(ServiceHelper.java:75) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.component.file.GenericFilePollingConsumer.doStart(GenericFilePollingConsumer.java:59) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.support.ServiceSupport.start(ServiceSupport.java:72) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.impl.ConsumerCache.doGetPollingConsumer(ConsumerCache.java:175) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.impl.ConsumerCache.acquirePollingConsumer(ConsumerCache.java:121) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.PollEnricher.process(PollEnricher.java:203) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.Pipeline.process(Pipeline.java:101) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.LoopProcessor.process(LoopProcessor.java:128) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.LoopProcessor.process(LoopProcessor.java:96) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.Pipeline.process(Pipeline.java:138) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.Pipeline.process(Pipeline.java:101) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.Pipeline.process(Pipeline.java:138) ~[camel-core-2.25.2.jar:2.25.2]
+	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]

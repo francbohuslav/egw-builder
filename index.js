@@ -169,10 +169,11 @@ function setProjectVersion(project, newVersion) {
         json.uuSubApp.version = newVersion;
         core.writeTextFile(project.server + "/config/uucloud-development.json", JSON.stringify(json, null, 2));
 
-        json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json"));
-        json.version = newVersion.replace("SNAPSHOT", "beta");
-        core.writeTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json", JSON.stringify(json, null, 2));
-
+        if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
+            json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json"));
+            json.version = newVersion.replace("SNAPSHOT", "beta");
+            core.writeTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json", JSON.stringify(json, null, 2));
+        }
         let content = core.readTextFile("build.gradle");
         content = content.replace(/version '.*'/, `version '${newVersion}'`);
         core.writeTextFile("build.gradle", content);
@@ -225,7 +226,7 @@ async function waitForApplicationIsReady(project) {
  * @param {IProject} project
  * @param {string} yourUid
  */
-async function runInitCommands(project, yourUid) {
+async function runInitCommands(project, yourUid, envFolder) {
     await waitForApplicationIsReady(project);
 
     const projectCode = project.code;
@@ -239,15 +240,20 @@ async function runInitCommands(project, yourUid) {
         "--rm",
         "-v",
         process.cwd() + ":/jmeter",
+        "-v",
+        envFolder + ":/envs",
+        "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile + " -Jhost=host.docker.internal -Juid=" + yourUid).split(" "),
+        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" + yourUid).split(
+            " "
+        ),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
     }
 }
 
-async function runInitCommandsAsyncJob() {
+async function runInitCommandsAsyncJob(envFolder) {
     const initFile = "init-tests_ASYNC_JOB.jmx";
     const resultsFile = "jmeter/logs/initResultsASYNC.csv";
     const logFile = "jmeter/logs/initLogsASYNC.log";
@@ -258,8 +264,11 @@ async function runInitCommandsAsyncJob() {
         "--rm",
         "-v",
         process.cwd() + ":/jmeter",
+        "-v",
+        envFolder + ":/envs",
+        "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile).split(" "),
+        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -584,7 +593,7 @@ async function run() {
                 core.showMessage("Init AsyncJob");
                 // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                 await core.inLocationAsync(`${DG.folder}/${DG.server}/src/test/`, async () => {
-                    await runInitCommandsAsyncJob();
+                    await runInitCommandsAsyncJob(`${folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
                 });
             }
             for (const project of runableProjects) {
@@ -592,7 +601,7 @@ async function run() {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                     await core.inLocationAsync(`${project.folder}/${project.server}/src/test/`, async () => {
-                        await runInitCommands(project, yourUid);
+                        await runInitCommands(project, yourUid, `${folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
                     });
                 }
             }
