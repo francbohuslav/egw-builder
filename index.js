@@ -238,6 +238,8 @@ async function runInitCommands(project, yourUid, envFolder) {
     const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
+        "--name",
+        "egw-run-init",
         "-v",
         process.cwd() + ":/jmeter",
         "-v",
@@ -262,6 +264,8 @@ async function runInitCommandsAsyncJob(envFolder) {
     const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
+        "--name",
+        "egw-run-init",
         "-v",
         process.cwd() + ":/jmeter",
         "-v",
@@ -316,7 +320,7 @@ async function stopComposer() {
     }
 }
 
-async function removeMongoDockers() {
+async function cleanDockers() {
     const { stdOut } = await core.runCommand("docker container ls -a --filter name=egw-tests_mongo");
     const containerIds = stdOut
         .split("\n")
@@ -329,6 +333,7 @@ async function removeMongoDockers() {
         console.log("Remove docker ...");
         await core.runCommand("docker container rm " + id);
     }
+    await core.runCommand("docker system prune -f");
 }
 
 /**
@@ -359,6 +364,8 @@ async function runTests(project, testFile, isVersion11) {
     await core.runCommand("docker", [
         "run",
         "--rm",
+        "--name",
+        "egw-run-test",
         "-v",
         process.cwd() + ":/jmeter",
         "-v",
@@ -536,7 +543,7 @@ async function run() {
                     await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
                 }
                 if (project.code == "DG") {
-                    await removeMongoDockers();
+                    await cleanDockers();
                 }
             }
         }
