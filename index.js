@@ -137,9 +137,9 @@ async function generateModel(project) {
 /**
  * @param {IProject} project
  */
-function printProjectVersion(project) {
+function getProjectVersion(project) {
+    const versions = {};
     core.inLocation(project.folder, () => {
-        const versions = {};
         versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
         versions["build.gradle"] = core.readTextFile("build.gradle").match(/version '(\S+)'/)[1];
         versions["uucloud-development.json"] = JSON.parse(core.readTextFile(project.server + "/config/uucloud-development.json")).uuSubApp.version;
@@ -152,13 +152,13 @@ function printProjectVersion(project) {
         if (fs.existsSync(MR.hi + "/package.json")) {
             versions["package.json"] = JSON.parse(core.readTextFile(MR.hi + "/package.json")).version;
         }
-        const uniqueVersions = Object.values(versions).filter((value, index, self) => self.indexOf(value) == index);
-        if (uniqueVersions.length === 1) {
-            console.log(project.code + ":", uniqueVersions[0]);
-        } else {
-            console.log(project.code + ":", versions);
-        }
     });
+    const uniqueVersions = Object.values(versions).filter((value, index, self) => self.indexOf(value) == index);
+    if (uniqueVersions.length === 1) {
+        return uniqueVersions[0];
+    } else {
+        return versions;
+    }
 }
 
 /**
@@ -194,8 +194,17 @@ function setProjectVersion(project, newVersion) {
 
 function printProjectsVersions() {
     core.showMessage("Actual versions");
+    const projectVersions = {};
     for (const project of projects) {
-        printProjectVersion(project);
+        projectVersions[project.code] = getProjectVersion(project);
+    }
+    const uniqueVersions = Object.values(projectVersions).filter((value, index, self) => self.indexOf(value) == index);
+    if (uniqueVersions.length === 1) {
+        console.log("All:", uniqueVersions[0]);
+    } else {
+        for (const project of projects) {
+            console.log(project.code + ":", projectVersions[project.code]);
+        }
     }
 }
 

@@ -54,7 +54,6 @@ Run command `node index`.
     -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
 
-    -build               - Builds apps by gradle
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway
     -buildMR             - Builds Message Registry
