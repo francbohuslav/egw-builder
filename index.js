@@ -2,6 +2,7 @@ const prompt = require("prompt-sync")();
 const core = require("./core");
 const path = require("path");
 const fs = require("fs");
+const fse = require("fs-extra");
 const parseCsv = require("csv-parse/lib/sync");
 const request = require("request");
 const util = require("util");
@@ -396,6 +397,44 @@ async function runTests(project, testFile, isVersion11) {
     return { newFailed, newPassed, knownFailed };
 }
 
+function cloneDataGatewayForIec() {
+    const settings = core.readTextFile(`${IEC.folder}/settings.gradle`);
+    const match = settings.match(new RegExp(`${DG.folder}[^\\"]*`));
+    if (!match) {
+        core.showError(`Cannot find path to datagateway in ${IEC.folder}/settings.gradle, thus copy of DG for IEC will not be created.`);
+        return;
+    }
+    if (match[0] == DG.folder) {
+        core.showError(
+            `File ${IEC.folder}/settings.gradle leads to original DG folder. Copy of DG for IEC will not be not created. Modify path to DG in ${IEC.folder}/settings.gradle and builder creates copy of DG for you.`
+        );
+        return;
+    }
+    const dgCopyFolder = match[0];
+    if (fs.existsSync(dgCopyFolder)) {
+        core.showMessage(`Removing old ${dgCopyFolder}...`);
+        fse.removeSync(dgCopyFolder);
+    }
+    core.showMessage(`Copying ${DG.folder} to ${dgCopyFolder}`);
+    const exclusions = [
+        ".git",
+        ".gradle",
+        "docker",
+        "build",
+        "jenkins",
+        // Exclude server-lib too
+        "uu_energygateway_datagatewayg01-server",
+    ].map((e) => path.join(DG.folder, e));
+    fse.copySync(DG.folder, dgCopyFolder, {
+        filter: (src) => {
+            if (exclusions.indexOf(src) > -1) {
+                return false;
+            }
+            return true;
+        },
+    });
+}
+
 async function run() {
     try {
         const cmd = new CommandLine(process.argv.slice(2));
@@ -593,6 +632,9 @@ async function run() {
                     core.showMessage("Starting " + project.code);
                     if (await killProject(project)) {
                         console.log("Killed previous");
+                    }
+                    if (project.code == "IEC") {
+                        cloneDataGatewayForIec();
                     }
                     core.inLocation(project.folder, () => {
                         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
