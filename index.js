@@ -423,7 +423,7 @@ function cloneDataGatewayForIec() {
         "build",
         "jenkins",
         // Exclude server-lib too
-        "uu_energygateway_datagatewayg01-server",
+        // "uu_energygateway_datagatewayg01-server",
     ].map((e) => path.join(DG.folder, e));
     fse.copySync(DG.folder, dgCopyFolder, {
         filter: (src) => {
