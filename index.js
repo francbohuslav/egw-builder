@@ -193,11 +193,13 @@ function setProjectVersion(project, newVersion) {
     });
 }
 
-function printProjectsVersions() {
+function printProjectsVersions(isVersion11) {
     core.showMessage("Actual versions");
     const projectVersions = {};
     for (const project of projects) {
-        projectVersions[project.code] = getProjectVersion(project);
+        if (!isVersion11 || project.code != "IEC") {
+            projectVersions[project.code] = getProjectVersion(project);
+        }
     }
     const uniqueVersions = Object.values(projectVersions).filter((value, index, self) => self.indexOf(value) == index);
     if (uniqueVersions.length === 1) {
@@ -498,7 +500,7 @@ async function run() {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
         if (cmd.interactively) {
-            printProjectsVersions();
+            printProjectsVersions(isVersion11);
         }
         // console.log(cmd);
         // console.log(cmd.version);
