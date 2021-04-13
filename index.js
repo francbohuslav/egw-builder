@@ -71,6 +71,7 @@ const projects = [
         server: "uu_energygatewayg01_iec62325endpoint-server",
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
+        testFile: "iec62325_endpoint.jmx",
     },
 ];
 
@@ -456,7 +457,7 @@ async function run() {
             console.log("  -buildFTP            - Builds FTP endpoint");
             console.log("  -buildEMAIL          - Builds E-mail endpoint");
             console.log("  -buildECP            - Builds ECP endpoint");
-            console.log("  -buildIEC62325            - Builds IEC62325 endpoint");
+            console.log("  -buildIEC62325       - Builds IEC62325 endpoint");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -464,7 +465,7 @@ async function run() {
             console.log("  -runFTP              - Runs FTP endpoint");
             console.log("  -runEMAIL            - Runs E-mail endpoint");
             console.log("  -runECP              - Runs ECP endpoint");
-            console.log("  -runIEC62325              - Runs IEC62325 endpoint");
+            console.log("  -runIEC62325          - Runs IEC62325 endpoint");
             console.log("");
             console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");
@@ -480,6 +481,7 @@ async function run() {
             console.log("  -testMR              - Tests Message Registry by jmeter");
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
+            console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -579,7 +581,9 @@ async function run() {
         }
 
         // Tests
-        const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL;
+        const isTests = cmd.interactively
+            ? cmd.getCmdValue("tests", "Run tests?")
+            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testIEC62325;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -590,6 +594,7 @@ async function run() {
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
+        const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
         if (newVersion && newVersion.match(/^\d/)) {
             setProjectsVersions(newVersion);
         }
@@ -708,7 +713,13 @@ async function run() {
                 const knownFailed = {};
                 const newFailed = {};
                 const newPassed = {};
-                for (const project of [isTestsDG ? DG : null, isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
+                for (const project of [
+                    isTestsDG ? DG : null,
+                    isTestsMR ? MR : null,
+                    isTestsFTP ? FTP : null,
+                    isTestsEMAIL ? EMAIL : null,
+                    isTestsIEC62325 ? IEC62325 : null,
+                ]) {
                     if (project) {
                         core.showMessage(`Testing ${project.code}`);
                         const report = await runTests(project, project.testFile, isVersion11);

@@ -38,7 +38,7 @@
             "script": "custom",
             "problemMatcher": [],
             "label": "npm: custom",
-            "detail": "node ./index.js -folder ../sprint -clean -run -init 12-8835-1 -testMR -testFTP -testEMAIL"
+            "detail": "node ./index.js -folder ../sprint -clean -run -init 12-8835-1 -test"
         }
     ]
 }
