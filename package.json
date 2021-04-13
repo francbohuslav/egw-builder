@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node ./index.js -folder ../sprint",
         "cleanBuild": "node ./index.js -folder ../sprint -clear -build -metamodel",
-        "run": "node ./index.js -folder ../sprint -runDG -runMR -runEMAIL -runFTP -runECP -runIEC",
+        "run": "node ./index.js -folder ../sprint -runDG -runMR -runEMAIL -runFTP -runECP -runIEC62325",
         "init": "node ./index.js -folder ../sprint -init 12-8835-1",
         "test": "node ./index.js -folder ../sprint -testDG -testMR -testFTP -testEMAIL",
         "custom": "node ./index.js -folder ../sprint -testEMAIL -testFTP"

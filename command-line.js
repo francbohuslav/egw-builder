@@ -29,7 +29,7 @@ class CommandLine {
                 this.buildFTP = true;
                 this.buildEMAIL = true;
                 this.buildECP = true;
-                this.buildIEC = true;
+                this.buildIEC62325 = true;
                 this.interactively = false;
                 continue;
             }
@@ -58,8 +58,8 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-buildiec") {
-                this.buildIEC = true;
+            if (ar == "-buildiec62325") {
+                this.buildIEC62325 = true;
                 this.interactively = false;
                 continue;
             }
@@ -80,7 +80,7 @@ class CommandLine {
                 this.runFTP = true;
                 this.runEMAIL = true;
                 this.runECP = true;
-                this.runIEC = true;
+                this.runIEC62325 = true;
                 this.interactively = false;
                 continue;
             }
@@ -109,8 +109,8 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-runiec") {
-                this.runIEC = true;
+            if (ar == "-runiec62325") {
+                this.runIEC62325 = true;
                 this.interactively = false;
                 continue;
             }
@@ -121,7 +121,7 @@ class CommandLine {
                 this.initFTP = true;
                 this.initEMAIL = true;
                 this.initECP = true;
-                this.initIEC = true;
+                this.initIEC62325 = true;
                 this.initASYNC = true;
                 this.uid = pars.shift();
                 this.interactively = false;
@@ -153,8 +153,8 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-initiec") {
-                this.initIEC = true;
+            if (ar == "-initiec62325") {
+                this.initIEC62325 = true;
                 this.interactively = false;
                 continue;
             }
