@@ -30,6 +30,7 @@ class CommandLine {
                 this.buildEMAIL = true;
                 this.buildECP = true;
                 this.buildIEC62325 = true;
+                this.buildAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -63,6 +64,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-buildas24") {
+                this.buildAS24 = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-unittests") {
                 this.unitTests = true;
                 this.interactively = false;
@@ -81,6 +87,7 @@ class CommandLine {
                 this.runEMAIL = true;
                 this.runECP = true;
                 this.runIEC62325 = true;
+                this.runAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -114,6 +121,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-runas24") {
+                this.runAS24 = true;
+                this.interactively = false;
+                continue;
+            }
 
             if (ar == "-init") {
                 this.initDG = true;
@@ -122,6 +134,7 @@ class CommandLine {
                 this.initEMAIL = true;
                 this.initECP = true;
                 this.initIEC62325 = true;
+                this.initAS24 = true;
                 this.initASYNC = true;
                 this.uid = pars.shift();
                 this.interactively = false;
@@ -155,6 +168,11 @@ class CommandLine {
             }
             if (ar == "-initiec62325") {
                 this.initIEC62325 = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-initas24") {
+                this.initAS24 = true;
                 this.interactively = false;
                 continue;
             }

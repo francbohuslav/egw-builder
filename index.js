@@ -18,7 +18,7 @@ const builderDir = __dirname;
 
 /**
  * @typedef {Object} IProject Project
- * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325
+ * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
@@ -73,10 +73,18 @@ const projects = [
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
     },
+    {
+        code: "AS24",
+        folder: config.folders.AS24,
+        server: "uu_energygateway_as24endpointg01-server",
+        port: 8098,
+        webname: "uu-energygateway-as24endpointg01",
+        // testFile: "as24_endpoint.jmx",
+    },
 ];
 
-const [DG, MR, FTP, EMAIL, ECP, IEC62325] = projects;
-const runableProjects = [DG, MR, FTP, EMAIL, ECP, IEC62325];
+const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24] = projects;
+const runableProjects = [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24];
 
 /**
  *
@@ -194,11 +202,11 @@ function setProjectVersion(project, newVersion) {
     });
 }
 
-function printProjectsVersions(isVersion11) {
+function printProjectsVersions() {
     core.showMessage("Actual versions");
     const projectVersions = {};
     for (const project of projects) {
-        if (!isVersion11 || project.code != "IEC62325") {
+        if (fs.existsSync(project.folder)) {
             projectVersions[project.code] = getProjectVersion(project);
         }
     }
@@ -458,6 +466,7 @@ async function run() {
             console.log("  -buildEMAIL          - Builds E-mail endpoint");
             console.log("  -buildECP            - Builds ECP endpoint");
             console.log("  -buildIEC62325       - Builds IEC62325 endpoint");
+            console.log("  -buildAS24           - Builds AS24 endpoint");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -465,7 +474,8 @@ async function run() {
             console.log("  -runFTP              - Runs FTP endpoint");
             console.log("  -runEMAIL            - Runs E-mail endpoint");
             console.log("  -runECP              - Runs ECP endpoint");
-            console.log("  -runIEC62325          - Runs IEC62325 endpoint");
+            console.log("  -runIEC62325         - Runs IEC62325 endpoint");
+            console.log("  -runAS24             - Runs AS24 endpoint");
             console.log("");
             console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");
@@ -473,7 +483,8 @@ async function run() {
             console.log("  -initFTP             - Runs init commands of FTP endpoint");
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
-            console.log("  -initIEC62325             - Runs init commands of IEC62325 endpoint");
+            console.log("  -initIEC62325        - Runs init commands of IEC62325 endpoint");
+            console.log("  -initAS24            - Runs init commands of AS24 endpoint");
             console.log("  -initASYNC           - Runs init commands of AsyncJob server");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
@@ -502,7 +513,7 @@ async function run() {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
         if (cmd.interactively) {
-            printProjectsVersions(isVersion11);
+            printProjectsVersions();
         }
         // console.log(cmd);
         // console.log(cmd.version);
@@ -525,7 +536,7 @@ async function run() {
         // Build
         const isBuild = cmd.interactively
             ? cmd.getCmdValue("build", "Build app?")
-            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP || cmd.buildIEC62325;
+            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP || cmd.buildIEC62325 || cmd.buildAS24;
         if (!isBuild && !cmd.interactively) {
             console.log("Build app? no");
         }
@@ -541,7 +552,7 @@ async function run() {
         // Runs
         const isRun = cmd.interactively
             ? cmd.getCmdValue("run", "Run app?")
-            : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325;
+            : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325 || cmd.runAS24;
         if (!isRun && !cmd.interactively) {
             console.log("Run app? no");
         }
@@ -556,7 +567,7 @@ async function run() {
         // Inits
         const isRunInit = cmd.interactively
             ? cmd.getCmdValue("init", "Run init app?")
-            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initASYNC;
+            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initASYNC;
         if (!isRunInit && !cmd.interactively) {
             console.log("Run init app? no");
         }
