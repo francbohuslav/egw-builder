@@ -8,7 +8,7 @@
         "cleanBuild": "node ./index.js -folder ../sprint -clear -build",
         "ask": "node ./index.js -folder ../sprint",
         "init": "node ./index.js -folder ../sprint -init 12-8835-1",
-        "test": "node ./index.js -folder ../sprint -test",
+        "last": "node ./index.js -last",
         "custom": "node ./index.js -folder ../sprint -buildAS24 -runAS24 -initAS24"
     },
     "author": "Bohuslav Franc",

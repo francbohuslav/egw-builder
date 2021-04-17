@@ -40,6 +40,13 @@
             "problemMatcher": [],
             "label": "npm: ask",
             "detail": "node ./index.js -folder ../sprint"
+        },
+        {
+            "type": "npm",
+            "script": "last",
+            "problemMatcher": [],
+            "label": "npm: last",
+            "detail": "node ./index.js -last"
         }
     ]
 }
