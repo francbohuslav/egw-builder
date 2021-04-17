@@ -39,6 +39,13 @@
             "problemMatcher": [],
             "label": "npm: custom",
             "detail": "node ./index.js -folder ../sprint -clean -run -init 12-8835-1 -test"
+        },
+        {
+            "type": "npm",
+            "script": "last",
+            "problemMatcher": [],
+            "label": "npm: last",
+            "detail": "node ./index.js -last"
         }
     ]
 }

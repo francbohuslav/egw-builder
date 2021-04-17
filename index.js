@@ -8,6 +8,7 @@ const request = require("request");
 const util = require("util");
 const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
+const last = require("./last");
 
 let config = require("./config.default");
 if (fs.existsSync("./config.js")) {
@@ -440,12 +441,14 @@ function cloneDataGatewayForIec() {
 
 async function run() {
     try {
-        const cmd = new CommandLine(process.argv.slice(2));
+        let cmd = new CommandLine(process.argv.slice(2));
         if (process.argv.length == 2) {
             core.showMessage("Syntaxe");
             console.log(process.argv.join(" ") + " [OPTIONS]");
             console.log("Options:");
             console.log("  -folder <name>       - Name of folder where all projects are stored, mandatory.");
+            console.log("  -last                - Execute with settings from previous run.");
+            console.log("");
             console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
             console.log("  -clear               - Shutdown and remove docker containers.");
             console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
@@ -486,17 +489,19 @@ async function run() {
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
 
-        let folder = cmd.folder;
-
-        if (!folder) {
-            folder = prompt("Folder: ");
+        if (cmd.last) {
+            cmd = last.loadSettings();
         }
-        if (!folder) {
+
+        if (!cmd.folder) {
+            cmd.folder = prompt("Folder: ");
+        }
+        if (!cmd.folder) {
             core.showError("Terminated by user");
         }
-        folder = path.resolve(folder);
-        core.showMessage(`Using folder ${folder}`);
-        process.chdir(folder);
+        cmd.folder = path.resolve(cmd.folder);
+        core.showMessage(`Using folder ${cmd.folder}`);
+        process.chdir(cmd.folder);
         const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
         if (isVersion11) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
@@ -507,7 +512,7 @@ async function run() {
         // console.log(cmd);
         // console.log(cmd.version);
 
-        const newVersion = cmd.interactively ? prompt("Set version [enter = no change]: ") : cmd.version;
+        cmd.version = cmd.interactively ? prompt("Set version [enter = no change]: ") : cmd.version;
         if (!cmd.interactively) {
             if (cmd.version) {
                 console.log("Set version to " + cmd.version);
@@ -515,12 +520,12 @@ async function run() {
                 console.log("Set version? no");
             }
         }
-        if (newVersion === null) {
+        if (cmd.version === null) {
             core.showError("Terminated by user");
         }
 
-        const isClearDocker = cmd.getCmdValue("clear", "Clear docker?");
-        const isModel = cmd.getCmdValue("metamodel", "Generate metamodel?");
+        cmd.getCmdValue("clear", "Clear docker?");
+        cmd.getCmdValue("metamodel", "Generate metamodel?");
 
         // Build
         const isBuild = cmd.interactively
@@ -536,7 +541,7 @@ async function run() {
         for (const project of projects) {
             isBuildPerProject[project.code] = isBuild && cmd.getCmdValue("build" + project.code, "... " + project.code + "?");
         }
-        const isUnitTests = isBuild && cmd.getCmdValue("unittests", "Build or run with unit tests?");
+        cmd.unitTests = isBuild && cmd.getCmdValue("unitTests", "Build or run with unit tests?");
 
         // Runs
         const isRun = cmd.interactively
@@ -569,13 +574,12 @@ async function run() {
         }
         isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
 
-        let yourUid = "";
         if (isInitPerProject["MR"]) {
             if (cmd.uid) {
                 console.log("Your OID: " + cmd.uid);
             }
-            yourUid = cmd.uid || prompt("Your UID: ");
-            if (!yourUid) {
+            cmd.uid = cmd.uid || prompt("Your UID: ");
+            if (!cmd.uid) {
                 core.showError("Terminated by user");
             }
         }
@@ -595,11 +599,16 @@ async function run() {
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
-        if (newVersion && newVersion.match(/^\d/)) {
-            setProjectsVersions(newVersion);
+
+        if (!cmd.last) {
+            last.saveSettings(cmd);
         }
 
-        if (isClearDocker) {
+        if (cmd.version && cmd.version.match(/^\d/)) {
+            setProjectsVersions(cmd.version);
+        }
+
+        if (cmd.clear) {
             core.showMessage("Clearing docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
@@ -619,16 +628,19 @@ async function run() {
             }
         }
 
+        if (cmd.metamodel) {
+            core.showMessage("Generating metamodel...");
+            for (const project of projects) {
+                await generateModel(project);
+            }
+        }
+
         if (isBuild) {
             core.showMessage("Building apps...");
             for (const project of projects) {
-                if (isModel) {
-                    core.showMessage(`Metamodel of ${project.code} ...`);
-                    await generateModel(project);
-                }
                 if (isBuildPerProject[project.code]) {
                     core.showMessage(`Building ${project.code} ...`);
-                    await buildProject(project, isUnitTests);
+                    await buildProject(project, cmd.unitTests);
                     core.showMessage(`${project.code} - build ok`);
                 }
             }
@@ -647,11 +659,11 @@ async function run() {
                     }
                     core.inLocation(project.folder, () => {
                         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
-                            folder,
+                            cmd.folder,
                             "log-" + project.code + ".log"
                         )}`;
                         // If build is present, unit tests are executed by it
-                        if (!isUnitTests || isBuild) {
+                        if (!cmd.unitTests || isBuild) {
                             command += " -x test";
                         }
                         core.runCommandNoWait(command);
@@ -666,7 +678,7 @@ async function run() {
                 core.showMessage("Init AsyncJob");
                 // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                 await core.inLocationAsync(`${DG.folder}/${DG.server}/src/test/`, async () => {
-                    await runInitCommandsAsyncJob(`${folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
+                    await runInitCommandsAsyncJob(`${cmd.folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
                 });
             }
             for (const project of runableProjects) {
@@ -674,7 +686,7 @@ async function run() {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                     await core.inLocationAsync(`${project.folder}/${project.server}/src/test/`, async () => {
-                        await runInitCommands(project, yourUid, `${folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
+                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
                     });
                 }
             }
@@ -696,7 +708,7 @@ async function run() {
                         core.inLocation(project.folder, () => {
                             let command = `start "${project.code}" /MIN gradlew start`;
                             // If build or run is present, unit tests are executed by it
-                            if (!isUnitTests || isBuild || isRun) {
+                            if (!cmd.unitTests || isBuild || isRun) {
                                 command += " -x test";
                             }
                             core.runCommandNoWait(command);

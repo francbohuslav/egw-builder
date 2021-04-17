@@ -9,6 +9,10 @@ class CommandLine {
         this.interactively = true;
         while (pars.length > 0) {
             const ar = pars.shift().toLowerCase();
+            if (ar == "-last") {
+                this.last = true;
+                continue;
+            }
             if (ar == "-folder") {
                 this.folder = pars.shift();
                 continue;
@@ -207,7 +211,9 @@ class CommandLine {
             console.log(question + " " + (value ? "yes" : "no"));
             return value;
         }
-        return core.ask(question);
+        const answer = core.ask(question);
+        this[property] = answer;
+        return answer;
     }
 }
 
