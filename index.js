@@ -640,6 +640,9 @@ async function run() {
             for (const project of projects) {
                 if (isBuildPerProject[project.code]) {
                     core.showMessage(`Building ${project.code} ...`);
+                    if (project.code == "IEC62325" && !isRun && !isRunPerProject[project.code]) {
+                        cloneDataGatewayForIec();
+                    }
                     await buildProject(project, cmd.unitTests);
                     core.showMessage(`${project.code} - build ok`);
                 }
