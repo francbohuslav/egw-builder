@@ -336,7 +336,7 @@ async function killProject(project) {
 
 async function stopComposer() {
     try {
-        await core.runCommand("docker compose down");
+        await core.runCommand("docker-compose down");
     } catch (e) {
         // Errors ignored
     }
@@ -625,7 +625,7 @@ async function run() {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker compose up -d --no-recreate"));
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d --no-recreate"));
                 }
             }
         }
