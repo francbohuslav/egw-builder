@@ -195,11 +195,11 @@ function setProjectVersion(project, newVersion) {
     });
 }
 
-function printProjectsVersions(isVersion11) {
+function printProjectsVersions() {
     core.showMessage("Actual versions");
     const projectVersions = {};
     for (const project of projects) {
-        if (!isVersion11 || project.code != "IEC62325") {
+        if (fs.existsSync(project.folder)) {
             projectVersions[project.code] = getProjectVersion(project);
         }
     }
@@ -215,7 +215,9 @@ function printProjectsVersions(isVersion11) {
 
 function setProjectsVersions(newVersion) {
     for (const project of projects) {
-        setProjectVersion(project, newVersion);
+        if (fs.existsSync(project.folder)) {
+            setProjectVersion(project, newVersion);
+        }
     }
 }
 
@@ -507,7 +509,7 @@ async function run() {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
         if (cmd.interactively) {
-            printProjectsVersions(isVersion11);
+            printProjectsVersions();
         }
         // console.log(cmd);
         // console.log(cmd.version);
@@ -631,7 +633,9 @@ async function run() {
         if (cmd.metamodel) {
             core.showMessage("Generating metamodel...");
             for (const project of projects) {
-                await generateModel(project);
+                if (fs.existsSync(project.folder)) {
+                    await generateModel(project);
+                }
             }
         }
 
