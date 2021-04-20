@@ -268,9 +268,16 @@ async function runInitCommands(project, yourUid, envFolder) {
         envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" + yourUid).split(
-            " "
-        ),
+        ...(
+            "-n -t jmeter/" +
+            initFile +
+            " -l " +
+            resultsFile +
+            " -j " +
+            logFile +
+            " -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" +
+            yourUid
+        ).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
