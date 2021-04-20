@@ -301,7 +301,7 @@ async function runInitCommandsAsyncJob(envFolder) {
         envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
+        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
