@@ -69,7 +69,7 @@ const projects = [
     {
         code: "IEC62325",
         folder: config.folders.IEC62325,
-        server: "uu_energygatewayg01_iec62325endpoint-server",
+        server: "uu_energygateway_iec62325endpointg01-server",
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
