@@ -69,7 +69,7 @@ const projects = [
     {
         code: "IEC62325",
         folder: config.folders.IEC62325,
-        server: "uu_energygatewayg01_iec62325endpoint-server",
+        server: "uu_energygateway_iec62325endpointg01-server",
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
@@ -223,7 +223,9 @@ function printProjectsVersions() {
 
 function setProjectsVersions(newVersion) {
     for (const project of projects) {
-        setProjectVersion(project, newVersion);
+        if (fs.existsSync(project.folder)) {
+            setProjectVersion(project, newVersion);
+        }
     }
 }
 
@@ -274,9 +276,16 @@ async function runInitCommands(project, yourUid, envFolder) {
         envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...("-n -t jmeter/" + initFile + " -l " + resultsFile + " -j " + logFile + " -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" + yourUid).split(
-            " "
-        ),
+        ...(
+            "-n -t jmeter/" +
+            initFile +
+            " -l " +
+            resultsFile +
+            " -j " +
+            logFile +
+            " -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" +
+            yourUid
+        ).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -300,7 +309,7 @@ async function runInitCommandsAsyncJob(envFolder) {
         envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
+        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -361,7 +370,7 @@ async function cleanDockers() {
         console.log("Remove docker ...");
         await core.runCommand("docker container rm " + id);
     }
-    await core.runCommand("docker system prune -f");
+    await core.runCommand("docker system prune --volumes -f");
 }
 
 /**
@@ -634,7 +643,7 @@ async function run() {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d --no-recreate"));
                 }
             }
         }
@@ -642,7 +651,9 @@ async function run() {
         if (cmd.metamodel) {
             core.showMessage("Generating metamodel...");
             for (const project of projects) {
-                await generateModel(project);
+                if (fs.existsSync(project.folder)) {
+                    await generateModel(project);
+                }
             }
         }
 
@@ -650,6 +661,9 @@ async function run() {
             core.showMessage("Building apps...");
             for (const project of projects) {
                 if (isBuildPerProject[project.code]) {
+                    if (project.code == "IEC62325" && !isRun && !isRunPerProject[project.code]) {
+                        cloneDataGatewayForIec();
+                    }
                     core.showMessage(`Building ${project.code} ...`);
                     await buildProject(project, cmd.unitTests);
                     core.showMessage(`${project.code} - build ok`);
