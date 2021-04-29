@@ -669,7 +669,7 @@ async function run() {
             core.showMessage("Building apps...");
             for (const project of projects) {
                 if (isBuildPerProject[project.code]) {
-                    if (project.code == "IEC62325" && !isRun && !isRunPerProject[project.code]) {
+                    if (project.code == IEC62325.code) {
                         cloneDataGatewayForIec();
                     }
                     core.showMessage(`Building ${project.code} ...`);
@@ -687,7 +687,7 @@ async function run() {
                     if (await killProject(project)) {
                         console.log("Killed previous");
                     }
-                    if (project.code == "IEC62325") {
+                    if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
                         cloneDataGatewayForIec();
                     }
                     core.inLocation(project.folder, () => {
