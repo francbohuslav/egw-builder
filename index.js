@@ -85,7 +85,6 @@ const projects = [
 ];
 
 const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24] = projects;
-const runableProjects = [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24];
 
 /**
  *
@@ -526,6 +525,15 @@ async function run() {
         if (isVersion11) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
+
+        const runableProjects = [DG, MR, FTP, EMAIL, ECP];
+        if (fs.existsSync(IEC62325.folder)) {
+            runableProjects.push(IEC62325);
+        }
+        if (fs.existsSync(AS24.folder)) {
+            runableProjects.push(AS24);
+        }
+
         if (cmd.interactively) {
             printProjectsVersions();
         }
