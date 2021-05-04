@@ -192,6 +192,7 @@ class CommandLine {
                 this.testFTP = true;
                 this.testEMAIL = true;
                 this.testIEC62325 = true;
+                this.testAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -217,6 +218,11 @@ class CommandLine {
             }
             if (ar == "-testiec62325") {
                 this.testIEC62325 = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-testas24") {
+                this.testAS24 = true;
                 this.interactively = false;
                 continue;
             }

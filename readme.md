@@ -92,6 +92,7 @@ Run command `node index`.
     -testFTP             - Tests FTP endpoint by jmeter
     -testEMAIL           - Tests E-mail endpoint by jmeter
     -testIEC62325        - Tests IEC62325 endpoint by jmeter
+    -testAS24            - Tests AS24 endpoint by jmeter
 
 You will be asked interactively if there is none of options (except folder) used on command line.
 

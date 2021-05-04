@@ -78,9 +78,9 @@ const projects = [
         code: "AS24",
         folder: config.folders.AS24,
         server: "uu_energygateway_as24endpointg01-server",
-        port: 8098,
+        port: 8099,
         webname: "uu-energygateway-as24endpointg01",
-        // testFile: "as24_endpoint.jmx",
+        testFile: "as24_endpoint.jmx",
     },
 ];
 
@@ -504,6 +504,7 @@ async function run() {
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
             console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
+            console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -615,7 +616,7 @@ async function run() {
         // Tests
         const isTests = cmd.interactively
             ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testIEC62325;
+            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testIEC62325 || cmd.testAS24;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -627,6 +628,7 @@ async function run() {
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
+        const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
 
         if (!cmd.last) {
             last.saveSettings(cmd);
@@ -764,6 +766,7 @@ async function run() {
                     isTestsFTP ? FTP : null,
                     isTestsEMAIL ? EMAIL : null,
                     isTestsIEC62325 ? IEC62325 : null,
+                    isTestsAS24 ? AS24 : null,
                 ]) {
                     if (project) {
                         core.showMessage(`Testing ${project.code}`);
