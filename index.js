@@ -3,11 +3,11 @@ const core = require("./core");
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");
-const parseCsv = require("csv-parse/lib/sync");
 const request = require("request");
 const util = require("util");
 const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
+const results = require("./results");
 const last = require("./last");
 
 let config = require("./config.default");
@@ -260,7 +260,7 @@ async function runInitCommands(project, yourUid, envFolder) {
 
     const projectCode = project.code;
     const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
-    const resultsFile = "jmeter/logs/initResults" + projectCode + ".csv";
+    const resultsFile = "jmeter/logs/initResults" + projectCode + ".xml";
     const logFile = "jmeter/logs/initLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
@@ -278,8 +278,6 @@ async function runInitCommands(project, yourUid, envFolder) {
         ...(
             "-n -t jmeter/" +
             initFile +
-            " -l " +
-            resultsFile +
             " -j " +
             logFile +
             " -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" +
@@ -293,7 +291,7 @@ async function runInitCommands(project, yourUid, envFolder) {
 
 async function runInitCommandsAsyncJob(envFolder) {
     const initFile = "init-tests_ASYNC_JOB.jmx";
-    const resultsFile = "jmeter/logs/initResultsASYNC.csv";
+    const resultsFile = "jmeter/logs/initResultsASYNC.xml";
     const logFile = "jmeter/logs/initLogsASYNC.log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
@@ -308,7 +306,7 @@ async function runInitCommandsAsyncJob(envFolder) {
         envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...`-n -t jmeter/${initFile} -l ${resultsFile} -j ${logFile} -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
+        ...`-n -t jmeter/${initFile} -j ${logFile} -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -379,7 +377,7 @@ async function cleanDockers() {
 async function runTests(project, testFile, isVersion11) {
     await waitForApplicationIsReady(project);
 
-    const resultsFile = "logs/testResults" + project.code + ".csv";
+    const resultsFile = "logs/testResults" + project.code + ".xml";
     const logFile = "logs/testLogs" + project.code + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
@@ -387,7 +385,7 @@ async function runTests(project, testFile, isVersion11) {
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    let restStr = "-n -t " + testFile + " -l " + resultsFile + " -j " + logFile + " ";
+    let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
     const rest = restStr.split(" ");
     if (project == FTP) {
@@ -410,10 +408,10 @@ async function runTests(project, testFile, isVersion11) {
         "egaillardon/jmeter-plugins",
         ...rest,
     ]);
-    const steps = parseCsv(core.readTextFile(resultsFile)).slice(1);
-    const knownFailed = steps.filter((step) => step[7] !== "true" && step[2].match(/\sT[0-9]+$/));
-    const newFailed = steps.filter((step) => step[7] !== "true" && !step[2].match(/\sT[0-9]+$/));
-    const newPassed = steps.filter((step) => step[7] === "true" && step[2].match(/\sT[0-9]+$/));
+    const steps = results.getSteps(core.readTextFile(resultsFile));
+    const knownFailed = steps.filter((step) => !step.success && step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
+    const newFailed = steps.filter((step) => !step.success && !step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
+    const newPassed = steps.filter((step) => step.success && step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
     return { newFailed, newPassed, knownFailed };
 }
 
@@ -772,13 +770,13 @@ async function run() {
                         core.showMessage(`Testing ${project.code}`);
                         const report = await runTests(project, project.testFile, isVersion11);
                         if (report.newFailed.length) {
-                            newFailed[project.code] = report.newFailed.map((step) => step[2]);
+                            newFailed[project.code] = report.newFailed;
                         }
                         if (report.newPassed.length) {
-                            newPassed[project.code] = report.newPassed.map((step) => step[2]);
+                            newPassed[project.code] = report.newPassed;
                         }
                         if (report.knownFailed.length) {
-                            knownFailed[project.code] = report.knownFailed.map((step) => step[2]);
+                            knownFailed[project.code] = report.knownFailed;
                         }
                     }
                 }
