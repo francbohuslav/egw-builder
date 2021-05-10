@@ -9,6 +9,7 @@ const requestAsync = util.promisify(request);
 const CommandLine = require("./command-line");
 const results = require("./results");
 const last = require("./last");
+const metamodel = require("./classes/metamodel");
 
 let config = require("./config.default");
 if (fs.existsSync("./config.js")) {
@@ -40,7 +41,7 @@ const projects = [
         port: 8094,
         webname: "uu-energygateway-datagatewayg01",
         testFile: "datagateway.jmx",
-        addProfilesFromLibraries: ["uu_energygateway_datagatewayg01-server-lib", "uu_energygateway_datagatewayg01-config"],
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-server-lib": "DG", "uu_energygateway_datagatewayg01-config": "DG" },
     },
     {
         code: "MR",
@@ -50,6 +51,7 @@ const projects = [
         webname: "uu-energygateway-messageregistryg01",
         hi: "uu_energygateway_messageregistryg01-hi",
         testFile: "message-registry.jmx",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
     {
         code: "FTP",
@@ -58,6 +60,7 @@ const projects = [
         port: 8095,
         webname: "uu-energygatewayg01-ftpendpoint",
         testFile: "ftp_endpoint.jmx",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
     {
         code: "EMAIL",
@@ -66,8 +69,16 @@ const projects = [
         port: 8096,
         webname: "uu-energygatewayg01-emailendpoint",
         testFile: "email_endpoint.jmx",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
-    { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server", port: 8097, webname: "uu-energygatewayg01-ecpendpoint" },
+    {
+        code: "ECP",
+        folder: config.folders.ECP,
+        server: "uu_energygatewayg01_ecpendpoint-server",
+        port: 8097,
+        webname: "uu-energygatewayg01-ecpendpoint",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+    },
     {
         code: "IEC62325",
         folder: config.folders.IEC62325,
@@ -75,6 +86,7 @@ const projects = [
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
     {
         code: "AS24",
@@ -83,6 +95,7 @@ const projects = [
         port: 8099,
         webname: "uu-energygateway-as24endpointg01",
         testFile: "as24_endpoint.jmx",
+        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
 ];
 
@@ -112,39 +125,6 @@ async function buildProject(project, isUnitTests) {
 
         if (project.code === "MR") {
             fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
-        }
-    });
-}
-
-function getNormalizedString(file) {
-    const data = fs.readFileSync(file, { encoding: "utf-8" }).toString();
-    return data.replace(/\s+/g, "");
-}
-
-/**
- * @param {IProject} project
- */
-async function generateModel(project) {
-    await core.inLocationAsync(`${project.folder}/${project.server}/src/main/resources/config`, async () => {
-        const tempFile = "metamodel-1.0.new.json";
-        fs.copyFileSync("metamodel-1.0.json", tempFile);
-        const addProfiles = (project.addProfilesFromLibraries || []).map((l) => ` -p ../../../../../${l}/src/main/resources/config/profiles.json`).join("");
-        const cmd =
-            "egw-metamodel-generatorg01.cmd -p profiles.json" + addProfiles + " -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors";
-        //node C:\\Gateway\\_others\\egw_metamodelgeneratorg01\\egw_metamodelgeneratorg01\\cli.js
-        console.log(project.code + ": " + cmd);
-        const code = await core.runCommand(cmd);
-        if (code.stdOut.indexOf("Profiles are not same !!!") > -1) {
-            fs.unlinkSync(tempFile);
-            core.showError("Error during metamodel");
-        }
-        const data = core.readTextFile(tempFile).replace(/uu-energygateway.*?\//g, "");
-        core.writeTextFile(tempFile, data);
-        if (getNormalizedString("metamodel-1.0.json") === getNormalizedString(tempFile)) {
-            fs.unlinkSync(tempFile);
-        } else {
-            core.showMessage("Metamodel changed for " + project.code);
-            fs.renameSync(tempFile, "metamodel-1.0.json");
         }
     });
 }
@@ -665,7 +645,7 @@ async function run() {
             core.showMessage("Generating metamodel...");
             for (const project of projects) {
                 if (fs.existsSync(project.folder)) {
-                    await generateModel(project);
+                    await metamodel.generateModel(cmd.folder, projects, project);
                 }
             }
         }
