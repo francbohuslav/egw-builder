@@ -26,6 +26,7 @@ const builderDir = __dirname;
  * @property {string} testFile e.g. "message-registr.jmx"
  * @property {string} port e.g. 8093
  * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
+ * @property {string[]} addProfilesFromLibraries e.g. ["uu_energygateway_datagatewayg01-server-lib", ...]
  */
 
 /**
@@ -39,6 +40,7 @@ const projects = [
         port: 8094,
         webname: "uu-energygateway-datagatewayg01",
         testFile: "datagateway.jmx",
+        addProfilesFromLibraries: ["uu_energygateway_datagatewayg01-server-lib", "uu_energygateway_datagatewayg01-config"],
     },
     {
         code: "MR",
@@ -126,9 +128,12 @@ async function generateModel(project) {
     await core.inLocationAsync(`${project.folder}/${project.server}/src/main/resources/config`, async () => {
         const tempFile = "metamodel-1.0.new.json";
         fs.copyFileSync("metamodel-1.0.json", tempFile);
-        const code = await core.runCommand(
-            "metamodel-generatorg01.cmd -p profiles.json -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors"
-        );
+        const addProfiles = (project.addProfilesFromLibraries || []).map((l) => ` -p ../../../../../${l}/src/main/resources/config/profiles.json`).join("");
+        const cmd =
+            "egw-metamodel-generatorg01.cmd -p profiles.json" + addProfiles + " -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors";
+        //node C:\\Gateway\\_others\\egw_metamodelgeneratorg01\\egw_metamodelgeneratorg01\\cli.js
+        console.log(project.code + ": " + cmd);
+        const code = await core.runCommand(cmd);
         if (code.stdOut.indexOf("Profiles are not same !!!") > -1) {
             fs.unlinkSync(tempFile);
             core.showError("Error during metamodel");
