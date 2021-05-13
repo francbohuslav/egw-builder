@@ -23,7 +23,8 @@ const builderDir = __dirname;
  * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
- * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
+ * @property {string} hi folder of HI module of MR, e.g. "uu_energygateway_messageregistryg01-hi"
+ * @property {string} gui folder of GUI components, e.g. "uu_energygateway_uu5lib/uu_energygateway_guig01"
  * @property {string} testFile e.g. "message-registr.jmx"
  * @property {string} port e.g. 8093
  * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
@@ -50,6 +51,7 @@ const projects = [
         port: 8093,
         webname: "uu-energygateway-messageregistryg01",
         hi: "uu_energygateway_messageregistryg01-hi",
+        gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
         testFile: "message-registry.jmx",
         addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
     },
@@ -110,7 +112,13 @@ async function buildProject(project, isUnitTests) {
         console.log("Killed running app");
     }
     if (project.code === "MR") {
-        console.log("npm i");
+        await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
+            console.log("Install NPM packages for GUI components");
+            await core.runCommand("cmd /C npm i");
+            console.log("Build GUI components");
+            await core.runCommand("cmd /C npm run build");
+        });
+        console.log("Install NPM packages for HI");
         await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
             await core.runCommand("cmd /C npm i");
         });
@@ -632,7 +640,7 @@ async function run() {
                 }
             }
         }
-        if (isBuild || isRun) {
+        if (isBuild || isRun || isRunInit) {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
