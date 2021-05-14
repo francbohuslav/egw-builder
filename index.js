@@ -10,6 +10,7 @@ const CommandLine = require("./command-line");
 const results = require("./results");
 const last = require("./last");
 const metamodel = require("./classes/metamodel");
+const tests = require("./classes/tests");
 
 let config = require("./config.default");
 if (fs.existsSync("./config.js")) {
@@ -253,7 +254,7 @@ async function runInitCommands(project, yourUid, envFolder) {
 
     const projectCode = project.code;
     const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
-    const resultsFile = "jmeter/logs/initResults" + projectCode + ".xml";
+    const resultsFile = "logs/initResults" + projectCode + ".xml";
     const logFile = "jmeter/logs/initLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
@@ -284,7 +285,7 @@ async function runInitCommands(project, yourUid, envFolder) {
 
 async function runInitCommandsAsyncJob(envFolder) {
     const initFile = "init-tests_ASYNC_JOB.jmx";
-    const resultsFile = "jmeter/logs/initResultsASYNC.xml";
+    const resultsFile = "logs/initResultsASYNC.xml";
     const logFile = "jmeter/logs/initLogsASYNC.log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
@@ -771,17 +772,15 @@ async function run() {
                         if (report.knownFailed.length) {
                             knownFailed[project.code] = report.knownFailed;
                         }
+                        const projectPassedTests = report.newPassed.length ? { [project.code]: report.newPassed } : {};
+                        const projectFailedTests = report.newFailed.length ? { [project.code]: report.newFailed } : {};
+                        tests.showFailedTests(projectPassedTests, projectFailedTests);
                     }
                 }
 
-                if (Object.keys(newPassed).length) {
-                    core.showMessage("There are tests marked as failed, but already passed. Remove task code from test name.");
-                    console.log(newPassed);
-                }
-                if (Object.keys(newFailed).length) {
-                    core.showMessage("There are failed tests. Create task in Sprintman and add code at end of test name. E.g. 'some test - T123'.");
-                    console.log(newFailed);
-                }
+                core.showMessage("\n\n======== TESTS SUMMARY =======\n");
+
+                tests.showFailedTests(newPassed, newFailed);
                 if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
                     core.showError("Tests failed. Watch message above.");
                 }
