@@ -382,14 +382,12 @@ async function runTests(project, testFile, isVersion11) {
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
     const rest = restStr.split(" ");
-    if (project == FTP) {
-        rest.push("-Jftp_data_dir=/ftpdata");
-    }
+    rest.push("-Jftp_data_dir=/ftpdata");
     if (project == EMAIL) {
         rest.push("-Jsmtp_host=smtp");
         rest.push("-Jsmtp_port=80");
     }
-    await core.runCommand("docker", [
+    const params = [
         "run",
         "--rm",
         "--name",
@@ -401,7 +399,9 @@ async function runTests(project, testFile, isVersion11) {
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
         ...rest,
-    ]);
+    ];
+    //console.log(params);
+    await core.runCommand("docker", params);
     const steps = results.getSteps(core.readTextFile(resultsFile));
     const knownFailed = steps.filter((step) => !step.success && step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
     const newFailed = steps.filter((step) => !step.success && !step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
