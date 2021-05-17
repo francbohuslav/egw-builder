@@ -113,12 +113,14 @@ async function buildProject(project, isUnitTests) {
         console.log("Killed running app");
     }
     if (project.code === "MR") {
-        await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
-            console.log("Install NPM packages for GUI components");
-            await core.runCommand("cmd /C npm i");
-            console.log("Build GUI components");
-            await core.runCommand("cmd /C npm run build");
-        });
+        if (fs.existsSync(project.folder + "/" + MR.gui)) {
+            await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
+                console.log("Install NPM packages for GUI components");
+                await core.runCommand("cmd /C npm i");
+                console.log("Build GUI components");
+                await core.runCommand("cmd /C npm run build");
+            });
+        }
         console.log("Install NPM packages for HI");
         await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
             await core.runCommand("cmd /C npm i");
