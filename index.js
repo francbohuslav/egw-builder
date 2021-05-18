@@ -224,6 +224,9 @@ function setProjectsVersions(newVersion) {
     }
 }
 
+/**
+ * @param {IProject} project
+ */
 async function waitForApplicationIsReady(project) {
     const seconds = 180;
     const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/ignoreThisRequest`;
@@ -685,6 +688,9 @@ async function run() {
                     }
                     if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
                         cloneDataGatewayForIec();
+                    }
+                    if (project.code == AS24.code) {
+                        await waitForApplicationIsReady(DG);
                     }
                     core.inLocation(project.folder, () => {
                         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
