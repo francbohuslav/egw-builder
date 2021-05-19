@@ -91,6 +91,7 @@ Run command `node index`.
     -testMR              - Tests Message Registry by jmeter
     -testFTP             - Tests FTP endpoint by jmeter
     -testEMAIL           - Tests E-mail endpoint by jmeter
+    -testECP             - Tests ECP endpoint by jmeter
     -testIEC62325        - Tests IEC62325 endpoint by jmeter
     -testAS24            - Tests AS24 endpoint by jmeter
 

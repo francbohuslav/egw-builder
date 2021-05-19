@@ -501,6 +501,7 @@ async function run() {
             console.log("  -testMR              - Tests Message Registry by jmeter");
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
+            console.log("  -testECP             - Tests ECP endpoint by jmeter");
             console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
             console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
             console.log("");
@@ -614,7 +615,7 @@ async function run() {
         // Tests
         const isTests = cmd.interactively
             ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testIEC62325 || cmd.testAS24;
+            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -625,6 +626,7 @@ async function run() {
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
+        const isTestsECP = isTests && cmd.getCmdValue("testECP", "... ECP?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
         const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
 
@@ -766,6 +768,7 @@ async function run() {
                     isTestsMR ? MR : null,
                     isTestsFTP ? FTP : null,
                     isTestsEMAIL ? EMAIL : null,
+                    isTestsECP ? ECP : null,
                     isTestsIEC62325 ? IEC62325 : null,
                     isTestsAS24 ? AS24 : null,
                 ]) {
