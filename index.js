@@ -29,7 +29,7 @@ const builderDir = __dirname;
  * @property {string} testFile e.g. "message-registr.jmx"
  * @property {string} port e.g. 8093
  * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
- * @property {string[]} addProfilesFromLibraries e.g. ["uu_energygateway_datagatewayg01-server-lib", ...]
+ * @property {function(string):string[]} addProfilesFromLibraries e.g. ["uu_energygateway_datagatewayg01-server-lib", ...]
  */
 
 /**
@@ -43,7 +43,8 @@ const projects = [
         port: 8094,
         webname: "uu-energygateway-datagatewayg01",
         testFile: "datagateway.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-server-lib": "DG", "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-server-lib": "DG", "uu_energygateway_datagatewayg01-config": "DG" },
     },
     {
         code: "MR",
@@ -54,7 +55,7 @@ const projects = [
         hi: "uu_energygateway_messageregistryg01-hi",
         gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
         testFile: "message-registry.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
         code: "FTP",
@@ -63,7 +64,7 @@ const projects = [
         port: 8095,
         webname: "uu-energygatewayg01-ftpendpoint",
         testFile: "ftp_endpoint.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
         code: "EMAIL",
@@ -72,7 +73,7 @@ const projects = [
         port: 8096,
         webname: "uu-energygatewayg01-emailendpoint",
         testFile: "email_endpoint.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
         code: "ECP",
@@ -80,7 +81,7 @@ const projects = [
         server: "uu_energygatewayg01_ecpendpoint-server",
         port: 8097,
         webname: "uu-energygatewayg01-ecpendpoint",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
         code: "IEC62325",
@@ -89,7 +90,7 @@ const projects = [
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
         code: "AS24",
@@ -98,7 +99,7 @@ const projects = [
         port: 8099,
         webname: "uu-energygateway-as24endpointg01",
         testFile: "as24_endpoint.jmx",
-        addProfilesFromLibraries: { "uu_energygateway_datagatewayg01-config": "DG" },
+        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
 ];
 
@@ -659,7 +660,7 @@ async function run() {
             core.showMessage("Generating metamodel...");
             for (const project of projects) {
                 if (fs.existsSync(project.folder)) {
-                    await metamodel.generateModel(cmd.folder, projects, project);
+                    await metamodel.generateModel(cmd.folder, projects, project, isVersion11);
                 }
             }
         }

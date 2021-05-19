@@ -7,11 +7,11 @@ class MetaModel {
      * @param {IProject[]} projects
      * @param {IProject} project
      */
-    async generateModel(mainFolder, projects, project) {
+    async generateModel(mainFolder, projects, project, isVersion11) {
         await core.inLocationAsync(`${project.folder}/${project.server}/src/main/resources/config`, async () => {
             const tempFile = "metamodel-1.0.new.json";
             fs.copyFileSync("metamodel-1.0.json", tempFile);
-            const addProfiles = this.getAdditionalProfiles(mainFolder, projects, project);
+            const addProfiles = this.getAdditionalProfiles(mainFolder, projects, project, isVersion11);
             const cmd =
                 "egw-metamodel-generatorg01.cmd -p profiles.json" +
                 addProfiles +
@@ -38,8 +38,11 @@ class MetaModel {
      * @param {IProject[]} projects
      * @param {IProject} project
      */
-    getAdditionalProfiles(mainFolder, projects, project) {
-        const adds = project.addProfilesFromLibraries || {};
+    getAdditionalProfiles(mainFolder, projects, project, isVersion11) {
+        let adds = {};
+        if (project.addProfilesFromLibraries) {
+            adds = project.addProfilesFromLibraries(isVersion11);
+        }
         const parts = [];
         Object.entries(adds).forEach(([libraryName, projectCode]) => {
             const otherProject = projects.filter((p) => p.code == projectCode)[0];
