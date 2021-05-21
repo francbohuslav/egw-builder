@@ -256,42 +256,39 @@ async function waitForApplicationIsReady(project) {
  * @param {IProject} project
  * @param {string} yourUid
  */
-async function runInitCommands(project, yourUid, envFolder) {
+async function runInitCommands(project, yourUid, insomniaFolder) {
     await waitForApplicationIsReady(project);
 
     const projectCode = project.code;
-    const initFile = projectCode === "DG" ? "init-tests_DG.jmx" : "init-tests.jmx";
+    const initFile = `inits/init_${projectCode}.jmx`;
     const resultsFile = "logs/initResults" + projectCode + ".xml";
     const logFile = "jmeter/logs/initLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
-    const { stdOut } = await core.runCommand("docker", [
-        "run",
-        "--rm",
-        "--name",
-        "egw-run-init",
-        "-v",
-        process.cwd() + ":/jmeter",
-        "-v",
-        envFolder + ":/envs",
-        "--network=egw-tests_default",
-        "egaillardon/jmeter-plugins",
+    const params = [
         ...(
-            "-n -t jmeter/" +
+            "run --rm --name egw-run-init" +
+            " -v " +
+            process.cwd() +
+            ":/jmeter" +
+            " -v " +
+            insomniaFolder +
+            ":/insomnia --network=egw-tests_default egaillardon/jmeter-plugins -n -t jmeter/" +
             initFile +
             " -j " +
             logFile +
-            " -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs -Juid=" +
+            " -Jenv=env_localhost_builder.cfg -Jinsomnia_dir=/insomnia -Juid=" +
             yourUid
         ).split(" "),
-    ]);
+    ];
+    const { stdOut } = await core.runCommand("docker", params);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
     }
 }
 
-async function runInitCommandsAsyncJob(envFolder) {
-    const initFile = "init-tests_ASYNC_JOB.jmx";
+async function runInitCommandsAsyncJob() {
+    const initFile = "inits/init_ASYNC_JOB.jmx";
     const resultsFile = "logs/initResultsASYNC.xml";
     const logFile = "jmeter/logs/initLogsASYNC.log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
@@ -303,11 +300,9 @@ async function runInitCommandsAsyncJob(envFolder) {
         "egw-run-init",
         "-v",
         process.cwd() + ":/jmeter",
-        "-v",
-        envFolder + ":/envs",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...`-n -t jmeter/${initFile} -j ${logFile} -Jhost=host.docker.internal -Jenv=env_localhost_builder.cfg -Jenv_dir=/envs`.split(" "),
+        ...`-n -t jmeter/${initFile} -j ${logFile} -Jenv=env_localhost_builder.cfg`.split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -722,17 +717,16 @@ async function run() {
             core.showMessage("Starting inits...");
             if (isInitPerProject.ASYNC) {
                 core.showMessage("Init AsyncJob");
-                // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                await core.inLocationAsync(`${DG.folder}/${DG.server}/src/test/`, async () => {
-                    await runInitCommandsAsyncJob(`${cmd.folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
+                await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
+                    await runInitCommandsAsyncJob();
                 });
             }
             for (const project of runableProjects) {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                    await core.inLocationAsync(`${project.folder}/${project.server}/src/test/`, async () => {
-                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${MR.folder}/${MR.server}/src/test/jmeter`);
+                    await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
+                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`);
                     });
                 }
             }
