@@ -81,6 +81,7 @@ const projects = [
         server: "uu_energygatewayg01_ecpendpoint-server",
         port: 8097,
         webname: "uu-energygatewayg01-ecpendpoint",
+        testFile: "ecp_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
     {
@@ -389,7 +390,7 @@ async function runTests(project, testFile, isVersion11) {
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
     const rest = restStr.split(" ");
     rest.push("-Jftp_data_dir=/ftpdata");
-    if (project == EMAIL) {
+    if (isVersion11 && project == EMAIL) {
         rest.push("-Jsmtp_host=smtp");
         rest.push("-Jsmtp_port=80");
     }
