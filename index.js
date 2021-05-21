@@ -696,6 +696,13 @@ async function run() {
                     if (project.code == AS24.code) {
                         await waitForApplicationIsReady(DG);
                     }
+                    if (project.code === MR.code) {
+                        console.log("Copying tests-uu5-environment.json to server/public");
+                        fs.copyFileSync(
+                            MR.folder + "/" + MR.hi + "/env/tests-uu5-environment.json",
+                            MR.folder + "/" + MR.server + "/public/uu5-environment.json"
+                        );
+                    }
                     core.inLocation(project.folder, () => {
                         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
                             cmd.folder,
