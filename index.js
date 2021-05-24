@@ -482,15 +482,16 @@ async function run() {
             console.log("  -runIEC62325         - Runs IEC62325 endpoint");
             console.log("  -runAS24             - Runs AS24 endpoint");
             console.log("");
-            console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
+            console.log("  -init                - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");
-            console.log("  -initMR <your-uid>   - Runs init commands of Message Registry");
+            console.log("  -initMR              - Runs init commands of Message Registry");
             console.log("  -initFTP             - Runs init commands of FTP endpoint");
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
             console.log("  -initIEC62325        - Runs init commands of IEC62325 endpoint");
             console.log("  -initAS24            - Runs init commands of AS24 endpoint");
             console.log("  -initASYNC           - Runs init commands of AsyncJob server");
+            console.log("  -uid <your-uid>      - UID of actual user");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
             console.log("  -testDG              - Tests Datagateway by jmeter");
@@ -598,14 +599,15 @@ async function run() {
         }
         isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
 
-        if (isInitPerProject["MR"]) {
-            if (cmd.uid) {
-                console.log("Your OID: " + cmd.uid);
-            }
-            cmd.uid = cmd.uid || prompt("Your UID: ");
-            if (!cmd.uid) {
-                core.showError("Terminated by user");
-            }
+        if (cmd.uid) {
+            console.log("Your OID: " + cmd.uid);
+        }
+        cmd.uid = cmd.uid || prompt("Your UID: ");
+        if (!cmd.uid) {
+            core.showError("Terminated by user");
+        }
+        if ((cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24) && !cmd.uid) {
+            core.showError("UID must be set along with inits");
         }
 
         // Tests
@@ -645,7 +647,7 @@ async function run() {
                 }
             }
         }
-        if (isBuild || isRun || isRunInit) {
+        if (isBuild || isRun) {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {

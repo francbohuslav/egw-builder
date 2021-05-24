@@ -76,15 +76,16 @@ Run command `node index`.
     -runIEC62325         - Runs IEC62325 endpoint
     -runAS24             - Runs AS24 endpoint
 
-    -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)
+    -init                - Runs init commands of all apps (creates workspace, sets permissions)
     -initDG              - Runs init commands of Datagateway
-    -initMR <your-uid>   - Runs init commands of Message Registry
+    -initMR              - Runs init commands of Message Registry
     -initFTP             - Runs init commands of FTP endpoint
     -initEMAIL           - Runs init commands of E-mail endpoint
     -initECP             - Runs init commands of ECP endpoint
     -initIEC62325        - Runs init commands of IEC62325 endpoint
     -initAS24            - Runs init commands of AS24 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
+    -uid <your-uid>      - UID of actual user
 
     -test                - Tests all subApps by jmeter
     -testDG              - Tests Datagateway by jmeter

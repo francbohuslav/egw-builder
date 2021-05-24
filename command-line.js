@@ -140,7 +140,6 @@ class CommandLine {
                 this.initIEC62325 = true;
                 this.initAS24 = true;
                 this.initASYNC = true;
-                this.uid = pars.shift();
                 this.interactively = false;
                 continue;
             }
@@ -151,7 +150,6 @@ class CommandLine {
             }
             if (ar == "-initmr") {
                 this.initMR = true;
-                this.uid = pars.shift();
                 this.interactively = false;
                 continue;
             }
@@ -182,6 +180,11 @@ class CommandLine {
             }
             if (ar == "-initasync") {
                 this.initASYNC = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-uid") {
+                this.uid = pars.shift();
                 this.interactively = false;
                 continue;
             }
