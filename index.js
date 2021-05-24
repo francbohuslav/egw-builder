@@ -599,15 +599,17 @@ async function run() {
         }
         isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
 
-        if (cmd.uid) {
-            console.log("Your OID: " + cmd.uid);
-        }
-        cmd.uid = cmd.uid || prompt("Your UID: ");
-        if (!cmd.uid) {
-            core.showError("Terminated by user");
-        }
-        if ((cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24) && !cmd.uid) {
-            core.showError("UID must be set along with inits");
+        if (isRunInit) {
+            if (cmd.uid) {
+                console.log("Your OID: " + cmd.uid);
+            }
+            cmd.uid = cmd.uid || prompt("Your UID: ");
+            if (!cmd.uid) {
+                core.showError("Terminated by user");
+            }
+            if ((cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24) && !cmd.uid) {
+                core.showError("UID must be set along with inits");
+            }
         }
 
         // Tests
