@@ -649,7 +649,7 @@ async function run() {
                 }
             }
         }
-        if (isBuild || isRun) {
+        if (cmd.unitTests || isRun) {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
