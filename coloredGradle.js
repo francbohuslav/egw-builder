@@ -46,22 +46,22 @@ function printLine(line, fd) {
     }
 
     if (line.indexOf("Started SubAppRunner") > -1) {
-        color = "33";
+        color = Colors.FgYellow;
         isRunning = true;
         title("");
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
-        color = "36";
+        color = Colors.FgCyan;
     } else if (
         (isRunning && (line.indexOf("IncomingMessageReceivedConsumer") > -1 || line.indexOf("DefaultIncomingMessageRecognizer") > -1)) ||
         line.indexOf("New message arrived") > -1
     ) {
         // Incoming messsage
-        color = "44";
-    } else if (isRunning && (line.match(/started.*route/i) || line.match(/finished.*route/i))) {
+        color = Colors.BgBlue;
+    } else if (isRunning && isUnImportantLine(line)) {
         // Unimportant message
-        color = "90";
+        color = Colors.FgGray;
     } else {
-        color = "37";
+        color = Colors.FgWhite;
     }
 
     logToFile(fd, line);
@@ -73,12 +73,14 @@ function printLine(line, fd) {
     }
     if (isError) {
         if (stackTraceLine < 5) {
-            console.log("\x1b[31m%s\x1b[0m", shortLine);
+            console.log("\x1b[" + Colors.FgRed + "m%s\x1b[0m", shortLine);
         }
-    } else if (isRunning) {
-        console.log("\x1b[33m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
-    } else {
-        console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
+    } else if (isLoggableLine(shortLine)) {
+        if (isRunning) {
+            console.log("\x1b[" + Colors.FgYellow + "m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
+        } else {
+            console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
+        }
     }
     prevLineTime = now;
 }
@@ -108,9 +110,52 @@ function logToFile(fd, line) {
     });
 }
 
+function isLoggableLine(shortLine) {
+    const patterns = [
+        /OidcAuthentication.*authenticate invoked/,
+        /\.OidcSession.*Initializing Identity and Client Application Identity values\./,
+        /AuthenticationHandler - Creating new session with request 'SecurityContextHolderAwareRequestWrapper.*' and response 'org.springframework.security.web.header.HeaderWriterFilter/,
+    ];
+    for (let i = 0; i < patterns.length; i++) {
+        if (shortLine.match(patterns[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function isUnImportantLine(line) {
+    const patterns = [
+        /started.*route/i,
+        /finished.*route/i,
+        /AsyncJobHelper/i,
+        /JobPlanModel/i,
+        /JobPlanController/i,
+        /Trying to lock/i,
+        /Unlocking the lock/i,
+    ];
+    for (let i = 0; i < patterns.length; i++) {
+        if (line.match(patterns[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function title(message) {
     process.stdout.write(String.fromCharCode(27) + "]0;" + projectCode + " " + message + String.fromCharCode(7));
 }
+
+const Colors = {
+    FgRed: "31",
+    FgYellow: "33",
+    FgCyan: "36",
+    BgBlue: "44",
+    FgGray: "90",
+    FgWhite: "37",
+};
 
 // for (let i = 0; i < 200; i++) {
 //     console.log("\x1b[%sm%s\x1b[0m", i, i + "text");

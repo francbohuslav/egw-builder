@@ -1,27 +1,13 @@
-09:57:41.437 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using StrickHostKeyChecking: no
-09:57:52.459 [http-nio-8095-exec-4] INFO  org.apache.camel.component.file.remote.SftpOperations - Known host file not configured, using user known host file: C:\Users\franc/.ssh/known_hosts
-09:57:52.459 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using known hosts information from file: C:\Users\franc/.ssh/known_hosts
-09:57:52.466 [http-nio-8095-exec-4] DEBUG org.apache.camel.component.file.remote.SftpOperations - Using StrickHostKeyChecking: no
-09:58:02.483 [http-nio-8095-exec-4] WARN  org.apache.camel.component.file.remote.SftpConsumer - Error auto creating directory: data/perf_incoming due Cannot connect to sftp://guest@localhost:2223. This exception is ignored.
-org.apache.camel.component.file.GenericFileOperationFailedException: Cannot connect to sftp://guest@localhost:2223
-	at org.apache.camel.component.file.remote.SftpOperations.connect(SftpOperations.java:150) ~[camel-ftp-2.25.2.jar:2.25.2]
-	at org.apache.camel.component.file.remote.RemoteFileConsumer.connectIfNecessary(RemoteFileConsumer.java:197) ~[camel-ftp-2.25.2.jar:2.25.2]
-	at org.apache.camel.component.file.remote.SftpConsumer.doStart(SftpConsumer.java:59) ~[camel-ftp-2.25.2.jar:2.25.2]
-	at org.apache.camel.support.ServiceSupport.start(ServiceSupport.java:72) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.util.ServiceHelper.startService(ServiceHelper.java:75) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.component.file.GenericFilePollingConsumer.doStart(GenericFilePollingConsumer.java:59) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.support.ServiceSupport.start(ServiceSupport.java:72) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.impl.ConsumerCache.doGetPollingConsumer(ConsumerCache.java:175) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.impl.ConsumerCache.acquirePollingConsumer(ConsumerCache.java:121) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.PollEnricher.process(PollEnricher.java:203) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.Pipeline.process(Pipeline.java:101) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.LoopProcessor.process(LoopProcessor.java:128) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.LoopProcessor.process(LoopProcessor.java:96) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.Pipeline.process(Pipeline.java:138) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.Pipeline.process(Pipeline.java:101) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.Pipeline.process(Pipeline.java:138) ~[camel-core-2.25.2.jar:2.25.2]
-	at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201) ~[camel-core-2.25.2.jar:2.25.2]
+| 17:21:20.291 DEBUG uu...OidcAuthentication - #authenticate invoked
+| 17:21:20.295 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
+| 17:21:20.327 DEBUG uu...OidcAuthentication - #authenticate invoked
+| 17:21:20.331 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
+| 17:21:20.452 DEBUG uu...FtpController - uuCMD ftp/receive finished
+| 17:21:20.717 DEBUG uu...AuthenticationHandler - Creating new session with request 'SecurityContextHolderAwareRequestWrapper[ FirewalledRequest[ org...RequestFacade@4b831cb1]]' and response 'org.springframework.security.web.header.HeaderWriterFilter$HeaderWriterResponse@16171b87'
+| 17:21:20.717 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
+| 17:21:20.719 INFO  uu...JobPlanController - Executing callback after execution of EVERYTWSEC_AUTOMAT job with jobId 60b10a6b7401b1000c0bb95a and state COMPLETED
+| 17:21:20.719 INFO  uu...JobPlanModel - jobPlan started with DTO in uu...JobPlanDtoIn@d52e76f[jobCode=EVERYTWSEC_AUTOMAT,jobCodeToCancelList=<null>]
+| 17:21:20.719 DEBUG uu...OidcAuthentication - #authenticate invoked
+| 17:21:20.723 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
+| 17:21:20.753 INFO  uu...JobPlanModel - creating job EVERYTWSEC_AUTOMAT for QUEUE_FOR_TESTS to start at 2021-05-28T15:21:25Z
+| 17:21:20.941 INFO  uu...AsyncJobHelper - New job for QUEUE_FOR_TESTS has been created with id 60b10a707401b1000c0bb964 to run at 2021-05-28T15:21:25Z.
