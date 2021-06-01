@@ -17,7 +17,7 @@ class MetaModel {
                 addProfiles +
                 " -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors";
             //node C:\\Gateway\\_others\\egw_metamodelgeneratorg01\\egw_metamodelgeneratorg01\\cli.js
-            console.log(project.code + ": " + cmd);
+            //console.log(project.code + ": " + cmd);
             const code = await core.runCommand(cmd);
             if (code.stdOut.indexOf("Profiles are not same !!!") > -1) {
                 fs.unlinkSync(tempFile);
