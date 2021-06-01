@@ -64,7 +64,8 @@ const projects = [
         port: 8095,
         webname: "uu-energygatewayg01-ftpendpoint",
         testFile: "ftp_endpoint.jmx",
-        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },
     {
         code: "EMAIL",
@@ -73,7 +74,8 @@ const projects = [
         port: 8096,
         webname: "uu-energygatewayg01-emailendpoint",
         testFile: "email_endpoint.jmx",
-        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },
     {
         code: "ECP",
@@ -82,7 +84,8 @@ const projects = [
         port: 8097,
         webname: "uu-energygatewayg01-ecpendpoint",
         testFile: "ecp_endpoint.jmx",
-        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },
     {
         code: "IEC62325",
@@ -91,7 +94,8 @@ const projects = [
         port: 8098,
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
-        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },
     {
         code: "AS24",
@@ -100,7 +104,8 @@ const projects = [
         port: 8099,
         webname: "uu-energygateway-as24endpointg01",
         testFile: "as24_endpoint.jmx",
-        addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
+        addProfilesFromLibraries: (isVersion11) =>
+            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },
 ];
 
