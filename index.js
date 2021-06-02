@@ -674,7 +674,10 @@ async function run() {
         if (cmd.unitTests || isRun) {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
-                if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
+                if (
+                    ((isBuild && isBuildPerProject[project.code] && cmd.unitTests) || (isRun && isRunPerProject[project.code])) &&
+                    fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
+                ) {
                     await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d --no-recreate"));
                 }
             }
