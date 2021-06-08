@@ -458,10 +458,14 @@ function cloneDataGatewayForIec() {
  * @param {IProject} project
  */
 async function runApp(project, cmd, isBuild) {
+    fs.mkdirSync(path.join(cmd.folder, "logs"), {
+        recursive: true,
+    });
     core.inLocation(project.folder, () => {
         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
             cmd.folder,
-            "log-" + project.code + ".log"
+            "logs",
+            project.code + ".log"
         )}`;
         // If build is present, unit tests are executed by it
         if (!cmd.unitTests || isBuild) {
