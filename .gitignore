@@ -1,3 +1,6 @@
 node_modules
 /temp.log
 /last.json
+/EgwBuilderRunner/EgwBuilderRunner/obj
+/EgwBuilderRunner/EgwBuilderRunner/bin
+/EgwBuilderRunner/.vs/EgwBuilderRunner/v15
