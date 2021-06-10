@@ -373,9 +373,8 @@ async function cleanDockers() {
 
 /**
  * @param {IProject} project
- * @param {string} testFile
  */
-async function runTests(project, testFile, isVersion11) {
+async function runTests(project, isVersion11) {
     await waitForApplicationIsReady(project);
 
     const resultsFile = "logs/testResults" + project.code + ".xml";
@@ -386,7 +385,7 @@ async function runTests(project, testFile, isVersion11) {
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    let restStr = "-n -t " + testFile + " -j " + logFile + " ";
+    let restStr = "-n -t " + project.testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
     const rest = restStr.split(" ");
     rest.push("-Jftp_data_dir=/ftpdata");
@@ -805,7 +804,7 @@ async function run() {
                 ]) {
                     if (project) {
                         core.showMessage(`Testing ${project.code}`);
-                        const report = await runTests(project, project.testFile, isVersion11);
+                        const report = await runTests(project, isVersion11);
                         if (report.newFailed.length) {
                             newFailed[project.code] = report.newFailed;
                         }
