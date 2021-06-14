@@ -33,45 +33,45 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="1"    TextWrapping="Wrap" Text="D6" TextAlignment="Center"  />
-            <TextBlock Grid.Column="2"    TextWrapping="Wrap" Text="MR" TextAlignment="Center"  />
-            <TextBlock Grid.Column="3"    TextWrapping="Wrap" Text="FTP" TextAlignment="Center"  />
-            <TextBlock Grid.Column="4"    TextWrapping="Wrap" Text="E-mail" TextAlignment="Center"  />
-            <TextBlock Grid.Column="5"    TextWrapping="Wrap" Text="ECP" TextAlignment="Center"  />
-            <TextBlock Grid.Column="6"    TextWrapping="Wrap" Text="IEC" TextAlignment="Center"  />
-            <TextBlock Grid.Column="7"    TextWrapping="Wrap" Text="AS24" TextAlignment="Center"  />
+            <TextBlock Grid.Column="1"    TextWrapping="Wrap" TextAlignment="Center" Height="20" VerticalAlignment="Bottom" MouseUp="TextBlock_MouseUp"  ><Run Text="D"/><Run Text="G"/></TextBlock>
+            <TextBlock Grid.Column="2"    TextWrapping="Wrap" Text="MR" TextAlignment="Center" MouseUp="TextBlock_MouseUp_1"  />
+            <TextBlock Grid.Column="3"    TextWrapping="Wrap" Text="FTP" TextAlignment="Center" MouseUp="TextBlock_MouseUp_2"  />
+            <TextBlock Grid.Column="4"    TextWrapping="Wrap" Text="E-mail" TextAlignment="Center" MouseUp="TextBlock_MouseUp_3"  />
+            <TextBlock Grid.Column="5"    TextWrapping="Wrap" Text="ECP" TextAlignment="Center" MouseUp="TextBlock_MouseUp_4"  />
+            <TextBlock Grid.Column="6"    TextWrapping="Wrap" Text="IEC" TextAlignment="Center" MouseUp="TextBlock_MouseUp_5"  />
+            <TextBlock Grid.Column="7"    TextWrapping="Wrap" Text="AS24" TextAlignment="Center" MouseUp="TextBlock_MouseUp_6"  />
             <TextBlock Grid.Row="1"    TextWrapping="Wrap" Text="Build" TextAlignment="Right"  />
             <TextBlock Grid.Row="2"    TextWrapping="Wrap" Text="Run" TextAlignment="Right"  />
             <TextBlock Grid.Row="3"    TextWrapping="Wrap" Text="Init" TextAlignment="Right"  />
             <TextBlock Grid.Row="4"    TextWrapping="Wrap" Text="Test" TextAlignment="Right"  />
-            <CheckBox Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="2" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="4" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="4" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="5" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="6" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="7" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="2" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="3" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="4" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="5" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="6" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="7" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="1" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="2" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="3" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="4" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="5" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-            <CheckBox Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_DG" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_MR" Grid.Column="2" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_FTP" Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_Email" Grid.Column="4" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_IEC" Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Build_AS24" Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_Email" Grid.Column="4" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_ECP" Grid.Column="5" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_IEC" Grid.Column="6" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Run_AS24" Grid.Column="7" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_DG" Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_MR" Grid.Column="2" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_FTP" Grid.Column="3" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_Email" Grid.Column="4" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_ECP" Grid.Column="5" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_IEC" Grid.Column="6" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Init_AS24" Grid.Column="7" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_DG" Grid.Column="1" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_MR" Grid.Column="2" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_FTP" Grid.Column="3" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_Email" Grid.Column="4" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_ECP" Grid.Column="5" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_IEC" Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+            <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
         </Grid>
         <CheckBox x:Name="asyncjob" Content="AsyncJob" HorizontalAlignment="Left" Margin="10,244,0,0" VerticalAlignment="Top"/>
         <Label Content="Your UID" HorizontalAlignment="Left" Margin="10,267,0,0" VerticalAlignment="Top" Width="75" Height="25" RenderTransformOrigin="0.711,1.8"/>
