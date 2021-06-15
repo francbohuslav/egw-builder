@@ -10,9 +10,9 @@ namespace EgwBuilderRunner
         {
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "node",
-                Arguments = "index -last",
-                WorkingDirectory = builderFolder
+                FileName = "cmd",
+                Arguments = "/K node index -last",
+                WorkingDirectory = builderFolder,
             });
         }
     }

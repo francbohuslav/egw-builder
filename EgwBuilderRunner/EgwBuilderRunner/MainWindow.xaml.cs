@@ -141,6 +141,7 @@ namespace EgwBuilderRunner
             var structure = GetStructure();
             lastSaver.Save(structure);
             runner.Run(MyApp.BuilderFolder, structure);
+            Close();
         }
 
         private Structure GetStructure()
