@@ -1,3 +1,9 @@
 node_modules
 /temp.log
 /last.json
+/EgwBuilderRunner/EgwBuilderRunner/obj
+/EgwBuilderRunner/EgwBuilderRunner/bin
+/EgwBuilderRunner/.vs/EgwBuilderRunner/v15
+/EgwBuilderRunner/packages
+/EgwBuilderRunner/EgwBuilderRunner.sln.cache
+/EgwBuilderRunner/Installer/setup-EgwBuilderRunner.exe
