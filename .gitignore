@@ -5,3 +5,5 @@ node_modules
 /EgwBuilderRunner/EgwBuilderRunner/bin
 /EgwBuilderRunner/.vs/EgwBuilderRunner/v15
 /EgwBuilderRunner/packages
+/EgwBuilderRunner/EgwBuilderRunner.sln.cache
+/EgwBuilderRunner/Installer/setup-EgwBuilderRunner.exe

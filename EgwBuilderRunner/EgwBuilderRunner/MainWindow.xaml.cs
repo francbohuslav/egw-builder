@@ -11,13 +11,15 @@ namespace EgwBuilderRunner
     public partial class MainWindow : BaseWindow<App>
     {
         private LastSaver lastSaver;
+        private Runner runner;
         public MainWindow()
         {
             InitializeComponent();
             Title = MyApp.AppSettings.ApplicationNameWithVersion;
 
             Clear_Click(null, null);
-            lastSaver = new LastSaver(MyApp.Folder);
+            lastSaver = new LastSaver(MyApp.BuilderFolder);
+            runner = new Runner();
 
             var last = lastSaver.Load();
             if (last != null)
@@ -27,10 +29,14 @@ namespace EgwBuilderRunner
             else
             {
                 YourUID.Text = MyApp.AppStorage.YourUid;
-                StatusBar.SetStatusText(MyApp.Folder);
+                UpdateStatusBar();
             }
         }
 
+        private void UpdateStatusBar()
+        {
+            StatusBar.SetStatusText(MyApp.EgwFolder + " | " + MyApp.BuilderFolder);
+        }
 
         private void DG_Click(object sender, RoutedEventArgs e)
         {
@@ -132,14 +138,16 @@ namespace EgwBuilderRunner
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            lastSaver.Save(GetStructure());
+            var structure = GetStructure();
+            lastSaver.Save(structure);
+            runner.Run(MyApp.BuilderFolder, structure);
         }
 
         private Structure GetStructure()
         {
             return new Structure
             {
-                Folder = MyApp.Folder,
+                Folder = MyApp.EgwFolder,
                 Version = Setversion.Text,
                 Clear = ClearDocker.IsChecked == true,
                 Metamodel = Metamodel.IsChecked == true,
@@ -183,8 +191,8 @@ namespace EgwBuilderRunner
 
         private void SetStructure(Structure structure)
         {
-            MyApp.Folder = structure.Folder;
-            StatusBar.SetStatusText(MyApp.Folder);
+            MyApp.EgwFolder = structure.Folder;
+            UpdateStatusBar();
             Setversion.Text = structure.Version;
             ClearDocker.IsChecked = structure.Clear;
             Metamodel.IsChecked = structure.Metamodel;
@@ -224,6 +232,19 @@ namespace EgwBuilderRunner
             Test_ECP.IsChecked = structure.TestECP;
             Test_IEC.IsChecked = structure.TestIEC62325;
             Test_AS24.IsChecked = structure.TestAS24;
+        }
+
+        private void Last_Click(object sender, RoutedEventArgs e)
+        {
+            var last = lastSaver.Load();
+            if (last != null)
+            {
+                SetStructure(last);
+            }
+            else
+            {
+                MyApp.ShowMessage("There is not last file");
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using BoganApp.Applications;
 using BoganApp.Storages;
 using System;
+using System.IO;
 using System.Windows;
 
 namespace EgwBuilderRunner
@@ -12,7 +13,8 @@ namespace EgwBuilderRunner
     {
         public new ThisAppStorage AppStorage { get { return (ThisAppStorage)base.AppStorage; } }
 
-        public string Folder { get; set; }
+        public string BuilderFolder { get; set; }
+        public string EgwFolder { get; set; }
 
         protected override AppSettings GetAppSettings()
         {
@@ -26,7 +28,17 @@ namespace EgwBuilderRunner
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Folder = e.Args.Length > 0 ? e.Args[0] : ExeDir;
+            if (e.Args.Length < 2)
+            {
+                ShowMessage("App needs two arguments. Path to builder and path to EGW folder.", MessageBoxImage.Error);
+                ShowMessage(string.Join(" ", e.Args));
+                Environment.Exit(1);
+            }
+            else
+            {
+                BuilderFolder = Path.GetFullPath(e.Args[0]);
+                EgwFolder = Path.GetFullPath(e.Args[1]);
+            }
         }
 
     }

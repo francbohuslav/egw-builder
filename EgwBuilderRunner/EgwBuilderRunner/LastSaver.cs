@@ -5,14 +5,14 @@ namespace EgwBuilderRunner
 {
     public class LastSaver
     {
-        private readonly string folder;
+        private readonly string builderFolder;
 
-        public LastSaver(string folder)
+        public LastSaver(string builderFolder)
         {
-            this.folder = folder;
+            this.builderFolder = builderFolder;
         }
 
-        private string LastFilePath => Path.Combine(folder, "last.json");
+        private string LastFilePath => Path.Combine(builderFolder, "last.json");
         public void Save(Structure structure)
         {
             File.WriteAllText(LastFilePath, JsonConvert.SerializeObject(structure));
