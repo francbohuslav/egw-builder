@@ -21,16 +21,8 @@ namespace EgwBuilderRunner
             lastSaver = new LastSaver(MyApp.BuilderFolder);
             runner = new Runner();
 
-            var last = lastSaver.Load();
-            if (last != null)
-            {
-                SetStructure(last);
-            }
-            else
-            {
-                YourUID.Text = MyApp.AppStorage.YourUid;
-                UpdateStatusBar();
-            }
+            YourUID.Text = MyApp.AppStorage.YourUid;
+            UpdateStatusBar();
         }
 
         private void UpdateStatusBar()
