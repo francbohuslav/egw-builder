@@ -53,7 +53,7 @@ const projects = [
         port: 8093,
         webname: "uu-energygateway-messageregistryg01",
         hi: "uu_energygateway_messageregistryg01-hi",
-        gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
+        gui: "gui-components/uu_energygateway_guig01",
         testFile: "message-registry.jmx",
         addProfilesFromLibraries: (isVersion11) => (isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG" }),
     },
