@@ -25,9 +25,14 @@ namespace EgwBuilderRunner
             UpdateStatusBar();
         }
 
+        private void BaseWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Console.Text = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+        }
+
         private void UpdateStatusBar()
         {
-            StatusBar.SetStatusText(MyApp.EgwFolder + " | " + MyApp.BuilderFolder);
+            Folders.Text = "EGW:     " + MyApp.EgwFolder + "\nBuilder: " + MyApp.BuilderFolder;
         }
 
         private void DG_Click(object sender, RoutedEventArgs e)
@@ -132,7 +137,7 @@ namespace EgwBuilderRunner
         {
             var structure = GetStructure();
             lastSaver.Save(structure);
-            runner.Run(MyApp.BuilderFolder, structure);
+            runner.Run(MyApp.BuilderFolder);
             Close();
         }
 

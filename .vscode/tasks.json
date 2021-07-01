@@ -31,22 +31,19 @@
             "type": "npm",
             "script": "custom",
             "problemMatcher": [],
-            "label": "npm: custom",
-            "detail": "node ./index.js -folder ../sprint -clean -run -init 12-8835-1 -test"
+            "label": "npm: custom"
         },
         {
             "type": "npm",
             "script": "ask",
             "problemMatcher": [],
-            "label": "npm: ask",
-            "detail": "node ./index.js -folder ../sprint"
+            "label": "npm: ask"
         },
         {
             "type": "npm",
             "script": "last",
             "problemMatcher": [],
-            "label": "npm: last",
-            "detail": "node ./index.js -last"
+            "label": "npm: last"
         }
     ]
 }

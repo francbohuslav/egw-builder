@@ -205,8 +205,12 @@ function setProjectVersion(project, newVersion) {
     });
 }
 
-function printProjectsVersions() {
-    core.showMessage("Actual versions");
+function printProjectsVersions(cmd) {
+    if (cmd.getVersions) {
+        console.log("Actual versions");
+    } else {
+        core.showMessage("Actual versions");
+    }
     const projectVersions = {};
     for (const project of projects) {
         if (fs.existsSync(project.folder)) {
@@ -541,7 +545,9 @@ async function run() {
             core.showError("Terminated by user");
         }
         cmd.folder = path.resolve(cmd.folder);
-        core.showMessage(`Using folder ${cmd.folder}`);
+        if (!cmd.getVersions) {
+            core.showMessage(`Using folder ${cmd.folder}`);
+        }
         process.chdir(cmd.folder);
         const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
         if (isVersion11) {
@@ -556,8 +562,11 @@ async function run() {
             runableProjects.push(AS24);
         }
 
-        if (cmd.interactively) {
-            printProjectsVersions();
+        if (cmd.interactively || cmd.getVersions) {
+            printProjectsVersions(cmd);
+            if (cmd.getVersions) {
+                return;
+            }
         }
         // console.log(cmd);
         // console.log(cmd.version);

@@ -9,7 +9,7 @@
         "ask": "node ./index.js -folder ../sprint",
         "init": "node ./index.js -folder ../sprint -init 12-8835-1",
         "last": "node ./index.js -last",
-        "custom": "node ./index.js -folder ../sprint -buildAS24 -runAS24 -initAS24"
+        "custom": "node ./index.js -folder ../sprint -getversions"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",

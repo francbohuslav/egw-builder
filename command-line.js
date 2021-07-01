@@ -22,6 +22,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-getversions") {
+                this.getVersions = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-clear") {
                 this.clear = true;
                 this.interactively = false;
