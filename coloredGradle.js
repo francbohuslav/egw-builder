@@ -56,7 +56,7 @@ function printLine(line, fd) {
         line.indexOf("New message arrived") > -1
     ) {
         // Incoming messsage
-        color = Colors.BgBlue;
+        color = line.indexOf("Message data:") > -1 ? Colors.FgGreen : Colors.BgBlue;
     } else if (isRunning && isUnImportantLine(line)) {
         // Unimportant message
         color = Colors.FgGray;
@@ -152,6 +152,7 @@ const Colors = {
     FgRed: "31",
     FgYellow: "33",
     FgCyan: "36",
+    FgGreen: "32",
     BgBlue: "44",
     FgGray: "90",
     FgWhite: "37",
