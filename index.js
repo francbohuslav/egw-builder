@@ -681,7 +681,7 @@ async function run() {
                     ((isBuild && isBuildPerProject[project.code] && cmd.unitTests) || (isRun && isRunPerProject[project.code])) &&
                     fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
                 ) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d --no-recreate"));
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
                 }
             }
         }
