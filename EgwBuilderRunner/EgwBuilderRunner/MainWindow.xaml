@@ -20,14 +20,14 @@
             <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="Loading versions..." Foreground="#FF87FF87" Padding="5"/>
         </ScrollViewer>
         <Grid Margin="336,0,0,0">
-            <Button x:Name="Clear" Content="Clear" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="Clear_Click"/>
-            <Button x:Name="Last" Content="Last" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="Last_Click"/>
-            <CheckBox x:Name="ClearDocker" Content="Clear Docker" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="Metamodel" Content="Metamodel" HorizontalAlignment="Left" Margin="10,67,0,0" VerticalAlignment="Top" Width="90">
+            <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
+            <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,10,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
+            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top">
 
             </CheckBox>
-            <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="10,87,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
-            <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="84,89,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
+            <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="10,90,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
+            <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="84,92,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
             <Grid Height="140" Margin="10,130,10,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -57,13 +57,13 @@
                 <Button Grid.Row="2"  Margin="0,3" Content="Run" Click="Button_Click_1" />
                 <Button Grid.Row="3"  Margin="0,3" Content="Init" Click="Button_Click_2" />
                 <Button Grid.Row="4"  Margin="0,3" Content="Test" Click="Button_Click_3" />
-                <CheckBox x:Name="Build_DG" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_MR" Grid.Column="2" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_FTP" Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_EMAIL" Grid.Column="4" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_IEC" Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Build_AS24" Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+                <CheckBox x:Name="Build_DG" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_MR" Grid.Column="2" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_FTP" Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_EMAIL" Grid.Column="4" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_IEC" Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_AS24" Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
@@ -86,7 +86,7 @@
                 <CheckBox x:Name="Test_IEC" Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
-            <CheckBox x:Name="AsyncJob" Content="AsyncJob init" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Height="18"/>
+            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Height="18"/>
             <Label Content="Your UID" HorizontalAlignment="Left" Margin="10,330,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
             <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="84,332,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>
             <Button x:Name="Start" Content="Start" Margin="0,0,10,35" FontSize="24" Height="49" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="106" Click="Start_Click"/>

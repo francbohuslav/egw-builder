@@ -23,6 +23,7 @@ namespace EgwBuilderRunner
 
             YourUID.Text = MyApp.AppStorage.YourUid;
             UpdateStatusBar();
+            UpdateAfterChecked(null, null);
         }
 
         private void BaseWindow_Loaded(object sender, RoutedEventArgs e)
@@ -122,7 +123,7 @@ namespace EgwBuilderRunner
             SetOperation("Init", false);
             SetOperation("Test", false);
             AsyncJob.IsChecked = false;
-
+            UpdateAfterChecked(null, null);
         }
 
         private void YourUID_LostFocus(object sender, RoutedEventArgs e)
@@ -242,6 +243,27 @@ namespace EgwBuilderRunner
             else
             {
                 MyApp.ShowMessage("There is not last file");
+            }
+            UpdateAfterChecked(null, null);
+        }
+
+        private void UpdateAfterChecked(object sender, RoutedEventArgs e)
+        {
+            if (Build_DG.IsChecked == false
+                && Build_MR.IsChecked == false
+                && Build_FTP.IsChecked == false
+                && Build_EMAIL.IsChecked == false
+                && Build_ECP.IsChecked == false
+                && Build_IEC.IsChecked == false
+                && Build_AS24.IsChecked == false
+                )
+            {
+                UnitTests.IsChecked = false;
+                UnitTests.IsEnabled = false;
+            }
+            else
+            {
+                UnitTests.IsEnabled = true;
             }
         }
     }
