@@ -89,6 +89,7 @@ function shortText(line) {
     // Replace thread in []
     line = line.replace(/^(\S+)\s\[\S+\]/g, "$1");
     line = line.replace(/11111111111111111111111111111111/g, "11...11");
+    line = line.replace(/(\d\d)0000000000000000000000000000(\d\d)/g, "$1...$2");
     // Do not short errors
     if (!line.match(/^\s+at/)) {
         // Shorten uu namespace

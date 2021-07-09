@@ -240,7 +240,7 @@ function setProjectsVersions(newVersion) {
  */
 async function waitForApplicationIsReady(project) {
     const seconds = 180;
-    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/ignoreThisRequest`;
+    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/oidc/getClientId`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
             await requestAsync(url, { json: true });
@@ -423,7 +423,7 @@ function cloneDataGatewayForIec() {
     const settings = core.readTextFile(`${IEC62325.folder}/settings.gradle`);
     const match = settings.match(new RegExp(`${DG.folder}[^\\"]*`));
     if (!match) {
-        core.showError(`Cannot find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
+        core.showError(`Can not find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
         return;
     }
     if (match[0] == DG.folder) {
