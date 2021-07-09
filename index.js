@@ -240,7 +240,7 @@ function setProjectsVersions(newVersion) {
  */
 async function waitForApplicationIsReady(project) {
     const seconds = 180;
-    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/oidc/getClientId`;
+    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
             await requestAsync(url, { json: true });

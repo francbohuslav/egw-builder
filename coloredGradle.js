@@ -52,7 +52,9 @@ function printLine(line, fd) {
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
         color = Colors.FgCyan;
     } else if (
-        (isRunning && (line.indexOf("IncomingMessageReceivedConsumer") > -1 || line.indexOf("DefaultIncomingMessageRecognizer") > -1)) ||
+        (isRunning &&
+            ((line.indexOf("IncomingMessageReceivedConsumer") > -1 && line.indexOf("Subscribing") == -1 && line.indexOf("Subscription done") == -1) ||
+                line.indexOf("DefaultIncomingMessageRecognizer") > -1)) ||
         line.indexOf("New message arrived") > -1
     ) {
         // Incoming messsage
