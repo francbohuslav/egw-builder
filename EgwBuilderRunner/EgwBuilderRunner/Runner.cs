@@ -26,7 +26,7 @@ namespace EgwBuilderRunner
                 WorkingDirectory = builderFolder,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-                CreateNoWindow = true
+                CreateNoWindow = true,
             });
             var output = new StringBuilder();
             while (!process.StandardOutput.EndOfStream)

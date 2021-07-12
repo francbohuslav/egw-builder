@@ -1,4 +1,5 @@
 ﻿using BoganApp.Windows;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,6 +13,10 @@ namespace EgwBuilderRunner
     {
         private LastSaver lastSaver;
         private Runner runner;
+
+        private bool hasAS24 = true;
+        private bool hasIEC = true;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,7 +33,23 @@ namespace EgwBuilderRunner
 
         private void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.Text = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+            var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+            Console.Text = version;
+            if (version.Contains(" 1.1") || version.Contains(" 2.0") || version.Contains(" 2.1"))
+            {
+                hasIEC = false;
+                hasAS24 = false;
+            }
+            if (!hasIEC)
+            {
+                IEC.IsEnabled = false;
+                ForProject("IEC", ch => ch.IsEnabled = false);
+            }
+            if (!hasAS24)
+            {
+                AS24.IsEnabled = false;
+                ForProject("AS24", ch => ch.IsEnabled = false);
+            }
         }
 
         private void UpdateStatusBar()
@@ -81,6 +102,14 @@ namespace EgwBuilderRunner
             (FindName("Test_" + project) as CheckBox).IsChecked = on;
         }
 
+        private void ForProject(string project, Action<CheckBox> action)
+        {
+            action(FindName("Build_" + project) as CheckBox);
+            action(FindName("Run_" + project) as CheckBox);
+            action(FindName("Init_" + project) as CheckBox);
+            action(FindName("Test_" + project) as CheckBox);
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetOperation("Build", Build_DG.IsChecked != true);
@@ -109,8 +138,14 @@ namespace EgwBuilderRunner
             (FindName(operation + "_FTP") as CheckBox).IsChecked = on;
             (FindName(operation + "_EMAIL") as CheckBox).IsChecked = on;
             (FindName(operation + "_ECP") as CheckBox).IsChecked = on;
-            (FindName(operation + "_IEC") as CheckBox).IsChecked = on;
-            (FindName(operation + "_AS24") as CheckBox).IsChecked = on;
+            if (hasIEC)
+            {
+                (FindName(operation + "_IEC") as CheckBox).IsChecked = on;
+            }
+            if (hasAS24)
+            {
+                (FindName(operation + "_AS24") as CheckBox).IsChecked = on;
+            }
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)

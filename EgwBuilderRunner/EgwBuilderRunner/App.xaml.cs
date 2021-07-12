@@ -18,7 +18,7 @@ namespace EgwBuilderRunner
 
         protected override AppSettings GetAppSettings()
         {
-            return new AppSettings("EgwBuilderRunner", "EgwBuilderRunner", "EgwBuilderRunner", new Version("1.3"));
+            return new AppSettings("EgwBuilderRunner", "EgwBuilderRunner", "EgwBuilderRunner", new Version("1.4"));
         }
 
         protected override AppStorage GetAppStorage()
