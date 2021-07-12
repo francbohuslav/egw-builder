@@ -202,8 +202,12 @@ function setProjectVersion(project, newVersion) {
     });
 }
 
-function printProjectsVersions() {
-    core.showMessage("Actual versions");
+function printProjectsVersions(cmd) {
+    if (cmd.getVersions) {
+        console.log("Actual versions");
+    } else {
+        core.showMessage("Actual versions");
+    }
     const projectVersions = {};
     for (const project of projects) {
         if (fs.existsSync(project.folder)) {
@@ -230,7 +234,7 @@ function setProjectsVersions(newVersion) {
 
 async function waitForApplicationIsReady(project) {
     const seconds = 180;
-    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000000-11111111111111111111111111111111/ignoreThisRequest`;
+    const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
             await requestAsync(url, { json: true });
@@ -520,10 +524,12 @@ async function run() {
             core.showError("Terminated by user");
         }
         cmd.folder = path.resolve(cmd.folder);
-        core.showMessage(`Using folder ${cmd.folder}`);
+        if (!cmd.getVersions) {
+            core.showMessage(`Using folder ${cmd.folder}`);
+        }
         process.chdir(cmd.folder);
         const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
-        if (isVersion11) {
+        if (isVersion11 && !cmd.getVersions) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
 
@@ -535,8 +541,11 @@ async function run() {
             runableProjects.push(AS24);
         }
 
-        if (cmd.interactively) {
-            printProjectsVersions();
+        if (cmd.interactively || cmd.getVersions) {
+            printProjectsVersions(cmd);
+            if (cmd.getVersions) {
+                return;
+            }
         }
         // console.log(cmd);
         // console.log(cmd.version);
@@ -653,7 +662,7 @@ async function run() {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d --no-recreate"));
+                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
                 }
             }
         }
