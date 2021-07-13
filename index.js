@@ -478,6 +478,16 @@ async function runApp(project, cmd, isBuild) {
     });
 }
 
+async function logAsyncJob(cmd) {
+    fs.mkdirSync(path.join(cmd.folder, "logs"), {
+        recursive: true,
+    });
+    core.inLocation(`${DG.folder}/docker/egw-tests`, () => {
+        const command = `start "AsyncJob" /MAX ${builderDir}\\asyncJobLogs.cmd ${builderDir} ${path.join(cmd.folder, "logs", "AsyncJob.log")}`;
+        core.runCommandNoWait(command);
+    });
+}
+
 async function run() {
     try {
         let cmd = new CommandLine(process.argv.slice(2));
@@ -492,6 +502,7 @@ async function run() {
             console.log("  -clear               - Shutdown and remove docker containers.");
             console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
+            console.log("  -logAsyncJob         - Shows console windows for AsyncJob");
             console.log("");
             console.log("  -build               - Builds all apps by gradle");
             console.log("  -buildDG             - Builds Datagateway");
@@ -567,6 +578,10 @@ async function run() {
             if (cmd.getVersions) {
                 return;
             }
+        }
+        if (cmd.logAsyncJob) {
+            logAsyncJob(cmd);
+            return;
         }
         // console.log(cmd);
         // console.log(cmd.version);

@@ -57,6 +57,7 @@ Run command `node index`.
     -clear               - Shutdown and remove docker containers.
     -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
+    -logAsyncJob         - Shows console windows for AsyncJob.
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway

@@ -9,12 +9,13 @@
         "ask": "node ./index.js -folder ../sprint",
         "init": "node ./index.js -folder ../sprint -init 12-8835-1",
         "last": "node ./index.js -last",
-        "custom": "node ./index.js -folder ../sprint -getversions"
+        "custom": "node ./index.js -folder ../sprint -logasyncjob"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",
     "dependencies": {
         "fs-extra": "^9.1.0",
+        "html-entities": "^2.3.2",
         "prompt-sync": "^4.2.0",
         "request": "^2.88.2",
         "xmldom": "^0.6.0",

@@ -27,6 +27,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-logasyncjob") {
+                this.logAsyncJob = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-clear") {
                 this.clear = true;
                 this.interactively = false;

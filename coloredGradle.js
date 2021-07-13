@@ -1,3 +1,5 @@
+const decode = require("html-entities").decode;
+
 const fs = require("fs");
 const os = require("os");
 
@@ -16,7 +18,16 @@ fs.open(logFile, "w", function (err, fd) {
     stdin.on("data", function (chunk) {
         const lines = chunk.toString().split(/[\r\n]+/);
         lines.forEach((line) => {
-            printLine(line.replace(/\s+$/, ""), fd);
+            line = line.replace(/\s+$/, "");
+            if (line.trim() === "") {
+                return;
+            }
+            if ("AsyncJob" == projectCode) {
+                const lines = updateLineFromDocker(line);
+                lines.split("\n").forEach((line) => printLine(line, fd));
+            } else {
+                printLine(line, fd);
+            }
         });
     });
 });
@@ -31,9 +42,6 @@ let prevLineTime = new Date().getTime();
  * @param {string} line input line
  */
 function printLine(line, fd) {
-    if (line.trim() === "") {
-        return;
-    }
     if (line.match(/^\S+\s\S+\sERROR/)) {
         isError = true;
         stackTraceLine = 0;
@@ -85,6 +93,33 @@ function printLine(line, fd) {
         }
     }
     prevLineTime = now;
+}
+
+function updateLineFromDocker(line) {
+    line = line.replace(/^\S+\s+\|/, "").trim();
+    line = line.replace("TRACE_LOG", "").trim();
+    // console.log("line", "x" + line + "x");
+    // process.exit(1);
+    const match = line.match(/^([A-Z]+)\s({.*})$/);
+    if (match) {
+        try {
+            const json = JSON.parse(match[2]);
+            line = json.eventTime.replace(/^.*T/, "").replace(",", ".");
+            line += " [" + json.threadName + "]";
+            line += " " + match[1];
+            line += " " + json.logger;
+            line += " - " + decode(json.message);
+            if (json.stackTrace) {
+                if (json.resourceUri) {
+                    line += "\n    resourceUri: " + decode(json.resourceUri);
+                }
+                line += "\n" + json.stackTrace;
+            }
+        } catch (Err) {
+            // it is not valid json
+        }
+    }
+    return line.trim();
 }
 
 function shortText(line) {
