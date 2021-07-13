@@ -1,2 +1,2 @@
 @echo off
-docker-compose logs asyncJob -f --no-color | node %1\coloredGradle.js AsyncJob %2
+docker-compose logs -f --no-color asyncJob | node %1\coloredGradle.js AsyncJob %2
