@@ -58,6 +58,7 @@ Run command `node index`.
     -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
     -logAsyncJob         - Shows console windows for AsyncJob.
+    -runInSequence       - SubApps are started gradually.
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway

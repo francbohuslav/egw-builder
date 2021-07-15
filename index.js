@@ -503,6 +503,7 @@ async function run() {
             console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
             console.log("  -logAsyncJob         - Shows console windows for AsyncJob");
+            console.log("  -runInSequence       - SubApps are started gradually.");
             console.log("");
             console.log("  -build               - Builds all apps by gradle");
             console.log("  -buildDG             - Builds Datagateway");
@@ -735,8 +736,12 @@ async function run() {
 
         if (isRun) {
             core.showMessage("Starting apps...");
+            let prevProject = null;
             for (const project of runableProjects) {
                 if (isRunPerProject[project.code]) {
+                    if (prevProject != null && cmd.runInSequence) {
+                        await waitForApplicationIsReady(prevProject);
+                    }
                     core.showMessage("Starting " + project.code);
                     if (await killProject(project)) {
                         console.log("Killed previous");
@@ -755,8 +760,9 @@ async function run() {
                         );
                     }
                     await runApp(project, cmd, isBuild);
+                    await core.delay(1000);
+                    prevProject = project;
                 }
-                await core.delay(1000);
             }
         }
         if (isRunInit) {

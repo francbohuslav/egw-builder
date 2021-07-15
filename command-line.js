@@ -140,6 +140,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-runinsequence") {
+                this.runInSequence = true;
+                this.interactively = false;
+                continue;
+            }
 
             if (ar == "-init") {
                 this.initDG = true;

@@ -40,7 +40,7 @@ class Core {
     showMessage(message) {
         console.log("\x1b[36m%s\x1b[0m", message);
         // Title
-        process.stdout.write(String.fromCharCode(27) + "]0;" + message + String.fromCharCode(7));
+        process.stdout.write(String.fromCharCode(27) + "]0;EB: " + message + String.fromCharCode(7));
     }
 
     showSuccess(message) {
