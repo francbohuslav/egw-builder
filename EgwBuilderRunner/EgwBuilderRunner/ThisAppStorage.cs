@@ -13,5 +13,11 @@ namespace EgwBuilderRunner
             get { return storager.GetValue("YourUid", "12-8835-1"); }
             set { storager.SetValue("YourUid", value); }
         }
+
+        public bool RunInSequence
+        {
+            get { return storager.GetValue("RunInSequence", "0") == "1"; }
+            set { storager.SetValue("RunInSequence", value ? "1" : "0"); }
+        }
     }
 }

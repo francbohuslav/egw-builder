@@ -8,7 +8,7 @@
         xmlns:b="clr-namespace:BoganApp.UI;assembly=BoganApp"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="EgwBuilderRunner" Height="456" MinHeight="442" MinWidth="900" Width="900" Loaded="BaseWindow_Loaded">
+        Title="EgwBuilderRunner" SizeToContent="Height" Width="965" Loaded="BaseWindow_Loaded" ResizeMode="NoResize">
 
     <Grid>
         <TextBlock x:Name="Folders" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Foreground="#FF87EFFF" Padding="5,5" Height="40" Width="321">
@@ -19,16 +19,19 @@
         <ScrollViewer Margin="10,55,0,35" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Width="321">
             <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="Loading versions..." Foreground="#FF87FF87" Padding="5"/>
         </ScrollViewer>
-        <Grid Margin="336,0,0,0">
-            <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
-            <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,10,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
-            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top">
+        <StackPanel Orientation="Vertical"  Margin="336,0,0,0">
+            <Grid>
+                <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
+                <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,10,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
+            </Grid>
+            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" />
+            <Grid>
+                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="10,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
+                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="84,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
+            </Grid>
 
-            </CheckBox>
-            <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="10,90,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
-            <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="84,92,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
-            <Grid Height="140" Margin="10,130,10,0" VerticalAlignment="Top">
+            <Grid Height="140" Margin="10,20,10,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -86,12 +89,18 @@
                 <CheckBox x:Name="Test_IEC" Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
-            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Height="18"/>
-            <Label Content="Your UID" HorizontalAlignment="Left" Margin="10,330,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
-            <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="84,332,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>
-            <Button x:Name="Start" Content="Start" Margin="0,0,10,35" FontSize="24" Height="49" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="106" Click="Start_Click"/>
-            <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="10,284,0,0" VerticalAlignment="Top" Height="18"/>
-        </Grid>
+            <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
+            <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" />
+            <Grid>
+                <Label Content="Your UID" HorizontalAlignment="Left" Margin="10,5,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
+                <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="84,7,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>
+            </Grid>
+            <Button x:Name="Start" Content="Start" Margin="0,-50,10,35" FontSize="24" Height="49" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="106" Click="Start_Click"/>
+
+        </StackPanel>
+
+
         <b:StatusBar x:Name="StatusBar" Height="25" Width="Auto" VerticalAlignment="Bottom" />
 
     </Grid>

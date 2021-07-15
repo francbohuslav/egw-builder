@@ -67,6 +67,9 @@ namespace EgwBuilderRunner
         [JsonProperty("runAS24")]
         public bool RunAS24 { get; set; }
 
+        [JsonProperty("runInSequence")]
+        public bool RunInSequence { get; set; }
+
         [JsonProperty("init")]
         public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24;
 

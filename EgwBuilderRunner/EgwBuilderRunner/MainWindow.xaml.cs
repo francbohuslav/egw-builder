@@ -27,6 +27,7 @@ namespace EgwBuilderRunner
             runner = new Runner();
 
             YourUID.Text = MyApp.AppStorage.YourUid;
+            RunInSequence.IsChecked = MyApp.AppStorage.RunInSequence;
             UpdateStatusBar();
             UpdateAfterChecked(null, null);
         }
@@ -188,6 +189,7 @@ namespace EgwBuilderRunner
                 UnitTests = UnitTests.IsChecked == true,
                 Uid = YourUID.Text,
                 InitASYNC = AsyncJob.IsChecked == true,
+                RunInSequence = RunInSequence.IsChecked == true,
 
                 BuildDG = Build_DG.IsChecked == true,
                 BuildMR = Build_MR.IsChecked == true,
@@ -234,6 +236,7 @@ namespace EgwBuilderRunner
             YourUID.Text = structure.Uid;
             YourUID_LostFocus(null, null);
             AsyncJob.IsChecked = structure.InitASYNC;
+            RunInSequence.IsChecked = structure.RunInSequence;
 
             Build_DG.IsChecked = structure.BuildDG;
             Build_MR.IsChecked = structure.BuildMR;
@@ -299,6 +302,14 @@ namespace EgwBuilderRunner
             else
             {
                 UnitTests.IsEnabled = true;
+            }
+        }
+
+        private void RunInSequence_Checked(object sender, RoutedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                MyApp.AppStorage.RunInSequence = RunInSequence.IsChecked == true;
             }
         }
     }
