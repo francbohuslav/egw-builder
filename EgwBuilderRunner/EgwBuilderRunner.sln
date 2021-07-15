@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.28307.1259
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EgwBuilderRunner", "EgwBuilderRunner\EgwBuilderRunner.csproj", "{84049410-E451-4BCB-9EC5-CCDA9BB64ADD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D71E62C0-7E3A-4B6E-8E2E-284A00A2A4B9}"
+	ProjectSection(SolutionItems) = preProject
+		Installer\installer.iss = Installer\installer.iss
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

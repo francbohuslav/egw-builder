@@ -39,5 +39,7 @@ Source: "..\EgwBuilderRunner\bin\Debug\cs\*"; DestDir: "{app}\cs"; Flags: ignore
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autoprograms}\Create {#MyAppName} link"; Filename: "{app}\{#MyAppExeName}"
 
+[Run]
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall

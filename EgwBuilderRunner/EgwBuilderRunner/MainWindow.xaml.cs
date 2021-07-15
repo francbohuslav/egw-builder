@@ -1,5 +1,9 @@
 ﻿using BoganApp.Windows;
+using IWshRuntimeLibrary;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -32,25 +36,89 @@ namespace EgwBuilderRunner
             UpdateAfterChecked(null, null);
         }
 
-        private void BaseWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
-            Console.Text = version;
-            if (version.Contains(" 1.1") || version.Contains(" 2.0") || version.Contains(" 2.1"))
+            if (MyApp.EgwFolder == null)
             {
-                hasIEC = false;
-                hasAS24 = false;
+                await Task.Delay(1);
+                Wizzard();
             }
-            if (!hasIEC)
+            else
             {
-                IEC.IsEnabled = false;
-                ForProject("IEC", ch => ch.IsEnabled = false);
+                Console.Text = "Loading versions...";
+                var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+                Console.Text = version;
+                if (version.Contains(" 1.1") || version.Contains(" 2.0") || version.Contains(" 2.1"))
+                {
+                    hasIEC = false;
+                    hasAS24 = false;
+                }
+                if (!hasIEC)
+                {
+                    IEC.IsEnabled = false;
+                    ForProject("IEC", ch => ch.IsEnabled = false);
+                }
+                if (!hasAS24)
+                {
+                    AS24.IsEnabled = false;
+                    ForProject("AS24", ch => ch.IsEnabled = false);
+                }
             }
-            if (!hasAS24)
+        }
+
+        private void Wizzard()
+        {
+            var result = MessageBox.Show("Hi. You must give me paths to your builder and EGW project. Can I run wizzard to create start link?",
+                    MyApp.AppSettings.ApplicationNameWithVersion,
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.OK
+                    );
+            if (result != MessageBoxResult.OK)
             {
-                AS24.IsEnabled = false;
-                ForProject("AS24", ch => ch.IsEnabled = false);
+                Environment.Exit(1);
             }
+
+            string builderFolder = null;
+            using (var folderDialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                MyApp.ShowMessage("Step 1: Give me EGW builder folder.");
+                folderDialog.ShowNewFolderButton = false;
+                var folderResult = folderDialog.ShowDialog();
+                if (folderResult != System.Windows.Forms.DialogResult.OK)
+                {
+                    Environment.Exit(2);
+                }
+                builderFolder = folderDialog.SelectedPath;
+
+            }
+            string egwFolder = null;
+            using (var folderDialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                MyApp.ShowMessage("Step 2: Give me folder with EGW subApps.");
+                folderDialog.ShowNewFolderButton = false;
+                var folderResult = folderDialog.ShowDialog();
+                if (folderResult != System.Windows.Forms.DialogResult.OK)
+                {
+                    Environment.Exit(2);
+                }
+                egwFolder = folderDialog.SelectedPath;
+            }
+
+            var fileName = PromptWindow.Show("Step 3: Name of lnk file", "EGW builder", "Enter filename without extension");
+
+            var shell = new WshShell();
+            string shortcutAddress = Path.Combine(egwFolder, fileName) + ".lnk";
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutAddress);
+            shortcut.TargetPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            shortcut.WorkingDirectory = MyApp.ExeDir;
+            shortcut.IconLocation = System.Reflection.Assembly.GetExecutingAssembly().Location + ",0";
+            shortcut.Arguments = $"\"{builderFolder}\" \"{egwFolder}\"";
+            shortcut.Save();
+
+            MyApp.ShowMessage("Link created. I am going to open target folder and you can use it. Bye.");
+            Process.Start(egwFolder);
+            Environment.Exit(0);
         }
 
         private void UpdateStatusBar()

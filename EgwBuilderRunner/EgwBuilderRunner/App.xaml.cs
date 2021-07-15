@@ -11,7 +11,7 @@ namespace EgwBuilderRunner
     /// </summary>
     public partial class App : BaseApplication
     {
-        public new ThisAppStorage AppStorage { get { return (ThisAppStorage)base.AppStorage; } }
+        public new ThisAppStorage AppStorage => base.AppStorage as ThisAppStorage;
 
         public string BuilderFolder { get; set; }
         public string EgwFolder { get; set; }
@@ -28,13 +28,7 @@ namespace EgwBuilderRunner
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if (e.Args.Length < 2)
-            {
-                ShowMessage("App needs two arguments. Path to builder and path to EGW folder.", MessageBoxImage.Error);
-                ShowMessage(string.Join(" ", e.Args));
-                Environment.Exit(1);
-            }
-            else
+            if (e.Args.Length > 1)
             {
                 BuilderFolder = Path.GetFullPath(e.Args[0]);
                 EgwFolder = Path.GetFullPath(e.Args[1]);

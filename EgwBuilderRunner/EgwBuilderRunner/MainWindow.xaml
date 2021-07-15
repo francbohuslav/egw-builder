@@ -12,12 +12,12 @@
 
     <Grid>
         <TextBlock x:Name="Folders" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Foreground="#FF87EFFF" Padding="5,5" Height="40" Width="321">
-            EGW: fsfsdf sd
+            EGW: ...
             <LineBreak />
-            Builder: fsdfsd
+            Builder: ...
         </TextBlock>
         <ScrollViewer Margin="10,55,0,35" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Width="321">
-            <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="Loading versions..." Foreground="#FF87FF87" Padding="5"/>
+            <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="" Foreground="#FF87FF87" Padding="5"/>
         </ScrollViewer>
         <StackPanel Orientation="Vertical" Margin="346,10,10,36">
             <Grid>
@@ -90,7 +90,7 @@
                 <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <TextBlock Width="69" >Special tests:</TextBlock>
+                <TextBlock Width="74" >Special tests:</TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0" >
                     <CheckBox Content="Quick" x:Name="Test_QUICK" />
                 </StackPanel>
