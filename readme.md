@@ -1,6 +1,6 @@
 # EGW builder
 
-Cleaner, builder, initializer, tester of EnergyGateway
+Cleaner, builder, initializer, tester of Energy Gateway
 
 Home page: <https://github.com/francbohuslav/egw-builder>  
 Skype: [cis_franc](skype:cis_franc), E-mail: [bohuslav.franc@unicornuniverse.eu](bohuslav.franc@unicornuniverse.eu)
@@ -9,8 +9,7 @@ Skype: [cis_franc](skype:cis_franc), E-mail: [bohuslav.franc@unicornuniverse.eu]
 
 ## Preparation
 
-[Node.js](https://nodejs.org/) must be installed. Sorry, but for now it works only on Windows.  
-Builder was fully tested with EGW version 1.1. Sprint should work also, but maybe `init` and `test*` will not work. Support for sprint will be done soon.
+[Node.js](https://nodejs.org/) must be installed. Sorry, but for now it works only on Windows.
 
 Builder supports this EGW projects, which are hosted in UU Codebase GIT repository:
 
@@ -40,13 +39,25 @@ Custom folder is supported. Look into `config.default.js` file and follow instru
 ## Instalation
 
 1. Clone GIT repository https://github.com/francbohuslav/egw-builder.git.
-2. Install node modules by command `npm i` from folder of builder.
+2. Run `pull_and_build.bat` from folder of builder. You can use this command also for update. It will...
+    1. Pull new version from git
+    2. Build console application
+    3. Install GUI application
+    4. Run GUI application to create execution link. Can be skipped if already created.
 
 ---
 
 ## Usage
 
-Run command `node index`.
+### GUI
+
+You can run **Create EgwBuilderRunner link** app from Windows start menu. It will create link to EGW folder that executes GUI.
+
+![GUI screenshot](GUI-screenshot.png)
+
+### Console version
+
+Run command `node index`. It is recommended to create bat files for repeated tasks.
 
 ### Options
 
@@ -103,7 +114,7 @@ You will be asked interactively if there is none of options (except folder) used
 
 ---
 
-## Common scenarios
+### Common scenarios
 
 Below there are some common scenarios.
 
