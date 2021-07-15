@@ -250,6 +250,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-testquick") {
+                this.testQuick = true;
+                this.interactively = false;
+                continue;
+            }
         }
     }
 

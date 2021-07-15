@@ -378,18 +378,25 @@ async function cleanDockers() {
 /**
  * @param {IProject} project
  */
-async function runTests(project, isVersion11) {
-    await waitForApplicationIsReady(project);
-
-    const resultsFile = "logs/testResults" + project.code + ".xml";
-    const logFile = "logs/testLogs" + project.code + ".log";
+async function runProjectTests(project, isProjectTest, isVersion11) {
+    let projectCode = project;
+    let testFile = null;
+    if (isProjectTest) {
+        await waitForApplicationIsReady(project);
+        projectCode = project.code;
+        testFile = project.testFile;
+    } else {
+        testFile = project.toLowerCase() + "_test.jmx";
+    }
+    const resultsFile = "logs/testResults" + projectCode + ".xml";
+    const logFile = "logs/testLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
     const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
-    let restStr = "-n -t " + project.testFile + " -j " + logFile + " ";
+    let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder.cfg";
     const rest = restStr.split(" ");
     rest.push("-Jftp_data_dir=/ftpdata");
@@ -542,6 +549,7 @@ async function run() {
             console.log("  -testECP             - Tests ECP endpoint by jmeter");
             console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
             console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
+            console.log("  -testQuick           - Run quick test (DG, MR, FTP must be running)");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -665,7 +673,7 @@ async function run() {
         // Tests
         const isTests = cmd.interactively
             ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24;
+            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24 || cmd.testQuick;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -679,6 +687,7 @@ async function run() {
         const isTestsECP = isTests && cmd.getCmdValue("testECP", "... ECP?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
         const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
+        const isTestsQuick = isTests && cmd.getCmdValue("testQuick", "... Quick?");
 
         if (!cmd.last) {
             last.saveSettings(cmd);
@@ -831,21 +840,24 @@ async function run() {
                     isTestsECP ? ECP : null,
                     isTestsIEC62325 ? IEC62325 : null,
                     isTestsAS24 ? AS24 : null,
+                    isTestsQuick ? "QUICK" : null,
                 ]) {
                     if (project) {
-                        core.showMessage(`Testing ${project.code}`);
-                        const report = await runTests(project, isVersion11);
+                        const isProjectTest = project != "QUICK";
+                        const testCode = isProjectTest ? project.code : project;
+                        core.showMessage(`Testing ${testCode}`);
+                        const report = await runProjectTests(project, isProjectTest, isVersion11);
                         if (report.newFailed.length) {
-                            newFailed[project.code] = report.newFailed;
+                            newFailed[testCode] = report.newFailed;
                         }
                         if (report.newPassed.length) {
-                            newPassed[project.code] = report.newPassed;
+                            newPassed[testCode] = report.newPassed;
                         }
                         if (report.knownFailed.length) {
-                            knownFailed[project.code] = report.knownFailed;
+                            knownFailed[testCode] = report.knownFailed;
                         }
-                        const projectPassedTests = report.newPassed.length ? { [project.code]: report.newPassed } : {};
-                        const projectFailedTests = report.newFailed.length ? { [project.code]: report.newFailed } : {};
+                        const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
+                        const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
                         tests.showFailedTests(projectPassedTests, projectFailedTests);
                     }
                 }
