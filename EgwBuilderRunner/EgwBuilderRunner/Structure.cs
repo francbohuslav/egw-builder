@@ -124,6 +124,7 @@ namespace EgwBuilderRunner
         [JsonProperty("testAS24")]
         public bool TestAS24 { get; set; }
 
-
+        [JsonProperty("testQuick")]
+        public bool TestQUICK { get; set; }
     }
 }

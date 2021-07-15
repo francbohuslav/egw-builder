@@ -159,6 +159,7 @@ namespace EgwBuilderRunner
             SetOperation("Init", false);
             SetOperation("Test", false);
             AsyncJob.IsChecked = false;
+            Test_QUICK.IsChecked = false;
             UpdateAfterChecked(null, null);
         }
 
@@ -222,6 +223,7 @@ namespace EgwBuilderRunner
                 TestECP = Test_ECP.IsChecked == true,
                 TestIEC62325 = Test_IEC.IsChecked == true,
                 TestAS24 = Test_AS24.IsChecked == true,
+                TestQUICK = Test_QUICK.IsChecked == true
             };
         }
 
@@ -269,6 +271,7 @@ namespace EgwBuilderRunner
             Test_ECP.IsChecked = structure.TestECP;
             Test_IEC.IsChecked = structure.TestIEC62325;
             Test_AS24.IsChecked = structure.TestAS24;
+            Test_QUICK.IsChecked = structure.TestQUICK;
         }
 
         private void Last_Click(object sender, RoutedEventArgs e)

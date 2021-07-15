@@ -19,19 +19,19 @@
         <ScrollViewer Margin="10,55,0,35" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Width="321">
             <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="Loading versions..." Foreground="#FF87FF87" Padding="5"/>
         </ScrollViewer>
-        <StackPanel Orientation="Vertical"  Margin="336,0,0,0">
+        <StackPanel Orientation="Vertical" Margin="346,10,10,36">
             <Grid>
-                <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
-                <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,10,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
+                <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
+                <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,0,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
             </Grid>
-            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" />
+            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
             <Grid>
-                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="10,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
-                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="84,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
+                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="0,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
+                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
             </Grid>
 
-            <Grid Height="140" Margin="10,20,10,0" VerticalAlignment="Top">
+            <Grid Height="140" Margin="0,20,0,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -89,14 +89,20 @@
                 <CheckBox x:Name="Test_IEC" Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
-            <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
-            <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" />
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <TextBlock Width="69" >Special tests:</TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,0" >
+                    <CheckBox Content="Quick" x:Name="Test_QUICK" />
+                </StackPanel>
+            </StackPanel>
+            <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
+            <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
             <Grid>
-                <Label Content="Your UID" HorizontalAlignment="Left" Margin="10,5,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
-                <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="84,7,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>
+                <Label Content="Your UID" HorizontalAlignment="Left" Margin="0,5,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
+                <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>
             </Grid>
-            <Button x:Name="Start" Content="Start" Margin="0,-50,10,35" FontSize="24" Height="49" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="106" Click="Start_Click"/>
+            <Button x:Name="Start" Content="Start" Margin="0,-50,0,0" FontSize="24" Height="49" HorizontalAlignment="Right" Width="106" Click="Start_Click"/>
 
         </StackPanel>
 
