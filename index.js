@@ -239,7 +239,7 @@ function setProjectsVersions(newVersion) {
  * @param {IProject} project
  */
 async function waitForApplicationIsReady(project) {
-    const seconds = 180;
+    const seconds = 300;
     const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`;
     for (let counter = seconds; counter > 0; counter -= 2) {
         try {
