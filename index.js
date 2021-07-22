@@ -428,18 +428,33 @@ async function runProjectTests(project, isProjectTest, isVersion11) {
 
 function cloneDataGatewayForIec() {
     const settings = core.readTextFile(`${IEC62325.folder}/settings.gradle`);
-    const match = settings.match(new RegExp(`${DG.folder}[^\\"]*`));
-    if (!match) {
+    const matches = [...settings.matchAll(new RegExp(`${DG.folder}[^\\"']*`, "g"))];
+    if (!matches || matches.length == 0) {
         core.showError(`Can not find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
         return;
     }
-    if (match[0] == DG.folder) {
-        core.showError(
-            `File ${IEC62325.folder}/settings.gradle leads to original DG folder. Copy of DG for IEC62325 will not be not created. Modify path to DG in ${IEC62325.folder}/settings.gradle and builder creates copy of DG for you.`
-        );
-        return;
+    let preferedFolder = "";
+    let firstNotExistingFolder = "";
+    for (let i = 0; i < matches.length; i++) {
+        const folder = matches[i][0];
+        if (folder == DG.folder) {
+            if (firstNotExistingFolder || preferedFolder) {
+                break;
+            }
+            core.showError(
+                `File ${IEC62325.folder}/settings.gradle leads to original DG folder. Copy of DG for IEC62325 will not be not created.\n` +
+                    `Modify path to DG in ${IEC62325.folder}/settings.gradle and builder creates copy of DG for you. Condition to copy of DG must be before original DG folder.`
+            );
+            return;
+        }
+        if (!firstNotExistingFolder) {
+            firstNotExistingFolder = folder;
+        }
+        if (!preferedFolder && fs.existsSync(folder)) {
+            preferedFolder = folder;
+        }
     }
-    const dgCopyFolder = match[0];
+    const dgCopyFolder = preferedFolder || firstNotExistingFolder;
     if (fs.existsSync(dgCopyFolder)) {
         core.showMessage(`Removing old ${dgCopyFolder}...`);
         fse.removeSync(dgCopyFolder);
