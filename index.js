@@ -773,9 +773,10 @@ async function run() {
                     if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
                         cloneDataGatewayForIec();
                     }
-                    if (project.code == AS24.code) {
-                        await waitForApplicationIsReady(DG);
-                    }
+                    // Commented. I can not remember reason why to do that/
+                    // if (project.code == AS24.code) {
+                    //     await waitForApplicationIsReady(DG);
+                    // }
                     if (project.code === MR.code) {
                         console.log("Copying tests-uu5-environment.json to server/public");
                         fs.copyFileSync(
