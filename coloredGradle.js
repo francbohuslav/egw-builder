@@ -33,6 +33,7 @@ fs.open(logFile, "w", function (err, fd) {
 });
 
 let isError = false;
+let prefIsError = false;
 let isRunning = false;
 let stackTraceLine = 0;
 let color = "";
@@ -73,7 +74,9 @@ function printLine(line, fd) {
     } else {
         color = Colors.FgWhite;
     }
-
+    if (!prefIsError && isError && isRunning) {
+        title("ERROR");
+    }
     logToFile(fd, line);
     const shortLine = shortText(line);
 
@@ -93,6 +96,7 @@ function printLine(line, fd) {
         }
     }
     prevLineTime = now;
+    prefIsError = isError;
 }
 
 function updateLineFromDocker(line) {
