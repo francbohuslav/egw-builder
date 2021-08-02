@@ -34,6 +34,7 @@ fs.open(logFile, "w", function (err, fd) {
 
 let isError = false;
 let prefIsError = false;
+let containsError = false;
 let isRunning = false;
 let stackTraceLine = 0;
 let color = "";
@@ -57,7 +58,9 @@ function printLine(line, fd) {
     if (line.indexOf("Started SubAppRunner") > -1) {
         color = Colors.FgYellow;
         isRunning = true;
-        title("");
+        if (!containsError) {
+            title("");
+        }
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
         color = Colors.FgCyan;
     } else if (
@@ -74,7 +77,8 @@ function printLine(line, fd) {
     } else {
         color = Colors.FgWhite;
     }
-    if (!prefIsError && isError && isRunning) {
+    if (!prefIsError && isError) {
+        containsError = true;
         title("ERROR");
     }
     logToFile(fd, line);
