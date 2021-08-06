@@ -33,7 +33,8 @@ fs.open(logFile, "w", function (err, fd) {
 });
 
 let isError = false;
-let prefIsError = false;
+let isErrorToInform = false;
+let prevIsErrorToInform = false;
 let containsError = false;
 let isRunning = false;
 let stackTraceLine = 0;
@@ -54,6 +55,7 @@ function printLine(line, fd) {
         isError = false;
         stackTraceLine = 0;
     }
+    isErrorToInform = isError ? !isLowPriorityError(line) : false;
 
     if (line.indexOf("Started SubAppRunner") > -1) {
         color = Colors.FgYellow;
@@ -77,7 +79,7 @@ function printLine(line, fd) {
     } else {
         color = Colors.FgWhite;
     }
-    if (!prefIsError && isError) {
+    if (!prevIsErrorToInform && isErrorToInform) {
         containsError = true;
         title("ERROR");
     }
@@ -88,19 +90,21 @@ function printLine(line, fd) {
     if (now - prevLineTime > 10 * 1000) {
         console.log();
     }
-    if (isError) {
-        if (stackTraceLine < 5) {
-            console.log("\x1b[" + Colors.FgRed + "m%s\x1b[0m", shortLine);
-        }
-    } else if (isLoggableLine(shortLine)) {
-        if (isRunning) {
-            console.log("\x1b[" + Colors.FgYellow + "m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
+    if (isLoggableLine(shortLine)) {
+        if (isError) {
+            if (stackTraceLine < 5) {
+                console.log("\x1b[" + Colors.FgRed + "m%s\x1b[0m", shortLine);
+            }
         } else {
-            console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
+            if (isRunning) {
+                console.log("\x1b[" + Colors.FgYellow + "m| \x1b[0m\x1b[%sm%s\x1b[0m", color, shortLine);
+            } else {
+                console.log("\x1b[%sm%s\x1b[0m", color, shortLine);
+            }
         }
     }
     prevLineTime = now;
-    prefIsError = isError;
+    prevIsErrorToInform = isErrorToInform;
 }
 
 function updateLineFromDocker(line) {
@@ -161,6 +165,8 @@ function isLoggableLine(shortLine) {
         /OidcAuthentication.*authenticate invoked/,
         /\.OidcSession.*Initializing Identity and Client Application Identity values\./,
         /AuthenticationHandler - Creating new session with request 'SecurityContextHolderAwareRequestWrapper.*' and response 'org.springframework.security.web.header.HeaderWriterFilter/,
+        /WARN.*ClientCredentialsHandler.*Missing configuration of OidcClient for a[ws]id.*and service oidcg02. Using/,
+        /ERROR.*ClientCredentialsHandler.*Use case context not available, unable to get awid. Using/,
     ];
     for (let i = 0; i < patterns.length; i++) {
         if (shortLine.match(patterns[i])) {
@@ -187,6 +193,13 @@ function isUnImportantLine(line) {
         }
     }
 
+    return false;
+}
+
+function isLowPriorityError(line) {
+    if (line.indexOf("Mappings.json not found on path") > -1) {
+        return true;
+    }
     return false;
 }
 

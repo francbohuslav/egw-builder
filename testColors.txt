@@ -1,13 +1,17 @@
-| 17:21:20.291 DEBUG uu...OidcAuthentication - #authenticate invoked
-| 17:21:20.295 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
-| 17:21:20.327 DEBUG uu...OidcAuthentication - #authenticate invoked
-| 17:21:20.331 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
-| 17:21:20.452 DEBUG uu...FtpController - uuCMD ftp/receive finished
-| 17:21:20.717 DEBUG uu...AuthenticationHandler - Creating new session with request 'SecurityContextHolderAwareRequestWrapper[ FirewalledRequest[ org...RequestFacade@4b831cb1]]' and response 'org.springframework.security.web.header.HeaderWriterFilter$HeaderWriterResponse@16171b87'
-| 17:21:20.717 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
-| 17:21:20.719 INFO  uu...JobPlanController - Executing callback after execution of EVERYTWSEC_AUTOMAT job with jobId 60b10a6b7401b1000c0bb95a and state COMPLETED
-| 17:21:20.719 INFO  uu...JobPlanModel - jobPlan started with DTO in uu...JobPlanDtoIn@d52e76f[jobCode=EVERYTWSEC_AUTOMAT,jobCodeToCancelList=<null>]
-| 17:21:20.719 DEBUG uu...OidcAuthentication - #authenticate invoked
-| 17:21:20.723 DEBUG uu...OidcSession - Initializing Identity and Client Application Identity values.
-| 17:21:20.753 INFO  uu...JobPlanModel - creating job EVERYTWSEC_AUTOMAT for QUEUE_FOR_TESTS to start at 2021-05-28T15:21:25Z
-| 17:21:20.941 INFO  uu...AsyncJobHelper - New job for QUEUE_FOR_TESTS has been created with id 60b10a707401b1000c0bb964 to run at 2021-05-28T15:21:25Z.
+08:58:32.132 [http-nio-8094-exec-5] INFO  processIncomingAcknowledgementSubRoute - calling incomingAcknowledgementProcessorProcessor
+08:58:32.140 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for awid  01000000000000000000000000000001 and service oidcg02. Using OidcClient from asid.
+08:58:32.140 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for asid  01000000000000000000000000000000 and service oidcg02. Using default OidcClient from configuration.
+08:58:32.173 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for awid  01000000000000000000000000000001 and service oidcg02. Using OidcClient from asid.
+08:58:32.173 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for asid  01000000000000000000000000000000 and service oidcg02. Using default OidcClient from configuration.
+08:58:32.193 [http-nio-8094-exec-5] INFO  uu.energygateway.datagateway.datagathering.processor.IncomingAcknowledgementProcessorProcessorBean - AWID: 02000000000000000000000000000001 | MessageId: 610cdd97b1d6cf213b0db19e | Message acknowledged with message `610cdd90b1d6cf213b0db18c`
+08:58:32.193 [http-nio-8094-exec-5] INFO  processIncomingAcknowledgementSubRoute - calling linkIncomingAcknowledgementProcessor
+08:58:32.194 [http-nio-8094-exec-5] INFO  uu.energygateway.common.MessageBrokerPublisher - Publishing message to `dfg_incoming_acknowledgement` channel.
+08:58:32.198 [http-nio-8094-exec-5] INFO  processIncomingAcknowledgementSubRoute - AWID: 02000000000000000000000000000001 | MessageId: 610cdd97b1d6cf213b0db19e | Finished ProcessIncomingAcknowledgementSubRoute route
+08:58:32.199 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for awid  01000000000000000000000000000001 and service oidcg02. Using OidcClient from asid.
+08:58:32.199 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for asid  01000000000000000000000000000000 and service oidcg02. Using default OidcClient from configuration.
+08:58:32.221 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for awid  01000000000000000000000000000001 and service oidcg02. Using OidcClient from asid.
+08:58:32.221 [http-nio-8094-exec-5] WARN  uu.app.authentication.oidc.abl.ClientCredentialsHandler - Missing configuration of OidcClient for asid  01000000000000000000000000000000 and service oidcg02. Using default OidcClient from configuration.
+08:58:32.240 [http-nio-8094-exec-5] INFO  uu.energygateway.common.MessageBrokerPublisher - Publishing message to `dfg_message_validated_notification` channel.
+08:58:32.243 [http-nio-8094-exec-5] INFO  uu.energygateway.datagateway.datagathering.processor.StoreMessageValidationsProcessorBean - AWID: 02000000000000000000000000000001 | MessageId: 610cdd97b1d6cf213b0db19e | Message validations stored. Count of validation is `3`
+08:58:32.243 [http-nio-8094-exec-5] INFO  basicIncomingMessageRoute - AWID: 02000000000000000000000000000001 | MessageId: 610cdd97b1d6cf213b0db19e | Finished BasicIncomingMessageRoute route
+09:00:02.931 [MaintenanceTimer-1-thread-1] INFO  org.mongodb.driver.connection - Closed connection [connectionId{localValue:2, serverValue:11}] to 127.0.0.1:27017 because it is past its maximum allowed idle time.
