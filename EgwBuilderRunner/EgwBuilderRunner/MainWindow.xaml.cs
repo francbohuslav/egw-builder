@@ -32,6 +32,7 @@ namespace EgwBuilderRunner
 
             YourUID.Text = MyApp.AppStorage.YourUid;
             RunInSequence.IsChecked = MyApp.AppStorage.RunInSequence;
+            CloseApplicationAfterRun.IsChecked = MyApp.AppStorage.CloseApplicationAfterRun;
             UpdateStatusBar();
             UpdateAfterChecked(null, null);
         }
@@ -244,7 +245,10 @@ namespace EgwBuilderRunner
             var structure = GetStructure();
             lastSaver.Save(structure);
             runner.Run(MyApp.BuilderFolder);
-            Close();
+            if (MyApp.AppStorage.CloseApplicationAfterRun)
+            {
+                Close();
+            }
         }
 
         private Structure GetStructure()
@@ -381,6 +385,14 @@ namespace EgwBuilderRunner
             if (IsLoaded)
             {
                 MyApp.AppStorage.RunInSequence = RunInSequence.IsChecked == true;
+            }
+        }
+
+        private void CloseApplicationAfterRun_Checked(object sender, RoutedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                MyApp.AppStorage.CloseApplicationAfterRun = CloseApplicationAfterRun.IsChecked == true;
             }
         }
     }

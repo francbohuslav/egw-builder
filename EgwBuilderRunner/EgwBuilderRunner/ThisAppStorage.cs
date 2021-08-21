@@ -19,5 +19,12 @@ namespace EgwBuilderRunner
             get { return storager.GetValue("RunInSequence", "0") == "1"; }
             set { storager.SetValue("RunInSequence", value ? "1" : "0"); }
         }
+
+        public bool CloseApplicationAfterRun
+        {
+            get { return storager.GetValue("CloseApplicationAfterRun", "1") == "1"; }
+            set { storager.SetValue("CloseApplicationAfterRun", value ? "1" : "0"); }
+        }
+
     }
 }
