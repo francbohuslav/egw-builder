@@ -38,8 +38,6 @@ class CommandLine {
                 this.buildFTP = true;
                 this.buildEMAIL = true;
                 this.buildECP = true;
-                this.buildIEC62325 = true;
-                this.buildAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -68,16 +66,6 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-buildiec62325") {
-                this.buildIEC62325 = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-buildas24") {
-                this.buildAS24 = true;
-                this.interactively = false;
-                continue;
-            }
             if (ar == "-unittests") {
                 this.unitTests = true;
                 this.interactively = false;
@@ -95,8 +83,6 @@ class CommandLine {
                 this.runFTP = true;
                 this.runEMAIL = true;
                 this.runECP = true;
-                this.runIEC62325 = true;
-                this.runAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -125,16 +111,6 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-runiec62325") {
-                this.runIEC62325 = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-runas24") {
-                this.runAS24 = true;
-                this.interactively = false;
-                continue;
-            }
 
             if (ar == "-init") {
                 this.initDG = true;
@@ -142,8 +118,6 @@ class CommandLine {
                 this.initFTP = true;
                 this.initEMAIL = true;
                 this.initECP = true;
-                this.initIEC62325 = true;
-                this.initAS24 = true;
                 this.initASYNC = true;
                 this.uid = pars.shift();
                 this.interactively = false;
@@ -175,16 +149,6 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-initiec62325") {
-                this.initIEC62325 = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-initas24") {
-                this.initAS24 = true;
-                this.interactively = false;
-                continue;
-            }
             if (ar == "-initasync") {
                 this.initASYNC = true;
                 this.interactively = false;
@@ -196,9 +160,6 @@ class CommandLine {
                 this.testMR = true;
                 this.testFTP = true;
                 this.testEMAIL = true;
-                this.testECP = true;
-                this.testIEC62325 = true;
-                this.testAS24 = true;
                 this.interactively = false;
                 continue;
             }
@@ -219,21 +180,6 @@ class CommandLine {
             }
             if (ar == "-testemail") {
                 this.testEMAIL = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-testecp") {
-                this.testECP = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-testiec62325") {
-                this.testIEC62325 = true;
-                this.interactively = false;
-                continue;
-            }
-            if (ar == "-testas24") {
-                this.testAS24 = true;
                 this.interactively = false;
                 continue;
             }
