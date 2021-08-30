@@ -818,12 +818,6 @@ async function run() {
                     await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
                         await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`);
                     });
-                    if (project == AS24) {
-                        core.showMessage(`Killing ${project.code}`);
-                        if (await killProject(project)) {
-                            await runApp(project, cmd, isBuild);
-                        }
-                    }
                 }
             }
             if (isVersion11) {
