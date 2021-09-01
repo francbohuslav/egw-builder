@@ -19,7 +19,7 @@
         <ScrollViewer Margin="10,55,0,60" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Width="321">
             <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="" Foreground="#FF87FF87" Padding="5"/>
         </ScrollViewer>
-        <CheckBox x:Name="CloseApplicationAfterRun" Content="Close application after execution" HorizontalAlignment="Left" Margin="10,386,0,0" VerticalAlignment="Top" Checked="CloseApplicationAfterRun_Checked" Unchecked="CloseApplicationAfterRun_Checked" />
+        <CheckBox x:Name="CloseApplicationAfterRun" Content="Close application after execution" HorizontalAlignment="Left" Margin="10,0,0,36" VerticalAlignment="Bottom" Checked="CloseApplicationAfterRun_Checked" Unchecked="CloseApplicationAfterRun_Checked" />
 
         <StackPanel Orientation="Vertical" Margin="346,10,10,36">
             <Grid>
