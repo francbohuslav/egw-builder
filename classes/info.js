@@ -8,7 +8,7 @@ class Info {
             JSON.stringify(
                 {
                     projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile })),
-                    additionalTests: [],
+                    additionalTests: ["QUICK"],
                 },
                 null,
                 2

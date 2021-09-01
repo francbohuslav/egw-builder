@@ -97,7 +97,7 @@ const projects = [
         server: "uu_energygatewayg01_ecpendpoint-server",
         port: 8097,
         webname: "uu-energygatewayg01-ecpendpoint",
-        testFile: "ecp_endpoint.jmx",
+        //TODO: vratit testFile: "ecp_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
     },

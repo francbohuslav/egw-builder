@@ -1,8 +1,11 @@
-﻿using BoganApp.Windows;
+﻿using BoganApp.Core;
+using BoganApp.Windows;
 using IWshRuntimeLibrary;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,8 +21,9 @@ namespace EgwBuilderRunner
         private LastSaver lastSaver;
         private Runner runner;
 
-        private bool hasAS24 = true;
-        private bool hasIEC = true;
+        private InfoStructure info = new InfoStructure();
+
+        private List<AdditionalTestModel> additionalTestModels = new List<AdditionalTestModel>();
 
         public MainWindow()
         {
@@ -47,22 +51,27 @@ namespace EgwBuilderRunner
             else
             {
                 Console.Text = "Loading versions...";
-                var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
-                Console.Text = version;
-                if (version.Contains(" 1.1") || version.Contains(" 2.0") || version.Contains(" 2.1"))
+                try
                 {
-                    hasIEC = false;
-                    hasAS24 = false;
+                    var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    info = runner.GetInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    Console.Text = version;
+                    additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
+                    AdditionalTests.ItemsSource = additionalTestModels;
+                    if (!info.ContainsProject("IEC62325"))
+                    {
+                        IEC.IsEnabled = false;
+                        ForProject("IEC", ch => ch.IsEnabled = false);
+                    }
+                    if (!info.ContainsProject("AS24"))
+                    {
+                        AS24.IsEnabled = false;
+                        ForProject("AS24", ch => ch.IsEnabled = false);
+                    }
                 }
-                if (!hasIEC)
+                catch (Exception ex)
                 {
-                    IEC.IsEnabled = false;
-                    ForProject("IEC", ch => ch.IsEnabled = false);
-                }
-                if (!hasAS24)
-                {
-                    AS24.IsEnabled = false;
-                    ForProject("AS24", ch => ch.IsEnabled = false);
+                    Console.Text = "Error: " + ex.Message + "\n" + ex.StackTrace;
                 }
             }
         }
@@ -208,11 +217,11 @@ namespace EgwBuilderRunner
             (FindName(operation + "_FTP") as CheckBox).IsChecked = on;
             (FindName(operation + "_EMAIL") as CheckBox).IsChecked = on;
             (FindName(operation + "_ECP") as CheckBox).IsChecked = on;
-            if (hasIEC)
+            if (info.ContainsProject("IEC62325"))
             {
                 (FindName(operation + "_IEC") as CheckBox).IsChecked = on;
             }
-            if (hasAS24)
+            if (info.ContainsProject("AS24"))
             {
                 (FindName(operation + "_AS24") as CheckBox).IsChecked = on;
             }
@@ -228,7 +237,7 @@ namespace EgwBuilderRunner
             SetOperation("Init", false);
             SetOperation("Test", false);
             AsyncJob.IsChecked = false;
-            Test_QUICK.IsChecked = false;
+            additionalTestModels.ForEach(a => a.IsChecked = false);
             UpdateAfterChecked(null, null);
         }
 
@@ -253,7 +262,7 @@ namespace EgwBuilderRunner
 
         private Structure GetStructure()
         {
-            return new Structure
+            var structure = new Structure
             {
                 Folder = MyApp.EgwFolder,
                 Version = Setversion.Text,
@@ -295,8 +304,9 @@ namespace EgwBuilderRunner
                 TestECP = Test_ECP.IsChecked == true,
                 TestIEC62325 = Test_IEC.IsChecked == true,
                 TestAS24 = Test_AS24.IsChecked == true,
-                TestQUICK = Test_QUICK.IsChecked == true
             };
+            additionalTestModels.ForEach(a => structure.GetType().GetProperty("Test" + a.Name)?.SetValue(structure, a.IsChecked));
+            return structure;
         }
 
         private void SetStructure(Structure structure)
@@ -343,7 +353,11 @@ namespace EgwBuilderRunner
             Test_ECP.IsChecked = structure.TestECP;
             Test_IEC.IsChecked = structure.TestIEC62325;
             Test_AS24.IsChecked = structure.TestAS24;
-            Test_QUICK.IsChecked = structure.TestQUICK;
+            additionalTestModels.ForEach(a =>
+            {
+                var type = structure.GetType().GetProperty("Test" + a.Name);
+                a.IsChecked = type != null && (bool)type.GetValue(structure);
+            });
         }
 
         private void Last_Click(object sender, RoutedEventArgs e)
@@ -397,4 +411,18 @@ namespace EgwBuilderRunner
         }
     }
 
+    internal class AdditionalTestModel : BindableBase
+    {
+
+        private bool isChecked;
+        public bool IsChecked { get => isChecked; set { isChecked = value; RaisePropertyChanged(); } }
+
+        public string Name { get; }
+
+
+        public AdditionalTestModel(string name)
+        {
+            Name = name;
+        }
+    }
 }
