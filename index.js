@@ -12,6 +12,7 @@ const last = require("./last");
 const metamodel = require("./classes/metamodel");
 
 let config = require("./config.default");
+const info = require("./classes/info");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -515,12 +516,12 @@ async function run() {
             core.showError("Terminated by user");
         }
         cmd.folder = path.resolve(cmd.folder);
-        if (!cmd.getVersions) {
+        if (cmd.enableConsole) {
             core.showMessage(`Using folder ${cmd.folder}`);
         }
         process.chdir(cmd.folder);
         const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
-        if (isVersion11 && !cmd.getVersions) {
+        if (isVersion11 && cmd.enableConsole) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
 
@@ -537,6 +538,10 @@ async function run() {
             if (cmd.getVersions) {
                 return;
             }
+        }
+        if (cmd.getInfo) {
+            info.getInfo(projects);
+            return;
         }
         // console.log(cmd);
         // console.log(cmd.version);
