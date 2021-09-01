@@ -58,7 +58,8 @@ namespace EgwBuilderRunner
                     Console.Text = version;
                     additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
-                    if (!info.ContainsProject("IEC62325"))
+
+                    if (!info.ContainsProject("IEC"))
                     {
                         IEC.IsEnabled = false;
                         ForProject("IEC", ch => ch.IsEnabled = false);
@@ -67,6 +68,13 @@ namespace EgwBuilderRunner
                     {
                         AS24.IsEnabled = false;
                         ForProject("AS24", ch => ch.IsEnabled = false);
+                    }
+                    foreach (var project in info.Projects)
+                    {
+                        if (!project.SupportTests)
+                        {
+                            (FindName("Test_" + project.CodeForComponent) as CheckBox).IsEnabled = false;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -211,19 +219,18 @@ namespace EgwBuilderRunner
 
         private void SetOperation(string operation, bool on)
         {
+            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC", "AS24" })
+            {
+                if (!info.ContainsProject(code))
+                {
+                    continue;
+                }
 
-            (FindName(operation + "_DG") as CheckBox).IsChecked = on;
-            (FindName(operation + "_MR") as CheckBox).IsChecked = on;
-            (FindName(operation + "_FTP") as CheckBox).IsChecked = on;
-            (FindName(operation + "_EMAIL") as CheckBox).IsChecked = on;
-            (FindName(operation + "_ECP") as CheckBox).IsChecked = on;
-            if (info.ContainsProject("IEC62325"))
-            {
-                (FindName(operation + "_IEC") as CheckBox).IsChecked = on;
-            }
-            if (info.ContainsProject("AS24"))
-            {
-                (FindName(operation + "_AS24") as CheckBox).IsChecked = on;
+                if (operation == "Test" && !info.ContainsProjectTest(code))
+                {
+                    continue;
+                }
+               (FindName(operation + "_" + code) as CheckBox).IsChecked = on;
             }
         }
 

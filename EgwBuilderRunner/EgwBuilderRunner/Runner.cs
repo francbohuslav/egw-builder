@@ -64,12 +64,13 @@ namespace EgwBuilderRunner
         public List<Project> Projects { get; set; }
         public List<string> AdditionalTests { get; set; }
 
-        public bool ContainsProject(string code) => Projects != null && Projects.Any(p => p.Code == code);
-        public bool ContainsProjectTest(string code) => Projects != null && Projects.Any(p => p.Code == code && p.SupportTests);
+        public bool ContainsProject(string code) => Projects != null && Projects.Any(p => p.CodeForComponent == code);
+        public bool ContainsProjectTest(string codeOfComponent) => Projects != null && Projects.Any(p => p.CodeForComponent == codeOfComponent && p.SupportTests);
 
         public class Project
         {
             public string Code { get; set; }
+            public string CodeForComponent => Code == "IEC62325" ? "IEC" : Code;
             public bool SupportTests { get; set; }
         }
     }
