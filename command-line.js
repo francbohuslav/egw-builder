@@ -7,6 +7,8 @@ class CommandLine {
      */
     constructor(pars) {
         this.interactively = true;
+        /** Output human readable text */
+        this.enableConsole = true;
         while (pars.length > 0) {
             const ar = pars.shift().toLowerCase();
             if (ar == "-last") {
@@ -22,9 +24,17 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            //TODO: BF: casem lze smazat az budou mit vsichni aktualni Runner
             if (ar == "-getversions") {
                 this.getVersions = true;
                 this.interactively = false;
+                this.enableConsole = false;
+                continue;
+            }
+            if (ar == "-info") {
+                this.getInfo = true;
+                this.interactively = false;
+                this.enableConsole = false;
                 continue;
             }
             if (ar == "-logasyncjob") {
