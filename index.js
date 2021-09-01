@@ -2,7 +2,6 @@ const prompt = require("prompt-sync")();
 const core = require("./core");
 const path = require("path");
 const fs = require("fs");
-const fse = require("fs-extra");
 const parseCsv = require("csv-parse/lib/sync");
 const request = require("request");
 const util = require("util");
@@ -20,7 +19,7 @@ const builderDir = __dirname;
 
 /**
  * @typedef {Object} IProject Project
- * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24
+ * @property {string} code one of DG, MR, EMAIL, ECP, FTP
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of hi module of MR e.g. "uu_energygateway_messageregistryg01-hi"
@@ -67,25 +66,9 @@ const projects = [
         testFile: "email_endpoint.jmx",
     },
     { code: "ECP", folder: config.folders.ECP, server: "uu_energygatewayg01_ecpendpoint-server", port: 8097, webname: "uu-energygatewayg01-ecpendpoint" },
-    {
-        code: "IEC62325",
-        folder: config.folders.IEC62325,
-        server: "uu_energygateway_iec62325endpointg01-server",
-        port: 8098,
-        webname: "uu-energygateway-iec62325endpointg01",
-        testFile: "iec62325_endpoint.jmx",
-    },
-    {
-        code: "AS24",
-        folder: config.folders.AS24,
-        server: "uu_energygateway_as24endpointg01-server",
-        port: 8099,
-        webname: "uu-energygateway-as24endpointg01",
-        testFile: "as24_endpoint.jmx",
-    },
 ];
 
-const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24] = projects;
+const [DG, MR, FTP, EMAIL, ECP] = projects;
 
 /**
  *
@@ -422,44 +405,6 @@ async function runTests(project, testFile, isVersion11) {
     return { newFailed, newPassed, knownFailed };
 }
 
-function cloneDataGatewayForIec() {
-    const settings = core.readTextFile(`${IEC62325.folder}/settings.gradle`);
-    const match = settings.match(new RegExp(`${DG.folder}[^\\"]*`));
-    if (!match) {
-        core.showError(`Cannot find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
-        return;
-    }
-    if (match[0] == DG.folder) {
-        core.showError(
-            `File ${IEC62325.folder}/settings.gradle leads to original DG folder. Copy of DG for IEC62325 will not be not created. Modify path to DG in ${IEC62325.folder}/settings.gradle and builder creates copy of DG for you.`
-        );
-        return;
-    }
-    const dgCopyFolder = match[0];
-    if (fs.existsSync(dgCopyFolder)) {
-        core.showMessage(`Removing old ${dgCopyFolder}...`);
-        fse.removeSync(dgCopyFolder);
-    }
-    core.showMessage(`Copying ${DG.folder} to ${dgCopyFolder}`);
-    const exclusions = [
-        ".git",
-        ".gradle",
-        "docker",
-        "build",
-        "jenkins",
-        // Exclude server-lib too
-        // "uu_energygateway_datagatewayg01-server",
-    ].map((e) => path.join(DG.folder, e));
-    fse.copySync(DG.folder, dgCopyFolder, {
-        filter: (src) => {
-            if (exclusions.indexOf(src) > -1) {
-                return false;
-            }
-            return true;
-        },
-    });
-}
-
 async function run() {
     try {
         let cmd = new CommandLine(process.argv.slice(2));
@@ -481,8 +426,6 @@ async function run() {
             console.log("  -buildFTP            - Builds FTP endpoint");
             console.log("  -buildEMAIL          - Builds E-mail endpoint");
             console.log("  -buildECP            - Builds ECP endpoint");
-            console.log("  -buildIEC62325       - Builds IEC62325 endpoint");
-            console.log("  -buildAS24           - Builds AS24 endpoint");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -490,8 +433,6 @@ async function run() {
             console.log("  -runFTP              - Runs FTP endpoint");
             console.log("  -runEMAIL            - Runs E-mail endpoint");
             console.log("  -runECP              - Runs ECP endpoint");
-            console.log("  -runIEC62325         - Runs IEC62325 endpoint");
-            console.log("  -runAS24             - Runs AS24 endpoint");
             console.log("");
             console.log("  -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");
@@ -499,8 +440,6 @@ async function run() {
             console.log("  -initFTP             - Runs init commands of FTP endpoint");
             console.log("  -initEMAIL           - Runs init commands of E-mail endpoint");
             console.log("  -initECP             - Runs init commands of ECP endpoint");
-            console.log("  -initIEC62325        - Runs init commands of IEC62325 endpoint");
-            console.log("  -initAS24            - Runs init commands of AS24 endpoint");
             console.log("  -initASYNC           - Runs init commands of AsyncJob server");
             console.log("");
             console.log("  -test                - Tests all subApps by jmeter");
@@ -508,8 +447,6 @@ async function run() {
             console.log("  -testMR              - Tests Message Registry by jmeter");
             console.log("  -testFTP             - Tests FTP endpoint by jmeter");
             console.log("  -testEMAIL           - Tests E-mail endpoint by jmeter");
-            console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
-            console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -535,12 +472,6 @@ async function run() {
         }
 
         const runableProjects = [DG, MR, FTP, EMAIL, ECP];
-        if (fs.existsSync(IEC62325.folder)) {
-            runableProjects.push(IEC62325);
-        }
-        if (fs.existsSync(AS24.folder)) {
-            runableProjects.push(AS24);
-        }
 
         if (cmd.interactively || cmd.getVersions) {
             printProjectsVersions(cmd);
@@ -573,7 +504,7 @@ async function run() {
         // Build
         const isBuild = cmd.interactively
             ? cmd.getCmdValue("build", "Build app?")
-            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP || cmd.buildIEC62325 || cmd.buildAS24;
+            : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP;
         if (!isBuild && !cmd.interactively) {
             console.log("Build app? no");
         }
@@ -587,9 +518,7 @@ async function run() {
         cmd.unitTests = isBuild && cmd.getCmdValue("unitTests", "Build or run with unit tests?");
 
         // Runs
-        const isRun = cmd.interactively
-            ? cmd.getCmdValue("run", "Run app?")
-            : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325 || cmd.runAS24;
+        const isRun = cmd.interactively ? cmd.getCmdValue("run", "Run app?") : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP;
         if (!isRun && !cmd.interactively) {
             console.log("Run app? no");
         }
@@ -604,7 +533,7 @@ async function run() {
         // Inits
         const isRunInit = cmd.interactively
             ? cmd.getCmdValue("init", "Run init app?")
-            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initASYNC;
+            : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initASYNC;
         if (!isRunInit && !cmd.interactively) {
             console.log("Run init app? no");
         }
@@ -628,9 +557,7 @@ async function run() {
         }
 
         // Tests
-        const isTests = cmd.interactively
-            ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testIEC62325 || cmd.testAS24;
+        const isTests = cmd.interactively ? cmd.getCmdValue("tests", "Run tests?") : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -641,8 +568,6 @@ async function run() {
         const isTestsMR = isTests && cmd.getCmdValue("testMR", "... MR?");
         const isTestsFTP = isTests && cmd.getCmdValue("testFTP", "... FTP?");
         const isTestsEMAIL = isTests && cmd.getCmdValue("testEMAIL", "... EMAIL?");
-        const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
-        const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
 
         if (!cmd.last) {
             last.saveSettings(cmd);
@@ -685,9 +610,6 @@ async function run() {
             core.showMessage("Building apps...");
             for (const project of projects) {
                 if (isBuildPerProject[project.code]) {
-                    if (project.code == IEC62325.code) {
-                        cloneDataGatewayForIec();
-                    }
                     core.showMessage(`Building ${project.code} ...`);
                     await buildProject(project, cmd.unitTests);
                     core.showMessage(`${project.code} - build ok`);
@@ -702,9 +624,6 @@ async function run() {
                     core.showMessage("Starting " + project.code);
                     if (await killProject(project)) {
                         console.log("Killed previous");
-                    }
-                    if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
-                        cloneDataGatewayForIec();
                     }
                     core.inLocation(project.folder, () => {
                         let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
@@ -774,14 +693,7 @@ async function run() {
                 const knownFailed = {};
                 const newFailed = {};
                 const newPassed = {};
-                for (const project of [
-                    isTestsDG ? DG : null,
-                    isTestsMR ? MR : null,
-                    isTestsFTP ? FTP : null,
-                    isTestsEMAIL ? EMAIL : null,
-                    isTestsIEC62325 ? IEC62325 : null,
-                    isTestsAS24 ? AS24 : null,
-                ]) {
+                for (const project of [isTestsDG ? DG : null, isTestsMR ? MR : null, isTestsFTP ? FTP : null, isTestsEMAIL ? EMAIL : null]) {
                     if (project) {
                         core.showMessage(`Testing ${project.code}`);
                         const report = await runTests(project, project.testFile, isVersion11);

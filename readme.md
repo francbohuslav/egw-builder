@@ -19,8 +19,6 @@ Builder supports this EGW projects, which are hosted in UU Codebase GIT reposito
 -   FTP endpoint
 -   E-mail endpoint
 -   ECP endpoint
--   IEC62325 endpoint
--   AS24 endpoint
 
 Default folder structure:
 
@@ -30,8 +28,6 @@ Default folder structure:
 -   `uu_energygateway_ftpendpointg01` - repository of FTP endpoint
 -   `uu_energygateway_emailendpointg01` - repository of E-mail endpoint
 -   `uu_energygateway_ecpendpointg01` - repository of ECP endpoint
--   `uu_energygateway_iec62325endpointg01` - repository of IEC62325 endpoint
--   `uu_energygateway_as24endpointg01` - repository of AS24 endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
@@ -64,8 +60,6 @@ Run command `node index`.
     -buildFTP            - Builds FTP endpoint
     -buildEMAIL          - Builds E-mail endpoint
     -buildECP            - Builds ECP endpoint
-    -buildIEC62325       - Builds IEC62325 endpoint
-    -buildAS24           - Builds AS24 endpoint
 
     -run                 - Runs all subApps
     -runDG               - Runs Datagateway
@@ -73,8 +67,6 @@ Run command `node index`.
     -runFTP              - Runs FTP endpoint
     -runEMAIL            - Runs E-mail endpoint
     -runECP              - Runs ECP endpoint
-    -runIEC62325         - Runs IEC62325 endpoint
-    -runAS24             - Runs AS24 endpoint
 
     -init <your-uid>     - Runs init commands of all apps (creates workspace, sets permissions)
     -initDG              - Runs init commands of Datagateway
@@ -82,8 +74,6 @@ Run command `node index`.
     -initFTP             - Runs init commands of FTP endpoint
     -initEMAIL           - Runs init commands of E-mail endpoint
     -initECP             - Runs init commands of ECP endpoint
-    -initIEC62325        - Runs init commands of IEC62325 endpoint
-    -initAS24            - Runs init commands of AS24 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
 
     -test                - Tests all subApps by jmeter
@@ -91,8 +81,6 @@ Run command `node index`.
     -testMR              - Tests Message Registry by jmeter
     -testFTP             - Tests FTP endpoint by jmeter
     -testEMAIL           - Tests E-mail endpoint by jmeter
-    -testIEC62325        - Tests IEC62325 endpoint by jmeter
-    -testAS24            - Tests AS24 endpoint by jmeter
 
 You will be asked interactively if there is none of options (except folder) used on command line.
 
