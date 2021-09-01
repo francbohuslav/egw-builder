@@ -58,7 +58,7 @@ namespace EgwBuilderRunner
                     Console.Text = version;
                     additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
-
+                    AdditionalTestsContainer.SetVisible(additionalTestModels.Count > 0);
                     if (!info.ContainsProject("IEC"))
                     {
                         IEC.IsEnabled = false;

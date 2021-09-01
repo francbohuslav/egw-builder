@@ -91,7 +91,7 @@
                 <CheckBox x:Name="Test_IEC" Grid.Column="6" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_AS24" Grid.Column="7" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
-            <Grid Margin="0,10,0,0">
+            <Grid Margin="0,10,0,0" x:Name="AdditionalTestsContainer">
                 <TextBlock Width="74" HorizontalAlignment="Left" >Special tests:</TextBlock>
                 <ItemsControl x:Name="AdditionalTests" Margin="80,2,0,0" >
                     <ItemsControl.ItemsPanel>
