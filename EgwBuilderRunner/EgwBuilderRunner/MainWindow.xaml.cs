@@ -311,8 +311,8 @@ namespace EgwBuilderRunner
                 TestECP = Test_ECP.IsChecked == true,
                 TestIEC62325 = Test_IEC.IsChecked == true,
                 TestAS24 = Test_AS24.IsChecked == true,
+                AdditionalTests = additionalTestModels.Where(t => t.IsChecked).Select(t => t.Name).ToArray()
             };
-            additionalTestModels.ForEach(a => structure.GetType().GetProperty("Test" + a.Name)?.SetValue(structure, a.IsChecked));
             return structure;
         }
 
@@ -362,8 +362,7 @@ namespace EgwBuilderRunner
             Test_AS24.IsChecked = structure.TestAS24;
             additionalTestModels.ForEach(a =>
             {
-                var type = structure.GetType().GetProperty("Test" + a.Name);
-                a.IsChecked = type != null && (bool)type.GetValue(structure);
+                a.IsChecked = structure.AdditionalTests != null && structure.AdditionalTests.Any(t => t == a.Name);
             });
         }
 
@@ -425,6 +424,7 @@ namespace EgwBuilderRunner
         public bool IsChecked { get => isChecked; set { isChecked = value; RaisePropertyChanged(); } }
 
         public string Name { get; }
+        public string NameToWPF => Name.Replace("_", "__");
 
 
         public AdditionalTestModel(string name)

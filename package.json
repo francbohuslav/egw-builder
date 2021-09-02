@@ -9,7 +9,7 @@
         "ask": "node ./index.js -folder ../sprint",
         "init": "node ./index.js -folder ../sprint -init 12-8835-1",
         "last": "node ./index.js -last",
-        "custom": "nodemon ./index.js -folder ../sprint -info"
+        "custom": "node ./index.js -folder ../sprint -tests quick_test,message_processing"
     },
     "author": "Bohuslav Franc",
     "license": "ISC",

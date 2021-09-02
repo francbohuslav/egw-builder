@@ -17,7 +17,7 @@
                 "name": "Launch Program",
                 "skipFiles": ["<node_internals>/**"],
                 "program": "index.js",
-                "args": ["-folder", "../sprint", "-buildIEC62325"]
+                "args": ["-folder", "../sprint", "-tests", "quick_test,message_processing"]
             }
         ]
     }
