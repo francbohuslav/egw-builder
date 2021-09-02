@@ -1,14 +1,22 @@
+const fs = require("fs");
+
 class Info {
     /**
      *
      * @param {import("..").IProject[]} projects
+     * @param {import("..").IProject} MR
      */
-    getInfo(projects) {
+    getInfo(projects, MR) {
+        const tests = fs
+            .readdirSync(`${MR.folder}/${MR.server}/src/test/jmeter/`)
+            .filter((t) => t.match(/^tests_.*\.jmx/))
+            .map((t) => t.match(/^tests_(.*)\.jmx/)[1]);
+
         console.log(
             JSON.stringify(
                 {
                     projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile })),
-                    additionalTests: ["QUICK"],
+                    additionalTests: tests,
                 },
                 null,
                 2

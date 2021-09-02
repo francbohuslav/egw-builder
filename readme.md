@@ -108,7 +108,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -testECP             - Tests ECP endpoint by jmeter
     -testIEC62325        - Tests IEC62325 endpoint by jmeter
     -testAS24            - Tests AS24 endpoint by jmeter
-    -testQuick           - Run quick test (DG, MR, FTP must be running)
+    -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)
 
 You will be asked interactively if there is none of options (except folder) used on command line.
 

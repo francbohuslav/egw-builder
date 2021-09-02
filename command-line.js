@@ -260,8 +260,8 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
-            if (ar == "-testquick") {
-                this.testQuick = true;
+            if (ar == "-tests") {
+                this.additionalTests = pars.shift().split(",");
                 this.interactively = false;
                 continue;
             }

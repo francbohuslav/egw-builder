@@ -400,7 +400,7 @@ async function runProjectTests(project, isProjectTest, isVersion11) {
         projectCode = project.code;
         testFile = project.testFile;
     } else {
-        testFile = project.toLowerCase() + "_test.jmx";
+        testFile = `tests_${project}.jmx`;
     }
     const resultsFile = "logs/testResults" + projectCode + ".xml";
     const logFile = "logs/testLogs" + projectCode + ".log";
@@ -578,7 +578,7 @@ async function run() {
             console.log("  -testECP             - Tests ECP endpoint by jmeter");
             console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
             console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
-            console.log("  -testQuick           - Run quick test (DG, MR, FTP must be running)");
+            console.log("  -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)");
             console.log("");
             console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
         }
@@ -622,7 +622,7 @@ async function run() {
             return;
         }
         if (cmd.getInfo) {
-            info.getInfo(projects);
+            info.getInfo(projects, MR);
             return;
         }
         // console.log(cmd);
@@ -706,7 +706,7 @@ async function run() {
         // Tests
         const isTests = cmd.interactively
             ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24 || cmd.testQuick;
+            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24 || cmd.additionalTests;
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -720,7 +720,7 @@ async function run() {
         const isTestsECP = isTests && cmd.getCmdValue("testECP", "... ECP?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
         const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
-        const isTestsQuick = isTests && cmd.getCmdValue("testQuick", "... Quick?");
+        const isTestsAdditional = isTests && cmd.additionalTests;
 
         if (!cmd.last) {
             last.saveSettings(cmd);
@@ -860,18 +860,21 @@ async function run() {
                 const knownFailed = {};
                 const newFailed = {};
                 const newPassed = {};
-                for (const project of [
-                    isTestsDG ? DG : null,
-                    isTestsMR ? MR : null,
-                    isTestsFTP ? FTP : null,
-                    isTestsEMAIL ? EMAIL : null,
-                    isTestsECP ? ECP : null,
-                    isTestsIEC62325 ? IEC62325 : null,
-                    isTestsAS24 ? AS24 : null,
-                    isTestsQuick ? "QUICK" : null,
-                ]) {
+                const projectList = [
+                    ...[
+                        isTestsDG ? DG : null,
+                        isTestsMR ? MR : null,
+                        isTestsFTP ? FTP : null,
+                        isTestsEMAIL ? EMAIL : null,
+                        isTestsECP ? ECP : null,
+                        isTestsIEC62325 ? IEC62325 : null,
+                        isTestsAS24 ? AS24 : null,
+                    ],
+                    ...cmd.additionalTests,
+                ];
+                for (const project of projectList) {
                     if (project) {
-                        const isProjectTest = project != "QUICK";
+                        const isProjectTest = typeof project !== "string";
                         const testCode = isProjectTest ? project.code : project;
                         core.showMessage(`Testing ${testCode}`);
                         const report = await runProjectTests(project, isProjectTest, isVersion11);
