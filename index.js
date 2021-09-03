@@ -706,7 +706,14 @@ async function run() {
         // Tests
         const isTests = cmd.interactively
             ? cmd.getCmdValue("tests", "Run tests?")
-            : cmd.testDG || cmd.testMR || cmd.testFTP || cmd.testEMAIL || cmd.testECP || cmd.testIEC62325 || cmd.testAS24 || cmd.additionalTests;
+            : cmd.testDG ||
+              cmd.testMR ||
+              cmd.testFTP ||
+              cmd.testEMAIL ||
+              cmd.testECP ||
+              cmd.testIEC62325 ||
+              cmd.testAS24 ||
+              (cmd.additionalTests && cmd.additionalTests.length);
         if (!isTests && !cmd.interactively) {
             console.log("Run tests? no");
         }
@@ -720,7 +727,6 @@ async function run() {
         const isTestsECP = isTests && cmd.getCmdValue("testECP", "... ECP?");
         const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
         const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
-        const isTestsAdditional = isTests && cmd.additionalTests;
 
         if (!cmd.last) {
             last.saveSettings(cmd);
