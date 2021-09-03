@@ -32,8 +32,9 @@
                 <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="0,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
                 <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
             </Grid>
+            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top" />
 
-            <Grid Height="140" Margin="0,20,0,0" VerticalAlignment="Top">
+            <Grid Height="140" Margin="0,5,0,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -69,14 +70,14 @@
                 <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_IEC" Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_AS24" Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
-                <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_EMAIL" Grid.Column="4" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_ECP" Grid.Column="5" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_IEC" Grid.Column="6" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Run_AS24" Grid.Column="7" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Init_DG" Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+                <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_EMAIL" Grid.Column="4" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_ECP" Grid.Column="5" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_IEC" Grid.Column="6" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_AS24" Grid.Column="7" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Init_DG" Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  />
                 <CheckBox x:Name="Init_MR" Grid.Column="2" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_FTP" Grid.Column="3" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_EMAIL" Grid.Column="4" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
@@ -108,7 +109,6 @@
             </Grid>
             <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
             <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
             <Grid>
                 <Label Content="Your UID" HorizontalAlignment="Left" Margin="0,5,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
                 <TextBox x:Name="YourUID" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" TextWrapping="Wrap" VerticalContentAlignment="Center" LostFocus="YourUID_LostFocus" VerticalAlignment="Top" Width="126"/>

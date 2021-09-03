@@ -398,6 +398,10 @@ namespace EgwBuilderRunner
             {
                 UnitTests.IsEnabled = true;
             }
+            if (ClearDocker.IsChecked == true && (Run_DG.IsChecked == true || Run_FTP.IsChecked == true))
+            {
+                AsyncJob.IsChecked = true;
+            }
         }
 
         private void RunInSequence_Checked(object sender, RoutedEventArgs e)
