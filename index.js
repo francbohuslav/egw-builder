@@ -876,7 +876,7 @@ async function run() {
                         isTestsIEC62325 ? IEC62325 : null,
                         isTestsAS24 ? AS24 : null,
                     ],
-                    ...cmd.additionalTests,
+                    ...(cmd.additionalTests || []),
                 ];
                 for (const project of projectList) {
                     if (project) {
