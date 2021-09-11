@@ -169,7 +169,10 @@ function getProjectVersion(project) {
     core.inLocation(project.folder, () => {
         versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
         versions["build.gradle"] = core.readTextFile("build.gradle").match(/version '(\S+)'/)[1];
-        versions["uucloud-development.json"] = JSON.parse(core.readTextFile(project.server + "/config/uucloud-development.json")).uuSubApp.version;
+        const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
+        uuCloudDescriptors.forEach((uuCloudDescriptor) => {
+            versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
+        });
         if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
             versions["metamodel-1.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json")).version.replace(
                 "-beta",
@@ -197,11 +200,12 @@ function setProjectVersion(project, newVersion) {
         let json = JSON.parse(core.readTextFile("uuapp.json"));
         json.version = newVersion;
         core.writeTextFile("uuapp.json", JSON.stringify(json, null, 2));
-
-        json = JSON.parse(core.readTextFile(project.server + "/config/uucloud-development.json"));
-        json.uuSubApp.version = newVersion;
-        core.writeTextFile(project.server + "/config/uucloud-development.json", JSON.stringify(json, null, 2));
-
+        const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
+        uuCloudDescriptors.forEach((uuCloudDescriptor) => {
+            json = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor));
+            json.uuSubApp.version = newVersion;
+            core.writeTextFile(project.server + "/config/" + uuCloudDescriptor, JSON.stringify(json, null, 2));
+        });
         if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
             json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json"));
             json.version = newVersion.replace("SNAPSHOT", "beta");
@@ -534,7 +538,7 @@ async function run() {
             console.log("  -folder <name>       - Name of folder where all projects are stored, mandatory.");
             console.log("  -last                - Execute with settings from previous run.");
             console.log("");
-            console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.");
+            console.log("  -version <ver>       - Version to be stored in build.gradle, uucloud-*.json, ...etc.");
             console.log("  -clear               - Shutdown and remove docker containers.");
             console.log("  -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.");
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");

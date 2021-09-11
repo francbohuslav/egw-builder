@@ -64,7 +64,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -folder <name>       - Name of folder where all projects are stored, mandatory.
     -last                - Execute with settings from previous run.
 
-    -version <ver>       - Version to be stored in build.gradle, uucloud-developmnet.json, ...etc.
+    -version <ver>       - Version to be stored in build.gradle, uucloud-*.json, ...etc.
     -clear               - Shutdown and remove docker containers.
     -unitTests           - Build or run with unit tests. Option -build or -run* muset be used.
     -metamodel           - Regenerates metamodel for Business Territory.
