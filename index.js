@@ -57,7 +57,13 @@ const projects = [
         gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
         testFile: "message-registry.jmx",
         addProfilesFromLibraries: (isVersion11) =>
-            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-async": "DG" },
+            isVersion11
+                ? {}
+                : {
+                      "uu_energygateway_datagatewayg01-config": "DG",
+                      "uu_energygateway_datagatewayg01-async": "DG",
+                      "uu_energygateway_messageregistryg01-uulib": "MR",
+                  },
     },
     {
         code: "FTP",
@@ -73,6 +79,7 @@ const projects = [
                       "uu_energygateway_datagatewayg01-config": "DG",
                       "uu_energygateway_datagatewayg01-endpoint": "DG",
                       "uu_energygateway_datagatewayg01-async": "DG",
+                      "uu_energygateway_ftpendpointg01-uulib": "FTP",
                   },
     },
     {
@@ -89,6 +96,7 @@ const projects = [
                       "uu_energygateway_datagatewayg01-config": "DG",
                       "uu_energygateway_datagatewayg01-endpoint": "DG",
                       "uu_energygateway_datagatewayg01-async": "DG",
+                      "uu_energygateway_emailendpointg01-uulib": "EMAIL",
                   },
     },
     {
@@ -99,7 +107,13 @@ const projects = [
         webname: "uu-energygatewayg01-ecpendpoint",
         testFile: "ecp_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
-            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
+            isVersion11
+                ? {}
+                : {
+                      "uu_energygateway_datagatewayg01-config": "DG",
+                      "uu_energygateway_datagatewayg01-endpoint": "DG",
+                      "uu_energygateway_ecpendpointg01-uulib": "ECP",
+                  },
     },
     {
         code: "IEC62325",
@@ -109,7 +123,12 @@ const projects = [
         webname: "uu-energygateway-iec62325endpointg01",
         testFile: "iec62325_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
-            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
+            isVersion11
+                ? {}
+                : {
+                      "uu_energygateway_datagatewayg01-config": "DG",
+                      "uu_energygateway_datagatewayg01-endpoint": "DG",
+                  },
     },
     {
         code: "AS24",
@@ -119,7 +138,14 @@ const projects = [
         webname: "uu-energygateway-as24endpointg01",
         testFile: "as24_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
-            isVersion11 ? {} : { "uu_energygateway_datagatewayg01-config": "DG", "uu_energygateway_datagatewayg01-endpoint": "DG" },
+            isVersion11
+                ? {}
+                : {
+                      "uu_energygateway_datagatewayg01-config": "DG",
+                      "uu_energygateway_datagatewayg01-endpoint": "DG",
+                      "uu_energygateway_as2endpoint-uulib": "AS24",
+                      "uu_energygateway_as4endpoint-uulib": "AS24",
+                  },
     },
 ];
 
