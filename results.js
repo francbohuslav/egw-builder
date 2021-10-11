@@ -21,7 +21,13 @@ class Results {
         const nodes = xpath.select("//*[@lb]", doc);
         nodes.forEach((n) =>
             results.push({
-                label: n.getAttribute("lb"),
+                info: {
+                    label: n.getAttribute("lb"),
+                    asserts: xpath
+                        .select("./assertionResult", n)
+                        .filter((fn) => xpath.select1("./failure", fn).textContent == "true")
+                        .map((fn) => xpath.select1("./failureMessage", fn).textContent.replace(/[\r\n]+/g, " ")),
+                },
                 success: n.getAttribute("s") == "true",
             })
         );

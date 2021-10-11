@@ -464,9 +464,9 @@ async function runProjectTests(project, isProjectTest, isVersion11) {
     //console.log(params);
     await core.runCommand("docker", params);
     const steps = results.getSteps(core.readTextFile(resultsFile));
-    const knownFailed = steps.filter((step) => !step.success && step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
-    const newFailed = steps.filter((step) => !step.success && !step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
-    const newPassed = steps.filter((step) => step.success && step.label.match(/\sT[0-9]+$/)).map((step) => step.label);
+    const knownFailed = steps.filter((step) => !step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    const newFailed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    const newPassed = steps.filter((step) => step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
     return { newFailed, newPassed, knownFailed };
 }
 
@@ -891,6 +891,10 @@ async function run() {
         }
 
         if (isTests) {
+            if (isRun || isRunInit) {
+                core.showMessage("Waiting 10s before tests...");
+                await core.delay(10000);
+            }
             core.showMessage("Starting tests...");
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
                 const knownFailed = {};
