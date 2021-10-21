@@ -896,78 +896,87 @@ async function run() {
                 await core.delay(10000);
             }
             core.showMessage("Starting tests...");
-            await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
-                const knownFailed = {};
-                const newFailed = {};
-                const newPassed = {};
-                const projectList = [
-                    ...[
-                        isTestsDG ? DG : null,
-                        isTestsMR ? MR : null,
-                        isTestsFTP ? FTP : null,
-                        isTestsEMAIL ? EMAIL : null,
-                        isTestsECP ? ECP : null,
-                        isTestsIEC62325 ? IEC62325 : null,
-                        isTestsAS24 ? AS24 : null,
-                    ],
-                    ...(cmd.additionalTests || []),
-                ];
-                for (const project of projectList) {
-                    if (project) {
-                        const isProjectTest = typeof project !== "string";
-                        const testCode = isProjectTest ? project.code : project;
-                        core.showMessage(`Testing ${testCode}`);
-                        const report = await runProjectTests(project, isProjectTest, isVersion11);
-                        if (report.newFailed.length) {
-                            newFailed[testCode] = report.newFailed;
-                        }
-                        if (report.newPassed.length) {
-                            newPassed[testCode] = report.newPassed;
-                        }
-                        if (report.knownFailed.length) {
-                            knownFailed[testCode] = report.knownFailed;
-                        }
-                        const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
-                        const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
-                        tests.showFailedTests(projectPassedTests, projectFailedTests);
+
+            const knownFailed = {};
+            const newFailed = {};
+            const newPassed = {};
+            const projectList = [
+                ...[
+                    isTestsDG ? DG : null,
+                    isTestsMR ? MR : null,
+                    isTestsFTP ? FTP : null,
+                    isTestsEMAIL ? EMAIL : null,
+                    isTestsECP ? ECP : null,
+                    isTestsIEC62325 ? IEC62325 : null,
+                    isTestsAS24 ? AS24 : null,
+                ],
+                ...(cmd.additionalTests || []),
+            ];
+            for (const project of projectList) {
+                if (project) {
+                    const isProjectTest = typeof project !== "string";
+                    const testCode = isProjectTest ? project.code : project;
+                    core.showMessage(`Testing ${testCode}`);
+                    let report = null;
+                    if (testCode.toLowerCase() == "web") {
+                        await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
+                            report = await tests.runWebTests();
+                        });
+                    } else {
+                        await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
+                            report = await runProjectTests(project, isProjectTest, isVersion11);
+                        });
                     }
-                }
 
-                core.showMessage("\n\n======== TESTS SUMMARY =======\n");
+                    if (report.newFailed.length) {
+                        newFailed[testCode] = report.newFailed;
+                    }
+                    if (report.newPassed.length) {
+                        newPassed[testCode] = report.newPassed;
+                    }
+                    if (report.knownFailed.length) {
+                        knownFailed[testCode] = report.knownFailed;
+                    }
+                    const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
+                    const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
+                    tests.showFailedTests(projectPassedTests, projectFailedTests);
+                }
+            }
 
-                tests.showFailedTests(newPassed, newFailed);
-                if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
-                    core.showError("Tests failed. Watch message above.");
-                }
-                if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
-                    core.showSuccess("All tests passed as expected.");
-                    core.showSuccess("");
-                    core.showSuccess("            ████                ");
-                    core.showSuccess("          ███ ██                ");
-                    core.showSuccess("          ██   █                ");
-                    core.showSuccess("          ██   ██               ");
-                    core.showSuccess("           ██   ███             ");
-                    core.showSuccess("            ██    ██            ");
-                    core.showSuccess("            ██     ███          ");
-                    core.showSuccess("             ██      ██         ");
-                    core.showSuccess("        ███████       ██        ");
-                    core.showSuccess("     █████              ███ ██  ");
-                    core.showSuccess("    ██     ████          ██████ ");
-                    core.showSuccess("    ██  ████  ███             ██");
-                    core.showSuccess("    ██        ███             ██");
-                    core.showSuccess("     ██████████ ███           ██");
-                    core.showSuccess("     ██        ████           ██");
-                    core.showSuccess("     ███████████  ██          ██");
-                    core.showSuccess("       ██       ████     ██████ ");
-                    core.showSuccess("       ██████████ ██    ███ ██  ");
-                    core.showSuccess("          ██     ████ ███       ");
-                    core.showSuccess("          █████████████         ");
-                    core.showSuccess("");
-                }
-                if (Object.keys(knownFailed).length) {
-                    core.showWarning(`Some tests are marked as failed in ${Object.keys(knownFailed).join(", ")}.`);
-                }
-            });
+            core.showMessage("\n\n======== TESTS SUMMARY =======\n");
+
+            tests.showFailedTests(newPassed, newFailed);
+            if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
+                core.showError("Tests failed. Watch message above.");
+            }
+            if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
+                core.showSuccess("All tests passed as expected.");
+                core.showSuccess("");
+                core.showSuccess("            ████                ");
+                core.showSuccess("          ███ ██                ");
+                core.showSuccess("          ██   █                ");
+                core.showSuccess("          ██   ██               ");
+                core.showSuccess("           ██   ███             ");
+                core.showSuccess("            ██    ██            ");
+                core.showSuccess("            ██     ███          ");
+                core.showSuccess("             ██      ██         ");
+                core.showSuccess("        ███████       ██        ");
+                core.showSuccess("     █████              ███ ██  ");
+                core.showSuccess("    ██     ████          ██████ ");
+                core.showSuccess("    ██  ████  ███             ██");
+                core.showSuccess("    ██        ███             ██");
+                core.showSuccess("     ██████████ ███           ██");
+                core.showSuccess("     ██        ████           ██");
+                core.showSuccess("     ███████████  ██          ██");
+                core.showSuccess("       ██       ████     ██████ ");
+                core.showSuccess("       ██████████ ██    ███ ██  ");
+                core.showSuccess("          ██     ████ ███       ");
+                core.showSuccess("          █████████████         ");
+                core.showSuccess("");
+            }
+            if (Object.keys(knownFailed).length) {
+                core.showWarning(`Some tests are marked as failed in ${Object.keys(knownFailed).join(", ")}.`);
+            }
         }
 
         core.showMessage("DONE");
