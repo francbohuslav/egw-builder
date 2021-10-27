@@ -33,6 +33,7 @@ fs.open(logFile, "w", function (err, fd) {
 });
 
 let isError = false;
+let isErrorStart = false;
 let isErrorToInform = false;
 let prevIsErrorToInform = false;
 let containsError = false;
@@ -45,7 +46,9 @@ let prevLineTime = new Date().getTime();
  * @param {string} line input line
  */
 function printLine(line, fd) {
+    isErrorStart = false;
     if (line.match(/^\S+\s\S+\sERROR/)) {
+        isErrorStart = true;
         isError = true;
         stackTraceLine = 0;
     } else if (line.match(/^\s+at\s/)) {
@@ -55,7 +58,7 @@ function printLine(line, fd) {
         isError = false;
         stackTraceLine = 0;
     }
-    isErrorToInform = isError ? !isLowPriorityError(line) : false;
+    isErrorToInform = isErrorStart ? !isLowPriorityError(line) : false;
 
     if (line.indexOf("Started SubAppRunner") > -1) {
         color = Colors.FgYellow;
@@ -88,6 +91,7 @@ function printLine(line, fd) {
 
     const now = new Date().getTime();
     if (now - prevLineTime > 10 * 1000) {
+        // Empty line
         console.log();
     }
     if (isLoggableLine(shortLine)) {
