@@ -15,7 +15,7 @@ class Info {
         console.log(
             JSON.stringify(
                 {
-                    projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile })),
+                    projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile, directory: p.folder })),
                     additionalTests: tests,
                 },
                 null,

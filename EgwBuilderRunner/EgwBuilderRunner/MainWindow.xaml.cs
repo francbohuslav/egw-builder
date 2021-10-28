@@ -19,9 +19,6 @@ namespace EgwBuilderRunner
     public partial class MainWindow : BaseWindow<App>
     {
         private LastSaver lastSaver;
-        private Runner runner;
-
-        private InfoStructure info = new InfoStructure();
 
         private List<AdditionalTestModel> additionalTestModels = new List<AdditionalTestModel>();
 
@@ -33,7 +30,6 @@ namespace EgwBuilderRunner
 
             Clear_Click(null, null);
             lastSaver = new LastSaver(MyApp.BuilderFolder);
-            runner = new Runner();
 
             YourUID.Text = MyApp.AppStorage.YourUid;
             RunInSequence.IsChecked = MyApp.AppStorage.RunInSequence;
@@ -55,23 +51,23 @@ namespace EgwBuilderRunner
                 await Task.Delay(1);
                 try
                 {
-                    var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
-                    info = runner.GetInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    var version = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
                     Console.Text = version;
-                    additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
+                    additionalTestModels = MyApp.Runner.Info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
                     AdditionalTestsContainer.SetVisible(additionalTestModels.Count > 0);
-                    if (!info.ContainsProject("IEC"))
+                    if (!MyApp.Runner.Info.ContainsProject("IEC"))
                     {
                         IEC.IsEnabled = false;
                         ForProject("IEC", ch => ch.IsEnabled = false);
                     }
-                    if (!info.ContainsProject("AS24"))
+                    if (!MyApp.Runner.Info.ContainsProject("AS24"))
                     {
                         AS24.IsEnabled = false;
                         ForProject("AS24", ch => ch.IsEnabled = false);
                     }
-                    foreach (var project in info.Projects)
+                    foreach (var project in MyApp.Runner.Info.Projects)
                     {
                         if (!project.SupportTests)
                         {
@@ -87,14 +83,14 @@ namespace EgwBuilderRunner
                 await Task.Delay(1);
                 try
                 {
-                    if (runner.IsDockerAddressOk())
+                    if (MyApp.Runner.IsDockerAddressOk())
                     {
                         DockerInternalAddressWarning.SetVisible(false);
                         DockerInternalAddressWarningIsOk.SetVisible(true);
                     }
                     else
                     {
-                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + runner.GetDockerAddress()
+                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + MyApp.Runner.GetDockerAddress()
                             + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
                             "Otherwise AsyncJob and other services will not work correctly.";
 
@@ -242,14 +238,18 @@ namespace EgwBuilderRunner
 
         private void SetOperation(string operation, bool on)
         {
+            if (MyApp.Runner.Info == null)
+            {
+                return;
+            }
             foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC", "AS24" })
             {
-                if (!info.ContainsProject(code))
+                if (!MyApp.Runner.Info.ContainsProject(code))
                 {
                     continue;
                 }
 
-                if (operation == "Test" && !info.ContainsProjectTest(code))
+                if (operation == "Test" && !MyApp.Runner.Info.ContainsProjectTest(code))
                 {
                     continue;
                 }
@@ -283,7 +283,7 @@ namespace EgwBuilderRunner
         {
             var structure = GetStructure();
             lastSaver.Save(structure);
-            runner.Run(MyApp.BuilderFolder);
+            MyApp.Runner.Run(MyApp.BuilderFolder);
             if (MyApp.AppStorage.CloseApplicationAfterRun)
             {
                 Close();

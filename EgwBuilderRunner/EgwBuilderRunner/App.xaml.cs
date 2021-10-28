@@ -16,6 +16,9 @@ namespace EgwBuilderRunner
         public string BuilderFolder { get; set; }
         public string EgwFolder { get; set; }
 
+        public Runner Runner { get; set; } = new Runner();
+
+
         protected override AppSettings GetAppSettings()
         {
             return new AppSettings("EgwBuilderRunner", "EgwBuilderRunner", "EgwBuilderRunner", new Version("1.8"));

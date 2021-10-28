@@ -68,10 +68,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DockerController.xaml.cs">
+      <DependentUpon>DockerController.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LastSaver.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="Structure.cs" />
     <Compile Include="ThisAppStorage.cs" />
+    <Page Include="DockerController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
