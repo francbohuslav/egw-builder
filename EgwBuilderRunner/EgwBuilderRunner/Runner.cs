@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EgwBuilderRunner
 {
@@ -56,6 +57,44 @@ namespace EgwBuilderRunner
                 output.Append(process.StandardOutput.ReadLine() + "\n");
             }
             return JsonConvert.DeserializeObject<InfoStructure>(output.ToString().Trim());
+        }
+
+        public string GetDockerAddress()
+        {
+            var process = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "powershell",
+                Arguments = "(Resolve-DnsName host.docker.internal).IPAddress",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+            });
+            var output = new StringBuilder();
+            while (!process.StandardOutput.EndOfStream)
+            {
+                output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+            return output.ToString().Trim();
+        }
+
+        public bool IsDockerAddressOk()
+        {
+            var process = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "powershell",
+                Arguments = "ipconfig | findstr (Resolve-DnsName host.docker.internal).IPAddress",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+            });
+            var output = new StringBuilder();
+            while (!process.StandardOutput.EndOfStream)
+            {
+                output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+            var text = output.ToString().Trim();
+            // Valid return: IPv4 Address. . . . . . . . . . . : 192.168.2.4 
+            return Regex.IsMatch(text, "IPv4.*\\d+\\.\\d+\\.\\d+\\.\\d+");
         }
     }
 

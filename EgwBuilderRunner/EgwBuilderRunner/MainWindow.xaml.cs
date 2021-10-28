@@ -33,6 +33,18 @@ namespace EgwBuilderRunner
             Clear_Click(null, null);
             lastSaver = new LastSaver(MyApp.BuilderFolder);
             runner = new Runner();
+            if (runner.IsDockerAddressOk())
+            {
+
+                DockerInternalAddressWarning.SetVisible(false);
+            }
+            else
+            {
+                DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + runner.GetDockerAddress()
+                    + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
+                    "Otherwise AsyncJob and other services will not work correctly.";
+
+            }
 
             YourUID.Text = MyApp.AppStorage.YourUid;
             RunInSequence.IsChecked = MyApp.AppStorage.RunInSequence;
