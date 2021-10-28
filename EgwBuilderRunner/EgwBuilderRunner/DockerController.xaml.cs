@@ -28,10 +28,9 @@ namespace EgwBuilderRunner
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            RefreshUi();
             timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(15),
+                Interval = TimeSpan.FromSeconds(1),
                 IsEnabled = true
             };
             timer.Tick += (s, e2) => RefreshUi();
@@ -40,6 +39,7 @@ namespace EgwBuilderRunner
 
         private void RefreshUi()
         {
+            timer.Interval = TimeSpan.FromSeconds(15);
             var allContainers = runner.GetDockerContainers(true).Where(name => name.Contains("egw-tests") && !name.Contains("mongosetup"));
             var runningContainers = runner.GetDockerContainers(false);
 
