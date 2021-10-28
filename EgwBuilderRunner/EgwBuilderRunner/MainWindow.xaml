@@ -30,20 +30,23 @@
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Style.Resources>
-                            <Storyboard x:Key="flashAnimation" >
+                            <Storyboard x:Key="DockerInternalAddressWarningAnimation" >
                                 <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.3" AutoReverse="True" Duration="0:0:0.2" RepeatBehavior="Forever" />
                             </Storyboard>
                         </Style.Resources>
                         <Style.Triggers>
                             <Trigger Property="Visibility" Value="Visible">
                                 <Trigger.EnterActions>
-                                    <BeginStoryboard Storyboard="{StaticResource flashAnimation}"/>
+                                    <BeginStoryboard Storyboard="{StaticResource DockerInternalAddressWarningAnimation}"/>
                                 </Trigger.EnterActions>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
-                WARNING: ip address host.docker.internal is ...
+                Checking host.docker.internal ...
+            </TextBlock>
+            <TextBlock x:Name="DockerInternalAddressWarningIsOk" Background="#FF8BFFB0" FontWeight="Bold" Margin="0,10,0,5" Padding="8,5" Foreground="#FF007A0B">
+                Address host.docker.internal is ok
             </TextBlock>
             <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
             <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />

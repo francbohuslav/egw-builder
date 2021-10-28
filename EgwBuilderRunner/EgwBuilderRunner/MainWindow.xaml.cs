@@ -29,22 +29,11 @@ namespace EgwBuilderRunner
         {
             InitializeComponent();
             Title = MyApp.AppSettings.ApplicationNameWithVersion;
+            DockerInternalAddressWarningIsOk.SetVisible(false);
 
             Clear_Click(null, null);
             lastSaver = new LastSaver(MyApp.BuilderFolder);
             runner = new Runner();
-            if (runner.IsDockerAddressOk())
-            {
-
-                DockerInternalAddressWarning.SetVisible(false);
-            }
-            else
-            {
-                DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + runner.GetDockerAddress()
-                    + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
-                    "Otherwise AsyncJob and other services will not work correctly.";
-
-            }
 
             YourUID.Text = MyApp.AppStorage.YourUid;
             RunInSequence.IsChecked = MyApp.AppStorage.RunInSequence;
@@ -63,6 +52,7 @@ namespace EgwBuilderRunner
             else
             {
                 Console.Text = "Loading versions...";
+                await Task.Delay(1);
                 try
                 {
                     var version = runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
@@ -87,6 +77,27 @@ namespace EgwBuilderRunner
                         {
                             (FindName("Test_" + project.CodeForComponent) as CheckBox).IsEnabled = false;
                         }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.Text = "Error: " + ex.Message + "\n" + ex.StackTrace;
+                }
+                await Task.Delay(1);
+                try
+                {
+                    if (runner.IsDockerAddressOk())
+                    {
+                        DockerInternalAddressWarning.SetVisible(false);
+                        DockerInternalAddressWarningIsOk.SetVisible(true);
+                    }
+                    else
+                    {
+                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + runner.GetDockerAddress()
+                            + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
+                            "Otherwise AsyncJob and other services will not work correctly.";
+
                     }
                 }
                 catch (Exception ex)

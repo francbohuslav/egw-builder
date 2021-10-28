@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "EgwBuilderRunner"
-#define MyAppVersion "1.7"
+#define MyAppVersion "1.8"
 #define MyAppPublisher "Bogan"
 #define MyAppURL "http://www.bogan.cz/"
 #define MyAppExeName "EgwBuilderRunner.exe"
