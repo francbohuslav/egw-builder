@@ -65,7 +65,7 @@ namespace EgwBuilderRunner
 
         private string ToLabel(string name)
         {
-            var label = Regex.Replace(name, "^egw-tests-", "").Replace("-1", "").Replace("-", " ");
+            var label = Regex.Replace(name, "^egw-tests-", "").Replace("-1", "").Replace("_1", "").Replace("-", " ");
             label = label.Substring(0, 1).ToUpper() + label.Substring(1);
             return label;
         }

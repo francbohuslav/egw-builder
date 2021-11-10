@@ -53,7 +53,7 @@ namespace EgwBuilderRunner
                 {
                     var version = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
                     MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
-                    Console.Text = version;
+                    Console.Text = version + "\n\nBranches\n" + MyApp.Runner.Info.GetBranches();
                     additionalTestModels = MyApp.Runner.Info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
                     AdditionalTestsContainer.SetVisible(additionalTestModels.Count > 0);

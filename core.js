@@ -96,15 +96,20 @@ class Core {
 
             context.stderr.on("data", (data) => {
                 stdErr += data.toString();
-                if (data.toString().toLowerCase().indexOf("warn") > -1) {
-                    console.log("\x1b[33m%s\x1b[0m", data.toString());
-                } else {
-                    console.log("\x1b[31m%s\x1b[0m", data.toString());
+                if (!options || !options.disableStdOut) {
+                    if (data.toString().toLowerCase().indexOf("warn") > -1) {
+                        console.log("\x1b[33m%s\x1b[0m", data.toString());
+                    } else {
+                        console.log("\x1b[31m%s\x1b[0m", data.toString());
+                    }
                 }
             });
 
             context.on("error", (error) => {
-                console.log("\x1b[31m%s\x1b[0m", error.message);
+                stdErr += error;
+                if (!options || !options.disableStdOut) {
+                    console.log("\x1b[31m%s\x1b[0m", error.message);
+                }
             });
 
             context.on("close", (code) => {

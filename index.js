@@ -265,8 +265,9 @@ function printProjectsVersions(cmd) {
     if (uniqueVersions.length === 1) {
         console.log("All:", uniqueVersions[0]);
     } else {
+        const maxCodeLength = projects.map((p) => p.code.length).reduce((p, c) => Math.max(p, c));
         for (const project of projects) {
-            console.log(project.code + ":", projectVersions[project.code]);
+            console.log(project.code.padStart(maxCodeLength, " ") + ":", projectVersions[project.code]);
         }
     }
 }
@@ -652,7 +653,7 @@ async function run() {
             return;
         }
         if (cmd.getInfo) {
-            info.getInfo(projects, MR);
+            await info.getInfo(projects, MR);
             return;
         }
         // console.log(cmd);

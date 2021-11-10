@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -160,12 +161,32 @@ namespace EgwBuilderRunner
         public bool ContainsProject(string code) => Projects != null && Projects.Any(p => p.CodeForComponent == code);
         public bool ContainsProjectTest(string codeOfComponent) => Projects != null && Projects.Any(p => p.CodeForComponent == codeOfComponent && p.SupportTests);
 
+        public string GetBranches()
+        {
+            var validProjects = Projects.Where(p => p.Branch != null).ToList();
+            if (!validProjects.Any())
+            {
+                return "not supported";
+            }
+            if (validProjects.All(p => p.Branch == validProjects[0].Branch))
+            {
+                var line = "All: " + validProjects[0].Branch.Replace("feature/", "");
+                return line.Substring(0, Math.Min(47, line.Length));
+            }
+            var codeLength = validProjects.Select(p => p.Code.Length).Max();
+            return string.Join("\n", validProjects.Select(p =>
+            {
+                var line = p.Code.PadLeft(codeLength, ' ') + ": " + p.Branch.Replace("feature/", "");
+                return line.Substring(0, Math.Min(47, line.Length));
+            }));
+        }
         public class Project
         {
             public string Code { get; set; }
             public string CodeForComponent => Code == "IEC62325" ? "IEC" : Code;
             public bool SupportTests { get; set; }
             public string Directory { get; set; }
+            public string Branch { get; set; }
         }
     }
 }
