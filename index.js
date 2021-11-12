@@ -40,9 +40,9 @@ const projects = [
     {
         code: "DG",
         folder: config.folders.DG,
-        server: "uu_energygateway_datagatewayg01-server",
-        port: 8094,
-        webname: "uu-energygateway-datagatewayg01",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "datagateway.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11 ? {} : { "uu_energygateway_datagatewayg01-server-lib": "DG", "uu_energygateway_datagatewayg01-config": "DG" },
@@ -68,9 +68,9 @@ const projects = [
     {
         code: "FTP",
         folder: config.folders.FTP,
-        server: "uu_energygatewayg01_ftpendpoint-server",
-        port: 8095,
-        webname: "uu-energygatewayg01-ftpendpoint",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "ftp_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -85,9 +85,9 @@ const projects = [
     {
         code: "EMAIL",
         folder: config.folders.EMAIL,
-        server: "uu_energygatewayg01_emailendpoint-server",
-        port: 8096,
-        webname: "uu-energygatewayg01-emailendpoint",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "email_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -102,9 +102,9 @@ const projects = [
     {
         code: "ECP",
         folder: config.folders.ECP,
-        server: "uu_energygatewayg01_ecpendpoint-server",
-        port: 8097,
-        webname: "uu-energygatewayg01-ecpendpoint",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "ecp_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -118,9 +118,9 @@ const projects = [
     {
         code: "IEC62325",
         folder: config.folders.IEC62325,
-        server: "uu_energygateway_iec62325endpointg01-server",
-        port: 8098,
-        webname: "uu-energygateway-iec62325endpointg01",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "iec62325_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -133,9 +133,9 @@ const projects = [
     {
         code: "AS24",
         folder: config.folders.AS24,
-        server: "uu_energygateway_as24endpointg01-server",
-        port: 8099,
-        webname: "uu-energygateway-as24endpointg01",
+        server: "uu_energygateway_mergedg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
         testFile: "as24_endpoint.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -335,6 +335,7 @@ async function runInitCommands(project, yourUid, insomniaFolder) {
             yourUid
         ).split(" "),
     ];
+    // console.log(params);
     const { stdOut } = await core.runCommand("docker", params);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ${projectCode} failed`);
@@ -858,7 +859,7 @@ async function run() {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                     await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
-                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`);
+                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia/${project.code}`);
                     });
                 }
             }
