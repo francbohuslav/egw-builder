@@ -80,6 +80,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="1" Margin="5,0" Click="DG_Click">DG</Button>
                 <Button Grid.Column="2" Margin="5,0" Content="MR"  Click="MR_Click"  />
@@ -88,6 +89,7 @@
                 <Button Grid.Column="5" Margin="5,0" Content="ECP"  Click="ECP_Click"  />
                 <Button x:Name="IEC" Grid.Column="6" Margin="5,0" Content="IEC"  Click="IEC_Click"  />
                 <Button x:Name="AS24" Grid.Column="7" Margin="5,0" Content="AS24"  Click="AS24_Click"  />
+                <Button x:Name="MERGED" Grid.Column="8" Margin="5,0" Content="MERGED"  Click="MERGED_Click"  />
                 <Button Grid.Row="1"  Margin="0,3" Content="Build" Click="Button_Click" />
                 <Button Grid.Row="2"  Margin="0,3" Content="Run" Click="Button_Click_1" />
                 <Button Grid.Row="3"  Margin="0,3" Content="Init" Click="Button_Click_2" />
@@ -99,6 +101,7 @@
                 <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_IEC" Grid.Column="6" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_AS24" Grid.Column="7" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_MERGED" Grid.Column="8" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
@@ -106,6 +109,7 @@
                 <CheckBox x:Name="Run_ECP" Grid.Column="5" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_IEC" Grid.Column="6" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_AS24" Grid.Column="7" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_MERGED" Grid.Column="8" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Init_DG" Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  />
                 <CheckBox x:Name="Init_MR" Grid.Column="2" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_FTP" Grid.Column="3" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
@@ -113,6 +117,7 @@
                 <CheckBox x:Name="Init_ECP" Grid.Column="5" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_IEC" Grid.Column="6" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_AS24" Grid.Column="7" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+                <CheckBox x:Name="Init_MERGED" Grid.Column="8" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="MergedInit_Checked" Unchecked="MergedInit_Checked" />
                 <CheckBox x:Name="Test_DG" Grid.Column="1" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_MR" Grid.Column="2" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_FTP" Grid.Column="3" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />

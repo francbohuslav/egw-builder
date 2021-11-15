@@ -17,7 +17,7 @@ namespace EgwBuilderRunner
         public bool Metamodel { get; set; }
 
         [JsonProperty("build")]
-        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24;
+        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED;
 
         [JsonProperty("buildDG")]
         public bool BuildDG { get; set; }
@@ -39,6 +39,10 @@ namespace EgwBuilderRunner
 
         [JsonProperty("buildAS24")]
         public bool BuildAS24 { get; set; }
+
+
+        [JsonProperty("buildMERGED")]
+        public bool BuildMERGED { get; set; }
 
         [JsonProperty("unitTests")]
         public bool UnitTests { get; set; }
@@ -66,6 +70,10 @@ namespace EgwBuilderRunner
 
         [JsonProperty("runAS24")]
         public bool RunAS24 { get; set; }
+
+        [JsonProperty("runMERGED")]
+        public bool RunMERGED { get; set; }
+
 
         [JsonProperty("runInSequence")]
         public bool RunInSequence { get; set; }

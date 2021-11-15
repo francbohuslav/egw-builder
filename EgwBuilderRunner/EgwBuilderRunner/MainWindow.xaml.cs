@@ -69,7 +69,7 @@ namespace EgwBuilderRunner
                     }
                     foreach (var project in MyApp.Runner.Info.Projects)
                     {
-                        if (!project.SupportTests)
+                        if (!project.SupportTests && FindName("Test_" + project.CodeForComponent) != null)
                         {
                             (FindName("Test_" + project.CodeForComponent) as CheckBox).IsEnabled = false;
                         }
@@ -205,7 +205,10 @@ namespace EgwBuilderRunner
             (FindName("Build_" + project) as CheckBox).IsChecked = on;
             (FindName("Run_" + project) as CheckBox).IsChecked = on;
             (FindName("Init_" + project) as CheckBox).IsChecked = on;
-            (FindName("Test_" + project) as CheckBox).IsChecked = on;
+            if (FindName("Test_" + project) != null)
+            {
+                (FindName("Test_" + project) as CheckBox).IsChecked = on;
+            }
         }
 
         private void ForProject(string project, Action<CheckBox> action)
@@ -310,6 +313,7 @@ namespace EgwBuilderRunner
                 BuildECP = Build_ECP.IsChecked == true,
                 BuildIEC62325 = Build_IEC.IsChecked == true,
                 BuildAS24 = Build_AS24.IsChecked == true,
+                BuildMERGED = Build_MERGED.IsChecked == true,
 
                 RunDG = Run_DG.IsChecked == true,
                 RunMR = Run_MR.IsChecked == true,
@@ -318,6 +322,7 @@ namespace EgwBuilderRunner
                 RunECP = Run_ECP.IsChecked == true,
                 RunIEC62325 = Run_IEC.IsChecked == true,
                 RunAS24 = Run_AS24.IsChecked == true,
+                RunMERGED = Run_MERGED.IsChecked == true,
 
                 InitDG = Init_DG.IsChecked == true,
                 InitMR = Init_MR.IsChecked == true,
@@ -359,6 +364,7 @@ namespace EgwBuilderRunner
             Build_ECP.IsChecked = structure.BuildECP;
             Build_IEC.IsChecked = structure.BuildIEC62325;
             Build_AS24.IsChecked = structure.BuildAS24;
+            Build_MERGED.IsChecked = structure.BuildMERGED;
 
             Run_DG.IsChecked = structure.RunDG;
             Run_MR.IsChecked = structure.RunMR;
@@ -367,6 +373,7 @@ namespace EgwBuilderRunner
             Run_ECP.IsChecked = structure.RunECP;
             Run_IEC.IsChecked = structure.RunIEC62325;
             Run_AS24.IsChecked = structure.RunAS24;
+            Run_MERGED.IsChecked = structure.RunMERGED;
 
             Init_DG.IsChecked = structure.InitDG;
             Init_MR.IsChecked = structure.InitMR;
@@ -441,6 +448,16 @@ namespace EgwBuilderRunner
             {
                 MyApp.AppStorage.CloseApplicationAfterRun = CloseApplicationAfterRun.IsChecked == true;
             }
+        }
+
+        private void MergedInit_Checked(object sender, RoutedEventArgs e)
+        {
+            SetOperation("Init", Init_MERGED.IsChecked == true);
+        }
+
+        private void MERGED_Click(object sender, RoutedEventArgs e)
+        {
+            SetProject("MERGED", Build_MERGED.IsChecked != true);
         }
     }
 
