@@ -24,6 +24,7 @@ const builderDir = __dirname;
  * @typedef {Object} IProject Project
  * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
+ * @property {string} dockerFolder docker folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} hi folder of HI module of MR, e.g. "uu_energygateway_messageregistryg01-hi"
  * @property {string} gui folder of GUI components, e.g. "uu_energygateway_uu5lib/uu_energygateway_guig01"
@@ -40,6 +41,7 @@ const projects = [
     {
         code: "DG",
         folder: config.folders.DG,
+        dockerFolder: "uu_energygateway_datagatewayg01",
         server: "uu_energygateway_mergedg01-server",
         port: 8800,
         webname: "uu-energygateway-mergedg01",
@@ -50,11 +52,12 @@ const projects = [
     {
         code: "MR",
         folder: config.folders.MR,
-        server: "uu_energygateway_messageregistryg01-server",
-        port: 8093,
-        webname: "uu-energygateway-messageregistryg01",
-        hi: "uu_energygateway_messageregistryg01-hi",
-        gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
+        testsFolder: "uu_energygateway_messageregistryg01",
+        server: "uu_energygateway_mergedg01-server",
+        testsServer: "uu_energygateway_messageregistryg01-server",
+        port: 8800,
+        webname: "uu-energygateway-mergedg01",
+        hi: "uu-energygateway-mergedg01-hi",
         testFile: "message-registry.jmx",
         addProfilesFromLibraries: (isVersion11) =>
             isVersion11
@@ -68,6 +71,7 @@ const projects = [
     {
         code: "FTP",
         folder: config.folders.FTP,
+        dockerFolder: "uu_energygateway_ftpendpointg01",
         server: "uu_energygateway_mergedg01-server",
         port: 8800,
         webname: "uu-energygateway-mergedg01",
@@ -102,6 +106,7 @@ const projects = [
     {
         code: "ECP",
         folder: config.folders.ECP,
+        dockerFolder: "uu_energygateway_ecpendpointg01",
         server: "uu_energygateway_mergedg01-server",
         port: 8800,
         webname: "uu-energygateway-mergedg01",
@@ -438,7 +443,7 @@ async function runProjectTests(project, isProjectTest, isVersion11) {
     const logFile = "logs/testLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
-    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
+    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.dockerFolder + "/docker/egw-tests/data");
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
@@ -550,7 +555,7 @@ async function logAsyncJob(cmd) {
     fs.mkdirSync(path.join(cmd.folder, "logs"), {
         recursive: true,
     });
-    core.inLocation(`${DG.folder}/docker/egw-tests`, () => {
+    core.inLocation(`${DG.dockerFolder}/docker/egw-tests`, () => {
         const command = `start "AsyncJob" /MAX ${builderDir}\\asyncJobLogs.cmd ${builderDir} ${path.join(cmd.folder, "logs", "AsyncJob.log")}`;
         core.runCommandNoWait(command);
     });
@@ -630,7 +635,7 @@ async function run() {
             core.showMessage(`Using folder ${cmd.folder}`);
         }
         process.chdir(cmd.folder);
-        const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
+        const isVersion11 = !fs.existsSync(`${MR.testsFolder}/${MR.testsServer}/src/test/jmeter/env_localhost.cfg`);
         if (isVersion11 && cmd.enableConsole) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
@@ -771,8 +776,8 @@ async function run() {
         if (cmd.clear) {
             core.showMessage("Clearing docker...");
             for (const project of runableProjects) {
-                if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
+                if (fs.existsSync(project.dockerFolder + "/docker/egw-tests/docker-compose.yml")) {
+                    await core.inLocationAsync(`${project.dockerFolder}/docker/egw-tests`, stopComposer);
                 }
                 if (project.code == "DG") {
                     await cleanDockers();
@@ -784,9 +789,9 @@ async function run() {
             for (const project of runableProjects) {
                 if (
                     ((isBuild && isBuildPerProject[project.code] && cmd.unitTests) || (isRun && isRunPerProject[project.code])) &&
-                    fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
+                    fs.existsSync(project.dockerFolder + "/docker/egw-tests/docker-compose.yml")
                 ) {
-                    await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
+                    await core.inLocationAsync(`${project.dockerFolder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
                 }
             }
         }
@@ -850,7 +855,7 @@ async function run() {
             core.showMessage("Starting inits...");
             if (isInitPerProject.ASYNC) {
                 core.showMessage("Init AsyncJob");
-                await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
+                await core.inLocationAsync(`${MR.testsFolder}/${MR.testsServer}/src/test/`, async () => {
                     await runInitCommandsAsyncJob();
                 });
             }
@@ -858,7 +863,7 @@ async function run() {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
-                    await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
+                    await core.inLocationAsync(`${MR.testsFolder}/${MR.testsServer}/src/test/`, async () => {
                         await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia/${project.code}`);
                     });
                 }
@@ -921,11 +926,11 @@ async function run() {
                     core.showMessage(`Testing ${testCode}`);
                     let report = null;
                     if (testCode.toLowerCase() == "web") {
-                        await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
+                        await core.inLocationAsync(`${MR.testsFolder}/${MR.testsServer}/src/test/web/bin`, async () => {
                             report = await tests.runWebTests();
                         });
                     } else {
-                        await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
+                        await core.inLocationAsync(`${MR.testsFolder}/${MR.testsServer}/src/test/jmeter/`, async () => {
                             report = await runProjectTests(project, isProjectTest, isVersion11);
                         });
                     }

@@ -15,7 +15,7 @@ class Info {
 
     getTests(projects, MR) {
         const tests = fs
-            .readdirSync(`${MR.folder}/${MR.server}/src/test/jmeter/`)
+            .readdirSync(`${MR.testsFolder}/${MR.testsServer}/src/test/jmeter/`)
             .filter((t) => t.match(/^tests_.*\.jmx/))
             .map((t) => t.match(/^tests_(.*)\.jmx/)[1]);
         tests.push("Web");

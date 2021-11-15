@@ -5,7 +5,7 @@
 module.exports = {
     folders: {
         DG: "uu_energygateway_mergedg01",
-        MR: "uu_energygateway_messageregistryg01",
+        MR: "uu_energygateway_mergedg01",
         FTP: "uu_energygateway_mergedg01",
         EMAIL: "uu_energygateway_mergedg01",
         ECP: "uu_energygateway_mergedg01",
