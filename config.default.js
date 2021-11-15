@@ -11,5 +11,6 @@ module.exports = {
         ECP: "uu_energygateway_ecpendpointg01",
         IEC62325: "uu_energygateway_iec62325endpointg01",
         AS24: "uu_energygateway_as24endpointg01",
+        MERGED: "uu_energygateway_mergedg01",
     },
 };

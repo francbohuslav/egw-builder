@@ -55,6 +55,7 @@ class CommandLine {
                 this.buildECP = true;
                 this.buildIEC62325 = true;
                 this.buildAS24 = true;
+                this.buildMERGED = true;
                 this.interactively = false;
                 continue;
             }
@@ -93,6 +94,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-buildmerged") {
+                this.buildMERGED = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-unittests") {
                 this.unitTests = true;
                 this.interactively = false;
@@ -112,6 +118,7 @@ class CommandLine {
                 this.runECP = true;
                 this.runIEC62325 = true;
                 this.runAS24 = true;
+                // merged app is not intentionally
                 this.interactively = false;
                 continue;
             }
@@ -147,6 +154,11 @@ class CommandLine {
             }
             if (ar == "-runas24") {
                 this.runAS24 = true;
+                this.interactively = false;
+                continue;
+            }
+            if (ar == "-runmerged") {
+                this.runMERGED = true;
                 this.interactively = false;
                 continue;
             }
