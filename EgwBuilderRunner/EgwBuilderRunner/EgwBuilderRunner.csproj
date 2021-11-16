@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="LastSaver.cs" />
     <Compile Include="Runner.cs" />
+    <Compile Include="Services\DockerService.cs" />
     <Compile Include="Structure.cs" />
     <Compile Include="ThisAppStorage.cs" />
     <Page Include="DockerController.xaml">

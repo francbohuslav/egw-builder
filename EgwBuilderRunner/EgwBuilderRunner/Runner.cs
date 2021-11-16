@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EgwBuilderRunner.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace EgwBuilderRunner
@@ -43,27 +45,24 @@ namespace EgwBuilderRunner
             return output.ToString().Trim();
         }
 
-        internal List<string> GetDockerContainers(bool all)
+        internal async Task<List<string>> GetAllDockerContainers(string egwFolder)
         {
-            var process = Process.Start(new ProcessStartInfo()
+            var allServices = new List<string>();
+            var dockerService = new DockerService();
+            foreach (var project in Info.Projects)
             {
-                FileName = "docker",
-                Arguments = "container ls " + (all ? "--all " : "") + "--format='{{.Names}}",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                RedirectStandardError = true
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
+                var services = await dockerService.GetDockerServices(Path.Combine(egwFolder, project.Directory, "docker", "egw-tests"));
+                allServices = allServices.Union(services).ToList();
             }
-            while (!process.StandardError.EndOfStream)
-            {
-                output.Append(process.StandardError.ReadLine() + "\n");
-            }
-            return output.ToString().Trim().Split('\n').Select(l => l.Trim('\'')).ToList();
+            return allServices.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+        }
+
+
+        internal async Task<List<string>> GetRunningDockerContainers(string egwFolder)
+        {
+            var dockerService = new DockerService();
+            var services = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, Info.Projects.First(p => p.Code == "DG").Directory, "docker", "egw-tests"));
+            return services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
 
         public void RetrieveInfo(string builderFolder, string egwFolder)

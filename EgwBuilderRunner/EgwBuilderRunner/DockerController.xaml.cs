@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +18,7 @@ namespace EgwBuilderRunner
         private DispatcherTimer timer;
         private App myApp;
         private Runner runner;
+        private List<string> allDockerServices = null;
 
         public DockerController()
         {
@@ -26,7 +27,7 @@ namespace EgwBuilderRunner
             runner = myApp.Runner;
         }
 
-        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             timer = new DispatcherTimer
             {
@@ -37,35 +38,42 @@ namespace EgwBuilderRunner
         }
 
 
-        private void RefreshUi()
+        private async Task RefreshUi()
         {
             timer.Interval = TimeSpan.FromSeconds(15);
-            var allContainers = runner.GetDockerContainers(true).Where(name => name.Contains("egw-tests") && !name.Contains("mongosetup"));
-            var runningContainers = runner.GetDockerContainers(false);
+            if (runner.Info != null)
+            {
+                if (allDockerServices == null)
+                {
+                    allDockerServices = await runner.GetAllDockerContainers(myApp.EgwFolder);
+                    allDockerServices = allDockerServices.Where(name => !name.Contains("mongosetup")).ToList();
+                }
+                var runningContainers = await runner.GetRunningDockerContainers(myApp.EgwFolder);
 
-            var containers = allContainers.Select(name => new DockerContainer
-            {
-                Label = ToLabel(name),
-                Name = name,
-                IsRunning = runningContainers.Contains(name),
-                Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
-                IsEnabled = false
-            }).ToList();
-            containers.Add(new DockerContainer
-            {
-                Label = "Kafka",
-                Name = KafkaName,
-                IsRunning = runningContainers.Contains(KafkaName),
-                Background = Brushes.Transparent,
-                IsEnabled = true,
-                ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
-            });
-            ContainersPanel.ItemsSource = containers;
+                var containers = allDockerServices.Select(name => new DockerContainer
+                {
+                    Label = ToLabel(name),
+                    Name = name,
+                    IsRunning = runningContainers.Contains(name),
+                    Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
+                    IsEnabled = false
+                }).ToList();
+                containers.Add(new DockerContainer
+                {
+                    Label = "Kafka",
+                    Name = KafkaName,
+                    IsRunning = runningContainers.Contains(KafkaName),
+                    Background = Brushes.Transparent,
+                    IsEnabled = true,
+                    ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
+                });
+                ContainersPanel.ItemsSource = containers;
+            }
         }
 
         private string ToLabel(string name)
         {
-            var label = Regex.Replace(name, "^egw-tests-", "").Replace("-1", "").Replace("_1", "").Replace("-", " ");
+            var label = name.Replace("-", " ");
             label = label.Substring(0, 1).ToUpper() + label.Substring(1);
             return label;
         }
