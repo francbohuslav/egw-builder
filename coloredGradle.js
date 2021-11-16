@@ -51,12 +51,13 @@ function printLine(line, fd) {
         isErrorStart = true;
         isError = true;
         stackTraceLine = 0;
-    } else if (line.match(/^\s+at\s/)) {
-        isError = true;
-        stackTraceLine++;
+    } else if (isError && line.match(/Caused by/)) {
+        stackTraceLine = 3;
     } else if (line.match(/^\S+\s\[\S+\]\s/)) {
         isError = false;
         stackTraceLine = 0;
+    } else {
+        stackTraceLine++;
     }
     isErrorToInform = isErrorStart ? !isLowPriorityError(line) : false;
 
