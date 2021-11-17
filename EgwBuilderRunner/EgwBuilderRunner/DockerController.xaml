@@ -16,7 +16,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid Background="{Binding Background}" Width="160">
-                        <CheckBox Content="{Binding Label}" IsEnabled="{Binding IsEnabled}" Margin="2" IsChecked="{Binding IsRunning}" Unchecked="StartService" Checked="StartService" ToolTip="{Binding ToolTip}" />
+                        <CheckBox Content="{Binding Label}" IsEnabled="{Binding IsEnabled}" Margin="2" IsChecked="{Binding IsRunning}" Unchecked="RestartService" Checked="StartService" ToolTip="{Binding ToolTip}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

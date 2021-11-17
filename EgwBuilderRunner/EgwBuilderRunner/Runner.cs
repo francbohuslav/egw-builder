@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using static EgwBuilderRunner.InfoStructure;
 
 namespace EgwBuilderRunner
 {
@@ -45,16 +46,19 @@ namespace EgwBuilderRunner
             return output.ToString().Trim();
         }
 
-        internal async Task<List<string>> GetAllDockerContainers(string egwFolder)
+        internal async Task<Dictionary<string, Project>> GetAllDockerContainers(string egwFolder)
         {
-            var allServices = new List<string>();
+            var allServices = new Dictionary<string, Project>();
             var dockerService = new DockerService();
             foreach (var project in Info.Projects)
             {
                 var services = await dockerService.GetDockerServices(Path.Combine(egwFolder, project.Directory, "docker", "egw-tests"));
-                allServices = allServices.Union(services).ToList();
+                foreach (var service in services.Where(s => !string.IsNullOrWhiteSpace(s)))
+                {
+                    allServices.Add(service, project);
+                }
             }
-            return allServices.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            return allServices;
         }
 
 
@@ -62,7 +66,15 @@ namespace EgwBuilderRunner
         {
             var dockerService = new DockerService();
             var services = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, Info.Projects.First(p => p.Code == "DG").Directory, "docker", "egw-tests"));
-            return services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            services = services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+            var dg = Info.Projects.First(p => p.Code == "DG");
+            var kafkaServices = await dockerService.GetDockerServices(Path.Combine(egwFolder, dg.Directory, "docker", "kafka"));
+            foreach (var service in kafkaServices.Where(s => !string.IsNullOrWhiteSpace(s)))
+            {
+                services.Add(service);
+            }
+            return services;
         }
 
         public void RetrieveInfo(string builderFolder, string egwFolder)
@@ -110,6 +122,40 @@ namespace EgwBuilderRunner
             while (!process.StandardOutput.EndOfStream)
             {
                 output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+        }
+
+        internal void StartDocker(string egwFolder, string directory, string name, bool restart)
+        {
+            if (Info == null)
+            {
+                (Application.Current as App).ShowMessage("EGW info is not ready yet, try it again after second.", MessageBoxImage.Error);
+                return;
+            }
+
+            if (directory == null)
+            {
+                (Application.Current as App).ShowMessage("EGW builder does not give directories of project. Update builder.", MessageBoxImage.Error);
+                return;
+            }
+            var process = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "docker-compose",
+                Arguments = (restart ? "restart " : "up -d ") + name,
+                WorkingDirectory = Path.Combine(egwFolder, directory, "docker\\egw-tests"),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            });
+            var output = new StringBuilder();
+            while (!process.StandardOutput.EndOfStream)
+            {
+                output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+            while (!process.StandardError.EndOfStream)
+            {
+                output.Append(process.StandardError.ReadLine() + "\n");
             }
         }
 
