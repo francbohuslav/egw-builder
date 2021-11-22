@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BoganApp.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace EgwBuilderRunner
         private DispatcherTimer timer;
         private App myApp;
         private Runner runner;
+        private bool isRefreshing;
         private Dictionary<string, Project> allDockerServices = null;
 
         public DockerController()
@@ -41,35 +43,53 @@ namespace EgwBuilderRunner
 
         private async Task RefreshUi()
         {
-            timer.Interval = TimeSpan.FromSeconds(15);
-            if (runner.Info != null)
+            if (isRefreshing)
             {
-                if (allDockerServices == null)
+                return;
+            }
+            try
+            {
+                isRefreshing = true;
+                timer.Interval = TimeSpan.FromSeconds(15);
+                if (runner.Info != null)
                 {
-                    allDockerServices = await runner.GetAllDockerContainers(myApp.EgwFolder);
-                    allDockerServices = allDockerServices.Where(kv => !kv.Key.Contains("mongosetup")).ToDictionary(kv => kv.Key, kv => kv.Value);
-                }
-                var runningContainers = await runner.GetRunningDockerContainers(myApp.EgwFolder);
+                    Progress.SetVisible(true);
+                    if (allDockerServices == null)
+                    {
+                        allDockerServices = await runner.GetAllDockerContainers(myApp.EgwFolder);
+                        allDockerServices = allDockerServices.Where(kv => !kv.Key.Contains("mongosetup")).ToDictionary(kv => kv.Key, kv => kv.Value);
+                    }
+                    var runningContainers = await runner.GetRunningDockerContainers(myApp.EgwFolder);
 
-                var containers = allDockerServices.Keys.Select(name => new DockerContainer
-                {
-                    Label = ToLabel(name),
-                    Name = name,
-                    IsRunning = runningContainers.Contains(name),
-                    Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
-                    IsEnabled = true,
-                    ToolTip = runningContainers.Contains(name) ? "Uncheck to restart. GUI will be freezed a while." : null
-                }).ToList();
-                containers.Add(new DockerContainer
-                {
-                    Label = "Kafka",
-                    Name = KafkaName,
-                    IsRunning = runningContainers.Contains(KafkaName),
-                    Background = Brushes.Transparent,
-                    IsEnabled = true,
-                    ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
-                });
-                ContainersPanel.ItemsSource = containers;
+                    var containers = allDockerServices.Keys.Select(name => new DockerContainer
+                    {
+                        Label = ToLabel(name),
+                        Name = name,
+                        IsRunning = runningContainers.Contains(name),
+                        Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
+                        IsEnabled = true,
+                        ToolTip = runningContainers.Contains(name) ? "Uncheck to restart. GUI will be freezed a while." : null
+                    }).ToList();
+                    containers.Add(new DockerContainer
+                    {
+                        Label = "Kafka",
+                        Name = KafkaName,
+                        IsRunning = runningContainers.Contains(KafkaName),
+                        Background = Brushes.Transparent,
+                        IsEnabled = true,
+                        ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
+                    });
+                    Progress.SetVisible(false);
+                    ContainersPanel.ItemsSource = containers;
+                }
+            }
+            catch (Exception ex)
+            {
+                myApp.ShowError(ex);
+            }
+            finally
+            {
+                isRefreshing = false;
             }
         }
 

@@ -43,8 +43,8 @@ namespace EgwBuilderRunner.Services
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = "docker-compose",
-                    Arguments = "ps --services --status running",
+                    FileName = "docker",
+                    Arguments = "compose ps --services --status running",
                     WorkingDirectory = egwFolder,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,

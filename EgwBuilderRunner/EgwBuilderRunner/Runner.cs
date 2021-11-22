@@ -69,7 +69,7 @@ namespace EgwBuilderRunner
             services = services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
             var dg = Info.Projects.First(p => p.Code == "DG");
-            var kafkaServices = await dockerService.GetDockerServices(Path.Combine(egwFolder, dg.Directory, "docker", "kafka"));
+            var kafkaServices = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, dg.Directory, "docker", "kafka"));
             foreach (var service in kafkaServices.Where(s => !string.IsNullOrWhiteSpace(s)))
             {
                 services.Add(service);
