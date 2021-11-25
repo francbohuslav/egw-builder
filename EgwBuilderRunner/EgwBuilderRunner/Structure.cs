@@ -16,6 +16,9 @@ namespace EgwBuilderRunner
         [JsonProperty("metamodel")]
         public bool Metamodel { get; set; }
 
+        [JsonProperty("isMerged")]
+        public bool IsMerged { get; set; }
+
         [JsonProperty("build")]
         public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED;
 

@@ -264,6 +264,7 @@ namespace EgwBuilderRunner
         {
             ClearDocker.IsChecked = false;
             Metamodel.IsChecked = false;
+            IsMerged.IsChecked = false;
             Setversion.Text = "";
             SetOperation("Build", false);
             SetOperation("Run", false);
@@ -301,6 +302,7 @@ namespace EgwBuilderRunner
                 Version = Setversion.Text,
                 Clear = ClearDocker.IsChecked == true,
                 Metamodel = Metamodel.IsChecked == true,
+                IsMerged = IsMerged.IsChecked == true,
                 UnitTests = UnitTests.IsChecked == true,
                 Uid = YourUID.Text,
                 InitASYNC = AsyncJob.IsChecked == true,
@@ -351,6 +353,7 @@ namespace EgwBuilderRunner
             Setversion.Text = structure.Version;
             ClearDocker.IsChecked = structure.Clear;
             Metamodel.IsChecked = structure.Metamodel;
+            IsMerged.IsChecked = structure.IsMerged;
             UnitTests.IsChecked = structure.UnitTests;
             YourUID.Text = structure.Uid;
             YourUID_LostFocus(null, null);
