@@ -17,10 +17,7 @@
             Builder: ...
         </TextBlock>
         <DockPanel HorizontalAlignment="Left" Margin="10,55,0,67"  Width="321">
-            <StackPanel DockPanel.Dock="Bottom"  Margin="0,10,0,0">
-                <TextBlock FontWeight="Bold" Margin="0,0,0,5">Docker containers (refreshed every 15s)</TextBlock>
-                <local:DockerController  />
-            </StackPanel>
+            <local:DockerController DockPanel.Dock="Bottom"  Margin="0,10,0,0" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" >
                 <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="" Foreground="#FF87FF87" Padding="5"/>
             </ScrollViewer>

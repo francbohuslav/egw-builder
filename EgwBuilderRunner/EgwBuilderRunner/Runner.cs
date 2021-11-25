@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EgwBuilderRunner.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
+using static EgwBuilderRunner.InfoStructure;
 
 namespace EgwBuilderRunner
 {
@@ -43,27 +46,35 @@ namespace EgwBuilderRunner
             return output.ToString().Trim();
         }
 
-        internal List<string> GetDockerContainers(bool all)
+        internal async Task<Dictionary<string, Project>> GetAllDockerContainers(string egwFolder)
         {
-            var process = Process.Start(new ProcessStartInfo()
+            var allServices = new Dictionary<string, Project>();
+            var dockerService = new DockerService();
+            foreach (var project in Info.Projects)
             {
-                FileName = "docker",
-                Arguments = "container ls " + (all ? "--all " : "") + "--format='{{.Names}}",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                RedirectStandardError = true
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
+                var services = await dockerService.GetDockerServices(Path.Combine(egwFolder, project.Directory, "docker", "egw-tests"));
+                foreach (var service in services.Where(s => !string.IsNullOrWhiteSpace(s)))
+                {
+                    allServices.Add(service, project);
+                }
             }
-            while (!process.StandardError.EndOfStream)
+            return allServices;
+        }
+
+
+        internal async Task<List<string>> GetRunningDockerContainers(string egwFolder)
+        {
+            var dockerService = new DockerService();
+            var services = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, Info.Projects.First(p => p.Code == "DG").Directory, "docker", "egw-tests"));
+            services = services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+            var dg = Info.Projects.First(p => p.Code == "DG");
+            var kafkaServices = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, dg.Directory, "docker", "kafka"));
+            foreach (var service in kafkaServices.Where(s => !string.IsNullOrWhiteSpace(s)))
             {
-                output.Append(process.StandardError.ReadLine() + "\n");
+                services.Add(service);
             }
-            return output.ToString().Trim().Split('\n').Select(l => l.Trim('\'')).ToList();
+            return services;
         }
 
         public void RetrieveInfo(string builderFolder, string egwFolder)
@@ -111,6 +122,40 @@ namespace EgwBuilderRunner
             while (!process.StandardOutput.EndOfStream)
             {
                 output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+        }
+
+        internal void StartDocker(string egwFolder, string directory, string name, bool restart)
+        {
+            if (Info == null)
+            {
+                (Application.Current as App).ShowMessage("EGW info is not ready yet, try it again after second.", MessageBoxImage.Error);
+                return;
+            }
+
+            if (directory == null)
+            {
+                (Application.Current as App).ShowMessage("EGW builder does not give directories of project. Update builder.", MessageBoxImage.Error);
+                return;
+            }
+            var process = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "docker-compose",
+                Arguments = (restart ? "restart " : "up -d ") + name,
+                WorkingDirectory = Path.Combine(egwFolder, directory, "docker\\egw-tests"),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            });
+            var output = new StringBuilder();
+            while (!process.StandardOutput.EndOfStream)
+            {
+                output.Append(process.StandardOutput.ReadLine() + "\n");
+            }
+            while (!process.StandardError.EndOfStream)
+            {
+                output.Append(process.StandardError.ReadLine() + "\n");
             }
         }
 
