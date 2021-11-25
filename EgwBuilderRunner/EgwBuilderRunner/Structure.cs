@@ -77,7 +77,6 @@ namespace EgwBuilderRunner
         [JsonProperty("runMERGED")]
         public bool RunMERGED { get; set; }
 
-
         [JsonProperty("runInSequence")]
         public bool RunInSequence { get; set; }
 
