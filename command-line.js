@@ -42,6 +42,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-ismerged") {
+                this.isMerged = true;
+                this.interactively = false;
+                continue;
+            }
             if (ar == "-clear") {
                 this.clear = true;
                 this.interactively = false;

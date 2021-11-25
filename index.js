@@ -306,9 +306,10 @@ async function waitForApplicationIsReady(project) {
         if (counter == seconds) {
             console.log("Pinging url " + url);
         }
-        console.log("Web is not ready, waiting... " + counter + " seconds left");
+        process.stdout.write(".");
         await core.delay(2000);
     }
+    process.stdout.write("\n");
     core.showError("Application is not ready");
 }
 
@@ -687,6 +688,9 @@ async function run() {
 
         cmd.getCmdValue("clear", "Clear docker?");
         cmd.getCmdValue("metamodel", "Generate metamodel?");
+        cmd.getCmdValue("isMerged", "Run as merged application?");
+
+        const isMergedVersion = cmd.isMerged;
 
         // Build
         const isBuild = cmd.interactively
@@ -718,7 +722,6 @@ async function run() {
         for (const project of runableProjects) {
             isRunPerProject[project.code] = isRun && cmd.getCmdValue("run" + project.code, "... " + project.code + "?");
         }
-        const isMergedVersion = isRunPerProject[MERGED.code];
 
         // Inits
         const isRunInit = cmd.interactively
