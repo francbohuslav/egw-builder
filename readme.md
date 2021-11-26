@@ -70,6 +70,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -metamodel           - Regenerates metamodel for Business Territory.
     -logAsyncJob         - Shows console windows for AsyncJob.
     -runInSequence       - SubApps are started gradually.
+    -isMerged            - Merged application will be used for inits, tests, etc.
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway
@@ -79,6 +80,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -buildECP            - Builds ECP endpoint
     -buildIEC62325       - Builds IEC62325 endpoint
     -buildAS24           - Builds AS24 endpoint
+    -buildMERGED         - Builds merged application
 
     -run                 - Runs all subApps
     -runDG               - Runs Datagateway
@@ -88,6 +90,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -runECP              - Runs ECP endpoint
     -runIEC62325         - Runs IEC62325 endpoint
     -runAS24             - Runs AS24 endpoint
+    -runMERGED           - Runs merged application
 
     -init                - Runs init commands of all apps (creates workspace, sets permissions)
     -initDG              - Runs init commands of Datagateway

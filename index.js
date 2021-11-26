@@ -357,7 +357,6 @@ async function runInitCommandsAsyncJob(isMergedVersion) {
     const logFile = "jmeter/logs/initLogsASYNC.log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
-
     const { stdOut } = await core.runCommand("docker", [
         "run",
         "--rm",
@@ -582,6 +581,7 @@ async function run() {
             console.log("  -metamodel           - Regenerates metamodel for Business Territory.");
             console.log("  -logAsyncJob         - Shows console windows for AsyncJob");
             console.log("  -runInSequence       - SubApps are started gradually.");
+            console.log("  -isMerged            - Merged application will be used for inits, tests, etc.");
             console.log("");
             console.log("  -build               - Builds all apps by gradle");
             console.log("  -buildDG             - Builds Datagateway");
@@ -591,6 +591,7 @@ async function run() {
             console.log("  -buildECP            - Builds ECP endpoint");
             console.log("  -buildIEC62325       - Builds IEC62325 endpoint");
             console.log("  -buildAS24           - Builds AS24 endpoint");
+            console.log("  -buildMERGED         - Builds merged application");
             console.log("");
             console.log("  -run                 - Runs all subApps");
             console.log("  -runDG               - Runs Datagateway");
@@ -600,6 +601,7 @@ async function run() {
             console.log("  -runECP              - Runs ECP endpoint");
             console.log("  -runIEC62325         - Runs IEC62325 endpoint");
             console.log("  -runAS24             - Runs AS24 endpoint");
+            console.log("  -runMERGED           - Runs merged application");
             console.log("");
             console.log("  -init                - Runs init commands of all apps (creates workspace, sets permissions)");
             console.log("  -initDG              - Runs init commands of Datagateway");

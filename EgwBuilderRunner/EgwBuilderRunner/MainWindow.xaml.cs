@@ -431,9 +431,13 @@ namespace EgwBuilderRunner
             {
                 UnitTests.IsEnabled = true;
             }
-            if (ClearDocker.IsChecked == true && (Run_DG.IsChecked == true || Run_FTP.IsChecked == true))
+            if (ClearDocker.IsChecked == true && (Run_DG.IsChecked == true || Run_FTP.IsChecked == true || Run_MERGED.IsChecked == true))
             {
                 AsyncJob.IsChecked = true;
+            }
+            if (Build_MERGED.IsChecked == true || Run_MERGED.IsChecked == true || Init_MERGED.IsChecked == true)
+            {
+                IsMerged.IsChecked = true;
             }
         }
 

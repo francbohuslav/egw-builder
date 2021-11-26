@@ -58,10 +58,10 @@
                 <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="0,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
                 <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
             </Grid>
-            <StackPanel Margin="0,15,0,0" Orientation="Horizontal"  HorizontalAlignment="Left" VerticalAlignment="Top">
+            <DockPanel Margin="0,15,0,0"  VerticalAlignment="Top">
+                <CheckBox x:Name="IsMerged" Content="Run as merged app" DockPanel.Dock="Right" />
                 <CheckBox x:Name="AsyncJob" Content="Init AsyncJob"  />
-                <CheckBox x:Name="IsMerged" Content="Run as merged app" Margin="20,0,0,0" />
-            </StackPanel>
+            </DockPanel>
             <Grid Height="140" Margin="0,10,0,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
