@@ -52,6 +52,10 @@ namespace EgwBuilderRunner
             var dockerService = new DockerService();
             foreach (var project in Info.Projects)
             {
+                if (project.Directory == null)
+                {
+                    continue;
+                }
                 var services = await dockerService.GetDockerServices(Path.Combine(egwFolder, project.Directory, "docker", "egw-tests"));
                 foreach (var service in services.Where(s => !string.IsNullOrWhiteSpace(s)))
                 {
