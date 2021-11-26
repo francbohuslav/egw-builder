@@ -299,9 +299,10 @@ async function waitForApplicationIsReady(project) {
         if (counter == seconds) {
             console.log("Pinging url " + url);
         }
-        console.log("Web is not ready, waiting... " + counter + " seconds left");
+        process.stdout.write(".");
         await core.delay(2000);
     }
+    process.stdout.write("\n");
     core.showError("Application is not ready");
 }
 
