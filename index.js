@@ -14,6 +14,7 @@ const tests = require("./classes/tests");
 
 let config = require("./config.default");
 const info = require("./classes/info");
+const messageBroker = require("./classes/message-broker");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
@@ -647,16 +648,16 @@ async function run() {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
 
-        const runableProjects = [DG, MR, FTP, EMAIL, ECP];
+        const runnableProjects = [DG, MR, FTP, EMAIL, ECP];
         if (fs.existsSync(IEC62325.folder)) {
-            runableProjects.push(IEC62325);
+            runnableProjects.push(IEC62325);
         }
         if (fs.existsSync(AS24.folder)) {
-            runableProjects.push(AS24);
+            runnableProjects.push(AS24);
         }
 
         if (fs.existsSync(MERGED.folder)) {
-            runableProjects.push(MERGED);
+            runnableProjects.push(MERGED);
         }
 
         if (cmd.interactively || cmd.getVersions) {
@@ -721,7 +722,7 @@ async function run() {
             console.log("Which app to run?");
         }
         const isRunPerProject = {};
-        for (const project of runableProjects) {
+        for (const project of runnableProjects) {
             isRunPerProject[project.code] = isRun && cmd.getCmdValue("run" + project.code, "... " + project.code + "?");
         }
 
@@ -736,7 +737,7 @@ async function run() {
             console.log("Which init?");
         }
         const isInitPerProject = {};
-        for (const project of runableProjects) {
+        for (const project of runnableProjects) {
             isInitPerProject[project.code] = isRunInit && cmd.getCmdValue("init" + project.code, "... " + project.code + "?");
         }
         isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
@@ -789,7 +790,7 @@ async function run() {
 
         if (cmd.clear) {
             core.showMessage("Clearing docker...");
-            for (const project of runableProjects) {
+            for (const project of runnableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
                     await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
                 }
@@ -800,7 +801,7 @@ async function run() {
         }
         if (cmd.unitTests || isRun) {
             core.showMessage("Starting docker...");
-            for (const project of runableProjects) {
+            for (const project of runnableProjects) {
                 if (
                     ((isBuild && isBuildPerProject[project.code] && cmd.unitTests) ||
                         (isRun && isRunPerProject[project.code]) ||
@@ -817,6 +818,15 @@ async function run() {
             for (const project of projects) {
                 if (fs.existsSync(project.folder)) {
                     await metamodel.generateModel(cmd.folder, projects, project, isVersion11);
+                }
+            }
+        }
+
+        if (cmd.messageBroker) {
+            core.showMessage(`Setting message broker to ${cmd.messageBroker}`);
+            for (const project of projects) {
+                if (fs.existsSync(project.folder)) {
+                    messageBroker.changeMessageBroker(cmd.messageBroker, projects);
                 }
             }
         }
@@ -838,7 +848,7 @@ async function run() {
         if (isRun) {
             core.showMessage("Starting apps...");
             let prevProject = null;
-            for (const project of runableProjects) {
+            for (const project of runnableProjects) {
                 if (isRunPerProject[project.code]) {
                     if (prevProject != null && cmd.runInSequence) {
                         await waitForApplicationIsReady(prevProject);
@@ -875,7 +885,7 @@ async function run() {
                     await runInitCommandsAsyncJob(isMergedVersion);
                 });
             }
-            for (const project of runableProjects) {
+            for (const project of runnableProjects) {
                 if (isInitPerProject[project.code]) {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder

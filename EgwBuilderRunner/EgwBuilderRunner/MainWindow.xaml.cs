@@ -74,7 +74,7 @@ namespace EgwBuilderRunner
                             (FindName("Test_" + project.CodeForComponent) as CheckBox).IsEnabled = false;
                         }
                     }
-
+                    MessageBroker.Text = MyApp.Runner.Info.MessageBroker;
                 }
                 catch (Exception ex)
                 {
@@ -266,6 +266,7 @@ namespace EgwBuilderRunner
             Metamodel.IsChecked = false;
             IsMerged.IsChecked = false;
             Setversion.Text = "";
+            MessageBroker.Text = MyApp.Runner.Info != null ? MyApp.Runner.Info.MessageBroker : "";
             SetOperation("Build", false);
             SetOperation("Run", false);
             SetOperation("Init", false);
@@ -300,6 +301,7 @@ namespace EgwBuilderRunner
             {
                 Folder = MyApp.EgwFolder,
                 Version = Setversion.Text,
+                MessageBroker = MessageBroker.Text,
                 Clear = ClearDocker.IsChecked == true,
                 Metamodel = Metamodel.IsChecked == true,
                 IsMerged = IsMerged.IsChecked == true,
@@ -351,6 +353,7 @@ namespace EgwBuilderRunner
             MyApp.EgwFolder = structure.Folder;
             UpdateStatusBar();
             Setversion.Text = structure.Version;
+            MessageBroker.Text = structure.MessageBroker;
             ClearDocker.IsChecked = structure.Clear;
             Metamodel.IsChecked = structure.Metamodel;
             IsMerged.IsChecked = structure.IsMerged;

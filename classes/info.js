@@ -1,5 +1,6 @@
 const fs = require("fs");
 const core = require("../core");
+const messageBroker = require("./message-broker");
 
 class Info {
     /**
@@ -22,6 +23,7 @@ class Info {
         return {
             projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile, directory: p.folder })),
             additionalTests: tests,
+            messageBroker: messageBroker.getActualMessageBroker(projects),
         };
     }
 

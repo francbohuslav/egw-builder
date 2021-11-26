@@ -172,6 +172,11 @@ class CommandLine {
                 this.interactively = false;
                 continue;
             }
+            if (ar == "-messagebroker") {
+                this.messageBroker = pars.shift();
+                this.interactively = false;
+                continue;
+            }
 
             if (ar == "-init") {
                 this.initDG = true;

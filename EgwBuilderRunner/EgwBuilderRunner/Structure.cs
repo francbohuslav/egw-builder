@@ -16,6 +16,9 @@ namespace EgwBuilderRunner
         [JsonProperty("metamodel")]
         public bool Metamodel { get; set; }
 
+        [JsonProperty("messageBroker")]
+        public string MessageBroker { get; set; }
+
         [JsonProperty("isMerged")]
         public bool IsMerged { get; set; }
 

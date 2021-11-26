@@ -54,9 +54,17 @@
             </TextBlock>
             <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
             <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
-            <Grid>
-                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,5" Margin="0,5,0,0" VerticalAlignment="Top" Width="69" Height="25"/>
-                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="23" Margin="74,7,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="126"/>
+            <Grid Margin="0,5,0,0">
+                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,2,0,0" Margin="0,0,0,0" VerticalAlignment="Top" Width="69"  />
+                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="19" Margin="74,0,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126"/>
+            </Grid>
+            <Grid Margin="0,5,0,0">
+                <Label Content="Change MB" HorizontalAlignment="Left" Padding="0,3,0,0" Margin="0,0,0,0" VerticalAlignment="Top" Width="69"  />
+                <ComboBox x:Name="MessageBroker"  SelectedIndex="-1" HorizontalAlignment="Left" Height="21" Margin="74,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126" IsEditable="True">
+                    <ComboBoxItem>amqp</ComboBoxItem>
+                    <ComboBoxItem>kafka</ComboBoxItem>
+                    <ComboBoxItem>mongodb</ComboBoxItem>
+                </ComboBox>
             </Grid>
             <DockPanel Margin="0,15,0,0"  VerticalAlignment="Top">
                 <CheckBox x:Name="IsMerged" Content="Run as merged app" DockPanel.Dock="Right" />

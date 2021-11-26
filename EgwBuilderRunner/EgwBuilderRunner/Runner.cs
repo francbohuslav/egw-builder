@@ -203,6 +203,8 @@ namespace EgwBuilderRunner
         public List<Project> Projects { get; set; }
         public List<string> AdditionalTests { get; set; }
 
+        public string MessageBroker { get; set; }
+
         public bool ContainsProject(string code) => Projects != null && Projects.Any(p => p.CodeForComponent == code);
         public bool ContainsProjectTest(string codeOfComponent) => Projects != null && Projects.Any(p => p.CodeForComponent == codeOfComponent && p.SupportTests);
 

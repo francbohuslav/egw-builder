@@ -7,3 +7,4 @@ node_modules
 /EgwBuilderRunner/packages
 /EgwBuilderRunner/EgwBuilderRunner.sln.cache
 /EgwBuilderRunner/Installer/setup-EgwBuilderRunner.exe
+/config.js
