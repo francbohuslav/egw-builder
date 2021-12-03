@@ -60,7 +60,7 @@ class CommandLine {
                 this.buildECP = true;
                 this.buildIEC62325 = true;
                 this.buildAS24 = true;
-                this.buildMERGED = true;
+                // merged app is not intentionally
                 this.interactively = false;
                 continue;
             }
