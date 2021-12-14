@@ -69,7 +69,12 @@ namespace EgwBuilderRunner
         internal async Task<List<string>> GetRunningDockerContainers(string egwFolder)
         {
             var dockerService = new DockerService();
-            var services = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, Info.Projects.First(p => p.Code == "DG").Directory, "docker", "egw-tests"));
+            var dgDir = Info.Projects.First(p => p.Code == "DG").Directory;
+            if (dgDir == null)
+            {
+                return new List<string>();
+            }
+            var services = await dockerService.GetRunningDockerContainers(Path.Combine(egwFolder, dgDir, "docker", "egw-tests"));
             services = services.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
             var dg = Info.Projects.First(p => p.Code == "DG");
