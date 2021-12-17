@@ -71,6 +71,7 @@
     <Compile Include="DockerController.xaml.cs">
       <DependentUpon>DockerController.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\EnvironmentHelper.cs" />
     <Compile Include="LastSaver.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="Services\DockerService.cs" />

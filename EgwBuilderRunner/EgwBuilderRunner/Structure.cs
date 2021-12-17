@@ -139,5 +139,8 @@ namespace EgwBuilderRunner
 
         [JsonProperty("additionalTests")]
         public string[] AdditionalTests { get; set; }
+
+        [JsonProperty("environmentFile")]
+        public string EnvironmentFile { get; set; }
     }
 }

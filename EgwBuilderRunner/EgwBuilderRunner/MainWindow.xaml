@@ -52,20 +52,28 @@
             <TextBlock x:Name="DockerInternalAddressWarningIsOk" Background="#FF8BFFB0" FontWeight="Bold" Margin="0,10,0,5" Padding="8,5" Foreground="#FF007A0B">
                 Address host.docker.internal is ok
             </TextBlock>
-            <CheckBox x:Name="ClearDocker" Content="Clear Docker (deletes Mongo, AMQP and ECP)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="Metamodel" Content="Genarate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
-            <Grid Margin="0,5,0,0">
-                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,2,0,0" Margin="0,0,0,0" VerticalAlignment="Top" Width="69"  />
-                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="19" Margin="74,0,0,0" VerticalContentAlignment="Center" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126"/>
-            </Grid>
-            <Grid Margin="0,5,0,0">
-                <Label Content="Change MB" HorizontalAlignment="Left" Padding="0,3,0,0" Margin="0,0,0,0" VerticalAlignment="Top" Width="69"  />
-                <ComboBox x:Name="MessageBroker"  SelectedIndex="-1" HorizontalAlignment="Left" Height="21" Margin="74,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126" IsEditable="True">
+            <CheckBox x:Name="ClearDocker" Content="Clear Docker" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" ToolTip="Deletes Mongo, AMQP, ECP,..."/>
+            <CheckBox x:Name="Metamodel" Content="Generate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />
+            <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                <Label Content="Set version" HorizontalAlignment="Left" Padding="0,2,0,0" Margin="0,0,5,0" VerticalAlignment="Top" Width="135" HorizontalContentAlignment="Right" />
+                <TextBox x:Name="Setversion" HorizontalAlignment="Left" Height="19" VerticalContentAlignment="Center" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126" ToolTip="Sets version to build.gradle, metamodel, uuapp.json, package.json,..."/>
+            </StackPanel>
+            <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                <Label Content="Change Message Broker" HorizontalAlignment="Left" Padding="0,3,0,0" Margin="0,0,5,0" VerticalAlignment="Top" Width="135" HorizontalContentAlignment="Right"  />
+                <ComboBox x:Name="MessageBroker"  SelectedIndex="-1" HorizontalAlignment="Left" Height="21" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126" IsEditable="True" ToolTip="Changes message broker in application.properties of all apps">
                     <ComboBoxItem>amqp</ComboBoxItem>
                     <ComboBoxItem>kafka</ComboBoxItem>
                     <ComboBoxItem>mongodb</ComboBoxItem>
                 </ComboBox>
-            </Grid>
+            </StackPanel>
+            <StackPanel Name="EnvironmentContainer" Margin="0,5,0,0" Orientation="Horizontal">
+                <Label Content="Environment" HorizontalAlignment="Left" Padding="0,3,0,0" Margin="0,0,5,0" VerticalAlignment="Top" Width="135" HorizontalContentAlignment="Right"  />
+                <ComboBox x:Name="Environment" SelectedIndex="0" HorizontalAlignment="Left" Height="21"
+                          VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126"
+                          ToolTip="You can find them in MR in folder */test/jmeter/ as env_localhost_builder*.cfg">
+                    <ComboBoxItem>default</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
             <DockPanel Margin="0,15,0,0"  VerticalAlignment="Top">
                 <CheckBox x:Name="IsMerged" Content="Run as merged app" DockPanel.Dock="Right" />
                 <CheckBox x:Name="AsyncJob" Content="Init AsyncJob"  />

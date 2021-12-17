@@ -9,6 +9,7 @@ class CommandLine {
         this.interactively = true;
         /** Output human readable text */
         this.enableConsole = true;
+        this.evironmentFile = "env_localhost_builder";
         while (pars.length > 0) {
             const ar = pars.shift().toLowerCase();
             if (ar == "-last") {
@@ -45,6 +46,10 @@ class CommandLine {
             if (ar == "-ismerged") {
                 this.isMerged = true;
                 this.interactively = false;
+                continue;
+            }
+            if (ar == "-environmentfile") {
+                this.evironmentFile = pars.shift();
                 continue;
             }
             if (ar == "-clear") {

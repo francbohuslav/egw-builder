@@ -1,5 +1,6 @@
 ﻿using BoganApp.Core;
 using BoganApp.Windows;
+using EgwBuilderRunner.Helpers;
 using IWshRuntimeLibrary;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Env = System.Environment;
 
 namespace EgwBuilderRunner
 {
@@ -27,6 +29,7 @@ namespace EgwBuilderRunner
             InitializeComponent();
             Title = MyApp.AppSettings.ApplicationNameWithVersion;
             DockerInternalAddressWarningIsOk.SetVisible(false);
+            EnvironmentContainer.SetVisible(false);
 
             Clear_Click(null, null);
             lastSaver = new LastSaver(MyApp.BuilderFolder);
@@ -54,27 +57,35 @@ namespace EgwBuilderRunner
                     var version = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
                     MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
                     Console.Text = version + "\n\nBranches\n" + MyApp.Runner.Info.GetBranches();
-                    additionalTestModels = MyApp.Runner.Info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
+                    var info = MyApp.Runner.Info;
+                    additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
                     AdditionalTestsContainer.SetVisible(additionalTestModels.Count > 0);
-                    if (!MyApp.Runner.Info.ContainsProject("IEC"))
+                    if (!info.ContainsProject("IEC"))
                     {
                         IEC.IsEnabled = false;
                         ForProject("IEC", ch => ch.IsEnabled = false);
                     }
-                    if (!MyApp.Runner.Info.ContainsProject("AS24"))
+                    if (!info.ContainsProject("AS24"))
                     {
                         AS24.IsEnabled = false;
                         ForProject("AS24", ch => ch.IsEnabled = false);
                     }
-                    foreach (var project in MyApp.Runner.Info.Projects)
+                    foreach (var project in info.Projects)
                     {
                         if (!project.SupportTests && FindName("Test_" + project.CodeForComponent) != null)
                         {
                             (FindName("Test_" + project.CodeForComponent) as CheckBox).IsEnabled = false;
                         }
                     }
-                    MessageBroker.Text = MyApp.Runner.Info.MessageBroker;
+                    MessageBroker.Text = info.MessageBroker;
+                    if (info.IsEnvironmentsShowable)
+                    {
+                        EnvironmentContainer.SetVisible(true);
+                        Environment.Items.Clear();
+                        Environment.ItemsSource = info.GetEnvironments();
+                        Environment.SelectedIndex = 0;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +124,7 @@ namespace EgwBuilderRunner
                     );
             if (result != MessageBoxResult.OK)
             {
-                Environment.Exit(1);
+                Env.Exit(1);
             }
 
             string builderFolder = null;
@@ -124,7 +135,7 @@ namespace EgwBuilderRunner
                 var folderResult = folderDialog.ShowDialog();
                 if (folderResult != System.Windows.Forms.DialogResult.OK)
                 {
-                    Environment.Exit(2);
+                    Env.Exit(2);
                 }
                 builderFolder = folderDialog.SelectedPath;
 
@@ -137,7 +148,7 @@ namespace EgwBuilderRunner
                 var folderResult = folderDialog.ShowDialog();
                 if (folderResult != System.Windows.Forms.DialogResult.OK)
                 {
-                    Environment.Exit(2);
+                    Env.Exit(2);
                 }
                 egwFolder = folderDialog.SelectedPath;
             }
@@ -155,7 +166,7 @@ namespace EgwBuilderRunner
 
             MyApp.ShowMessage("Link created. I am going to open target folder and you can use it. Bye.");
             Process.Start(egwFolder);
-            Environment.Exit(0);
+            Env.Exit(0);
         }
 
         private void UpdateStatusBar()
@@ -309,6 +320,7 @@ namespace EgwBuilderRunner
                 Uid = YourUID.Text,
                 InitASYNC = AsyncJob.IsChecked == true,
                 RunInSequence = RunInSequence.IsChecked == true,
+                EnvironmentFile = MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable ? EnvironmentHelper.LabelToFile(Environment.SelectedItem?.ToString()) : null,
 
                 BuildDG = Build_DG.IsChecked == true,
                 BuildMR = Build_MR.IsChecked == true,
@@ -354,6 +366,10 @@ namespace EgwBuilderRunner
             UpdateStatusBar();
             Setversion.Text = structure.Version;
             MessageBroker.Text = structure.MessageBroker;
+            if (MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable)
+            {
+                Environment.SelectedItem = EnvironmentHelper.FileToLabel(structure.EnvironmentFile);
+            }
             ClearDocker.IsChecked = structure.Clear;
             Metamodel.IsChecked = structure.Metamodel;
             IsMerged.IsChecked = structure.IsMerged;

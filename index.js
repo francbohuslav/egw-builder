@@ -317,9 +317,9 @@ async function waitForApplicationIsReady(project) {
 /**
  *
  * @param {IProject} project
- * @param {string} yourUid
+ * @param {CommandLine} cmd
  */
-async function runInitCommands(project, yourUid, insomniaFolder, isMergedVersion) {
+async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
     await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
 
     const projectCode = project.code;
@@ -340,10 +340,11 @@ async function runInitCommands(project, yourUid, insomniaFolder, isMergedVersion
             initFile +
             " -j " +
             logFile +
-            " -Jenv=env_localhost_builder" +
+            " -Jenv=" +
+            cmd.environmentFile +
             (isMergedVersion ? "_merged" : "") +
             ".cfg -Jinsomnia_dir=/insomnia -Juid=" +
-            yourUid
+            cmd.uid
         ).split(" "),
     ];
     const { stdOut } = await core.runCommand("docker", params);
@@ -352,7 +353,7 @@ async function runInitCommands(project, yourUid, insomniaFolder, isMergedVersion
     }
 }
 
-async function runInitCommandsAsyncJob(isMergedVersion) {
+async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
     const initFile = "inits/init_ASYNC_JOB.jmx";
     const resultsFile = "logs/initResultsASYNC.xml";
     const logFile = "jmeter/logs/initLogsASYNC.log";
@@ -367,7 +368,7 @@ async function runInitCommandsAsyncJob(isMergedVersion) {
         process.cwd() + ":/jmeter",
         "--network=egw-tests_default",
         "egaillardon/jmeter-plugins",
-        ...(`-n -t jmeter/${initFile} -j ${logFile} -Jenv=env_localhost_builder` + (isMergedVersion ? "_merged" : "") + `.cfg`).split(" "),
+        ...(`-n -t jmeter/${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}` + (isMergedVersion ? "_merged" : "") + `.cfg`).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
         core.showError(`Init commands of ASYNC failed`);
@@ -434,7 +435,7 @@ async function cleanDockers() {
 /**
  * @param {IProject} project
  */
-async function runProjectTests(project, isProjectTest, isVersion11, isMergedVersion) {
+async function runProjectTests(project, isProjectTest, isVersion11, isMergedVersion, cmd) {
     let projectCode = project;
     let testFile = null;
     if (isProjectTest) {
@@ -453,7 +454,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, isMergedVers
         core.showError(ftpDataDir + " does not exists");
     }
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
-    restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=env_localhost_builder" + (isMergedVersion ? "_merged" : "") + ".cfg";
+    restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const rest = restStr.split(" ");
     rest.push("-Jftp_data_dir=/ftpdata");
     if (isVersion11 && project == EMAIL) {
@@ -583,6 +584,7 @@ async function run() {
             console.log("  -logAsyncJob         - Shows console windows for AsyncJob");
             console.log("  -runInSequence       - SubApps are started gradually.");
             console.log("  -isMerged            - Merged application will be used for inits, tests, etc.");
+            console.log("  -environmentFile <f> - Environment file <f> will be used. Default: env_localhost_builder");
             console.log("");
             console.log("  -build               - Builds all apps by gradle");
             console.log("  -buildDG             - Builds Datagateway");
@@ -676,7 +678,7 @@ async function run() {
         }
         // console.log(cmd);
         // console.log(cmd.version);
-
+        console.log("Environment file: " + cmd.environmentFile);
         cmd.version = cmd.interactively ? prompt("Set version [enter = no change]: ") : cmd.version;
         if (!cmd.interactively) {
             if (cmd.version) {
@@ -882,7 +884,7 @@ async function run() {
             if (isInitPerProject.ASYNC) {
                 core.showMessage("Init AsyncJob");
                 await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
-                    await runInitCommandsAsyncJob(isMergedVersion);
+                    await runInitCommandsAsyncJob(isMergedVersion, cmd);
                 });
             }
             for (const project of runnableProjects) {
@@ -890,7 +892,7 @@ async function run() {
                     core.showMessage("Init " + project.code);
                     // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
                     await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
-                        await runInitCommands(project, cmd.uid, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`, isMergedVersion);
+                        await runInitCommands(project, cmd, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`, isMergedVersion);
                     });
                 }
             }
@@ -957,7 +959,7 @@ async function run() {
                         });
                     } else {
                         await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
-                            report = await runProjectTests(project, isProjectTest, isVersion11, isMergedVersion);
+                            report = await runProjectTests(project, isProjectTest, isVersion11, isMergedVersion, cmd);
                         });
                     }
 

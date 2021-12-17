@@ -1,4 +1,5 @@
-﻿using EgwBuilderRunner.Services;
+﻿using EgwBuilderRunner.Helpers;
+using EgwBuilderRunner.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,7 @@ namespace EgwBuilderRunner
                 output.Append(process.StandardOutput.ReadLine() + "\n");
             }
             Info = JsonConvert.DeserializeObject<InfoStructure>(output.ToString().Trim());
+
         }
 
         internal void StartKafka(string egwFolder)
@@ -210,7 +212,13 @@ namespace EgwBuilderRunner
     public class InfoStructure
     {
         public List<Project> Projects { get; set; }
+
         public List<string> AdditionalTests { get; set; }
+
+        public List<string> EnvironmentFiles { get; set; }
+        public List<string> GetEnvironments() => EnvironmentFiles?.Select(EnvironmentHelper.FileToLabel).ToList();
+
+        public bool IsEnvironmentsShowable => EnvironmentHelper.ContainsNonDefault(EnvironmentFiles);
 
         public string MessageBroker { get; set; }
 

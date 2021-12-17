@@ -71,6 +71,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -logAsyncJob         - Shows console windows for AsyncJob.
     -runInSequence       - SubApps are started gradually.
     -isMerged            - Merged application will be used for inits, tests, etc.
+    -environmentFile <f> - Environment file <f> will be used. Default: env_localhost_builder
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway
