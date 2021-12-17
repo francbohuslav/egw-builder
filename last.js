@@ -22,9 +22,11 @@ class Last {
             return null;
         }
         const content = core.readTextFile(this.path);
+        /** @type {CommandLine} */
         const cmd = Object.setPrototypeOf(JSON.parse(content), CommandLine.prototype);
         cmd.interactively = false;
         cmd.last = true;
+        cmd.environmentFile = cmd.environmentFile || "env_localhost_builder";
         return cmd;
     }
 }
