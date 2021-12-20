@@ -10,7 +10,7 @@ class Info {
      */
     async getInfo(projects, MR) {
         const info = this.getTests(projects, MR);
-        this.getEnvironments(info, MR);
+        info.environmentFiles = this.getEnvironments(MR);
         await this.getBranches(info, projects);
         console.log(JSON.stringify(info, null, 2));
     }
@@ -28,8 +28,8 @@ class Info {
         };
     }
 
-    getEnvironments(info, MR) {
-        info.environmentFiles = fs
+    getEnvironments(MR) {
+        return fs
             .readdirSync(`${MR.folder}/${MR.server}/src/test/jmeter/`)
             .filter((t) => t.match(/^env_localhost_builder(_.+)?\.cfg/))
             .map((e) => e.replace(".cfg", ""));

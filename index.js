@@ -417,12 +417,21 @@ async function stopComposer() {
 }
 
 async function cleanDockers() {
-    const { stdOut } = await core.runCommand("docker container ls -a --filter name=egw-tests_mongo");
+    let { stdOut } = await core.runCommand("docker container ls -a --filter name=egw-tests_mongo");
     const containerIds = stdOut
         .split("\n")
         .slice(1) // remove header
         .map((l) => l.split(" ")[0]) // take id
         .filter((id) => id.length > 10); // remove empty line
+    stdOut = (await core.runCommand("docker container ls -a --filter name=egw-run-test")).stdOut;
+    const testsId = stdOut
+        .split("\n")
+        .slice(1) // remove header
+        .map((l) => l.split(" ")[0]) // take id
+        .filter((id) => id.length > 10)[0]; // remove empty line
+    if (testsId) {
+        containerIds.push(testsId);
+    }
     for (const id of containerIds) {
         console.log("Stop docker ...");
         await core.runCommand("docker container stop " + id);
@@ -449,7 +458,8 @@ async function runProjectTests(project, isProjectTest, isVersion11, isMergedVers
     const logFile = "logs/testLogs" + projectCode + ".log";
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
-    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data");
+    const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
+    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
     if (!fs.existsSync(ftpDataDir)) {
         core.showError(ftpDataDir + " does not exists");
     }
@@ -645,7 +655,9 @@ async function run() {
             core.showMessage(`Using folder ${cmd.folder}`);
         }
         process.chdir(cmd.folder);
-        const isVersion11 = !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`);
+        const isVersion11 =
+            !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost.cfg`) &&
+            !fs.existsSync(`${MR.folder}/${MR.server}/src/test/jmeter/env_localhost_A.cfg`);
         if (isVersion11 && cmd.enableConsole) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
@@ -675,6 +687,11 @@ async function run() {
         if (cmd.getInfo) {
             await info.getInfo(projects, MR);
             return;
+        }
+
+        if (!cmd.environmentFile) {
+            const envs = info.getEnvironments(MR);
+            cmd.environmentFile = envs[0];
         }
         // console.log(cmd);
         // console.log(cmd.version);

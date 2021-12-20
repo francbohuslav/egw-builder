@@ -9,7 +9,6 @@ class CommandLine {
         this.interactively = true;
         /** Output human readable text */
         this.enableConsole = true;
-        this.environmentFile = "env_localhost_builder";
         while (pars.length > 0) {
             const ar = pars.shift().toLowerCase();
             if (ar == "-last") {
