@@ -152,6 +152,7 @@ const projects = [
         code: "MERGED",
         folder: config.folders.MERGED,
         server: "uu_energygateway_mergedg01-server",
+        hi: "uu_energygateway_mergedg01-hi",
         port: 8800,
         webname: "uu-energygateway-mergedg01",
     },
@@ -179,6 +180,15 @@ async function buildProject(project, isUnitTests) {
         console.log("Install NPM packages for HI");
         await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
             await core.runCommand("cmd /C npm i");
+        });
+    }
+
+    if (project.code === "MERGED") {
+        console.log("Install NPM packages for HI");
+        await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
+            await core.runCommand("cmd /C npm i");
+            console.log("Build HI");
+            await core.runCommand("cmd /C npm run build");
         });
     }
 
