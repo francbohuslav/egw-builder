@@ -162,9 +162,9 @@ const projects = [
 
 const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, MERGED] = projects;
 
-function addJDKtoGradle(command) {
+function addJDKtoGradle(command, withQuotes = "") {
     if (JDK) {
-        return `${command} "-Dorg.gradle.java.home=${JDK}"`;
+        return `${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`;
     }
     return command;
 }
@@ -582,7 +582,7 @@ async function runApp(project, cmd, isBuild) {
         if (!cmd.unitTests || isBuild) {
             command += " -x test";
         }
-        core.runCommandNoWait(addJDKtoGradle(command));
+        core.runCommandNoWait(addJDKtoGradle(command, '"'));
     });
 }
 
