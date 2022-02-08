@@ -13,4 +13,7 @@ module.exports = {
         AS24: "uu_energygateway_as24endpointg01",
         MERGED: "uu_energygateway_mergedg01",
     },
+    JDK: {
+        11: "c:\\Users\\franc\\.jdks\\corretto-11.0.12",
+    },
 };

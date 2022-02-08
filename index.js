@@ -15,9 +15,11 @@ const tests = require("./classes/tests");
 let config = require("./config.default");
 const info = require("./classes/info");
 const messageBroker = require("./classes/message-broker");
+const java = require("./classes/java");
 if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
+let JDK = "";
 
 const builderDir = __dirname;
 
@@ -160,6 +162,13 @@ const projects = [
 
 const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, MERGED] = projects;
 
+function addJDKtoGradle(command) {
+    if (JDK) {
+        return `${command} -Dorg.gradle.java.home=${JDK}`;
+    }
+    return command;
+}
+
 /**
  *
  * @param {IProject} project
@@ -197,7 +206,7 @@ async function buildProject(project, isUnitTests) {
         if (!isUnitTests) {
             command += " -x test";
         }
-        await core.runCommand(command);
+        await core.runCommand(addJDKtoGradle(command));
 
         if (project.code === "MR") {
             fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
@@ -671,6 +680,13 @@ async function run() {
         if (isVersion11 && cmd.enableConsole) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
+        const javaVersion = java.getJavaVersion(DG);
+        if (config.JDK && config.JDK[javaVersion]) {
+            JDK = config.JDK[javaVersion];
+        }
+        if (cmd.enableConsole) {
+            java.printInfo(javaVersion, JDK);
+        }
 
         const runnableProjects = [DG, MR, FTP, EMAIL, ECP];
         if (fs.existsSync(IEC62325.folder)) {
@@ -944,7 +960,7 @@ async function run() {
                             if (!cmd.unitTests || isBuild || isRun) {
                                 command += " -x test";
                             }
-                            core.runCommandNoWait(command);
+                            core.runCommandNoWait(addJDKtoGradle(command));
                         });
                         await core.delay(1000);
                     }
