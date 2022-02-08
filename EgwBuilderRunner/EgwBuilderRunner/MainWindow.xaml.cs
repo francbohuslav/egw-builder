@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Env = System.Environment;
 
 namespace EgwBuilderRunner
@@ -79,6 +80,11 @@ namespace EgwBuilderRunner
                         }
                     }
                     MessageBroker.Text = info.MessageBroker;
+                    if (string.IsNullOrWhiteSpace(info.MessageBroker))
+                    {
+                        MessageBrokerLabel.Foreground = Brushes.Red;
+                        MessageBrokerLabel.ToolTip = "Subapps have different brokers. You can set same broker for all subApps here.";
+                    }
                     if (info.IsEnvironmentsShowable)
                     {
                         EnvironmentContainer.SetVisible(true);
@@ -484,6 +490,12 @@ namespace EgwBuilderRunner
         private void MERGED_Click(object sender, RoutedEventArgs e)
         {
             SetProject("MERGED", Build_MERGED.IsChecked != true);
+        }
+
+        private void MessageBroker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MessageBrokerLabel.Foreground = SystemColors.ActiveCaptionTextBrush;
+            MessageBrokerLabel.ToolTip = null;
         }
     }
 
