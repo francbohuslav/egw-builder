@@ -1,2 +1,3 @@
 @echo off
-gradlew --console plain start %4 %5 | node %1\coloredGradle.js %2 %3
+@REM echo gradlew --console plain start %4 %5 %6 %7 %8
+gradlew --console plain start %4 %5 %6 %7 %8 | node %1\coloredGradle.js %2 %3

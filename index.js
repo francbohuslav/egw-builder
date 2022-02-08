@@ -164,7 +164,7 @@ const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, MERGED] = projects;
 
 function addJDKtoGradle(command) {
     if (JDK) {
-        return `${command} -Dorg.gradle.java.home=${JDK}`;
+        return `${command} "-Dorg.gradle.java.home=${JDK}"`;
     }
     return command;
 }
@@ -582,7 +582,7 @@ async function runApp(project, cmd, isBuild) {
         if (!cmd.unitTests || isBuild) {
             command += " -x test";
         }
-        core.runCommandNoWait(command);
+        core.runCommandNoWait(addJDKtoGradle(command));
     });
 }
 
@@ -680,13 +680,6 @@ async function run() {
         if (isVersion11 && cmd.enableConsole) {
             core.showMessage("This is 1.1.* version, apps will be restarted after init.");
         }
-        const javaVersion = java.getJavaVersion(DG);
-        if (config.JDK && config.JDK[javaVersion]) {
-            JDK = config.JDK[javaVersion];
-        }
-        if (cmd.enableConsole) {
-            java.printInfo(javaVersion, JDK);
-        }
 
         const runnableProjects = [DG, MR, FTP, EMAIL, ECP];
         if (fs.existsSync(IEC62325.folder)) {
@@ -714,6 +707,12 @@ async function run() {
             await info.getInfo(projects, MR);
             return;
         }
+
+        const javaVersion = java.getJavaVersion(DG);
+        if (config.JDK && config.JDK[javaVersion]) {
+            JDK = config.JDK[javaVersion];
+        }
+        java.printInfo(javaVersion, JDK);
 
         if (!cmd.environmentFile) {
             const envs = info.getEnvironments(MR);
