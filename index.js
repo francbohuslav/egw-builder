@@ -357,7 +357,6 @@ async function cleanDockers() {
         console.log("Remove docker ...");
         await core.runCommand("docker container rm " + id);
     }
-    await core.runCommand("docker system prune --volumes -f");
 }
 
 /**
@@ -588,7 +587,7 @@ async function run() {
                 }
             }
         }
-        if (isBuild || isRun) {
+        if (isRun) {
             core.showMessage("Starting docker...");
             for (const project of runableProjects) {
                 if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
