@@ -23,7 +23,7 @@ class Java {
         if (JDK) {
             str += `. JDK ${JDK} used.`;
         } else {
-            str += "Default Java used";
+            str += ". Default Java used";
         }
         console.log(str);
     }
