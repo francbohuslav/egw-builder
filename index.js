@@ -353,7 +353,6 @@ async function cleanDockers() {
         console.log("Remove docker ...");
         await core.runCommand("docker container rm " + id);
     }
-    await core.runCommand("docker system prune --volumes -f");
 }
 
 /**
