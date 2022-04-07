@@ -69,14 +69,9 @@ function printLine(line, fd) {
         }
     } else if (isRunning && line.indexOf("MessageBrokerPublisher") > -1) {
         color = Colors.FgCyan;
-    } else if (
-        (isRunning &&
-            ((line.indexOf("IncomingMessageReceivedConsumer") > -1 && line.indexOf("Subscribing") == -1 && line.indexOf("Subscription done") == -1) ||
-                line.indexOf("DefaultIncomingMessageRecognizer") > -1)) ||
-        line.indexOf("New message arrived") > -1
-    ) {
+    } else if (isRunning && isReceivedMessage(line)) {
         // Incoming messsage
-        color = line.indexOf("Message data:") > -1 ? Colors.FgGreen : Colors.BgBlue;
+        color = line.indexOf("Message data:") > -1 || line.indexOf("Header data:") > -1 ? Colors.FgGreen : Colors.BgBlue;
     } else if (isRunning && isUnImportantLine(line)) {
         // Unimportant message
         color = Colors.FgGray;
@@ -203,6 +198,29 @@ function isUnImportantLine(line) {
 
 function isLowPriorityError(line) {
     if (line.indexOf("Mappings.json not found on path") > -1) {
+        return true;
+    }
+    return false;
+}
+
+function isReceivedMessage(line) {
+    if (line.indexOf("IncomingMessageReceivedConsumer") > -1 && line.indexOf("Subscribing") == -1 && line.indexOf("Subscription done") == -1) {
+        return true;
+    }
+    if (line.indexOf("DefaultIncomingMessageRecognizer") > -1) {
+        return true;
+    }
+    if (line.indexOf("FtpOutgoingMessageSenderConsumer") > -1 && line.indexOf("Message will be processed by") == -1) {
+        return true;
+    }
+    if (
+        line.indexOf("EmailOutgoingMessageSenderConsumer") > -1 &&
+        line.indexOf("Message will be processed by") == -1 &&
+        line.indexOf("RabbitMqMessageBroker") == -1
+    ) {
+        return true;
+    }
+    if (line.indexOf("New message arrived") > -1) {
         return true;
     }
     return false;
