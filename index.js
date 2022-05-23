@@ -164,7 +164,12 @@ const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, MERGED] = projects;
 
 function addJDKtoGradle(command, withQuotes = "") {
     if (JDK) {
-        return `${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`;
+        if (typeof command === "string") {
+            console.log(`${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`);
+            return `${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`;
+        } else {
+            command.push(`${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`);
+        }
     }
     return command;
 }
@@ -202,11 +207,11 @@ async function buildProject(project, isUnitTests) {
     }
 
     await core.inLocationAsync(project.folder, async () => {
-        let command = `cmd /C gradlew clean build compileTestJava`;
+        let args = `/C gradlew clean build compileTestJava`;
         if (!isUnitTests) {
-            command += " -x test";
+            args += " -x test";
         }
-        await core.runCommand(addJDKtoGradle(command));
+        await core.runCommand("cmd", addJDKtoGradle(args.split(" ")));
 
         if (project.code === "MR") {
             fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
@@ -958,7 +963,7 @@ async function run() {
                             if (!cmd.unitTests || isBuild || isRun) {
                                 command += " -x test";
                             }
-                            core.runCommandNoWait(addJDKtoGradle(command));
+                            core.runCommandNoWait(command);
                         });
                         await core.delay(1000);
                     }
