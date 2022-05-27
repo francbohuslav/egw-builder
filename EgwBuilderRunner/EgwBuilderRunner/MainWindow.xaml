@@ -146,17 +146,17 @@
                 <ItemsControl x:Name="AdditionalTests" Margin="80,2,0,0" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
+                            <WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <CheckBox Content="{Binding NameToWPF}" IsChecked="{Binding IsChecked}" Margin="0,0,10,0" />
+                            <CheckBox Content="{Binding NameToWPF}" IsChecked="{Binding IsChecked}" Margin="0,0,10,3" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-            <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="0,15,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
+            <CheckBox x:Name="RunInSequence" Content="Run in sequence" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Checked="RunInSequence_Checked" Unchecked="RunInSequence_Checked" />
             <CheckBox x:Name="UnitTests" Content="Build with unit tests" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top"/>
             <Grid>
                 <Label Content="Your UID" HorizontalAlignment="Left" Margin="0,5,0,0" Padding="0,5" VerticalAlignment="Top" Width="69" Height="25"/>
