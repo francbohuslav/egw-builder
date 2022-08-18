@@ -103,8 +103,14 @@ namespace EgwBuilderRunner
             {
                 output.Append(process.StandardOutput.ReadLine() + "\n");
             }
-            Info = JsonConvert.DeserializeObject<InfoStructure>(output.ToString().Trim());
-
+            try
+            {
+                Info = JsonConvert.DeserializeObject<InfoStructure>(output.ToString().Trim());
+            }
+            catch
+            {
+                throw new Exception("Can not parse: " + output.ToString().Trim());
+            }
         }
 
         internal void StartKafka(string egwFolder)

@@ -5,6 +5,7 @@ const fs = require("fs");
 class Core {
     constructor() {
         this.locationHistory = [];
+        this.debugCommands = false;
     }
 
     /**
@@ -51,6 +52,10 @@ class Core {
         console.log("\x1b[33m%s\x1b[0m", message);
     }
 
+    showCommand(message) {
+        console.log("\x1b[35m%s\x1b[0m", message);
+    }
+
     showError(message, exit = true) {
         console.log("\x1b[31m%s\x1b[0m", message);
         //rompt("press ENTER to continue ");
@@ -86,6 +91,9 @@ class Core {
         return new Promise((resolve, reject) => {
             let stdOut = "";
             let stdErr = "";
+            if (this.debugCommands) {
+                this.showCommand(command + " " + args.join(" "));
+            }
             const context = spawn(command, args);
             context.stdout.on("data", (data) => {
                 stdOut += data.toString();
@@ -132,6 +140,9 @@ class Core {
             if (typeof args === "string") {
                 args = args.split(" ");
             }
+        }
+        if (this.debugCommands) {
+            this.showCommand(command + " " + args.join(" "));
         }
         spawn(command, args, {
             detached: true,

@@ -20,6 +20,7 @@ if (fs.existsSync("./config.js")) {
     config = require("./config");
 }
 let JDK = "";
+const jmeterDocker = "egaillardon/jmeter-plugins:latest";
 
 const builderDir = __dirname;
 
@@ -165,11 +166,9 @@ const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, MERGED] = projects;
 function addJDKtoGradle(command, withQuotes = "") {
     if (JDK) {
         if (typeof command === "string") {
-            console.log(`${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`);
             return `${command} ${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`;
-        } else {
-            command.push(`${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`);
         }
+        command.push(`${withQuotes}-Dorg.gradle.java.home=${JDK}${withQuotes}`);
     }
     return command;
 }
@@ -360,7 +359,7 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
             ":/jmeter" +
             " -v " +
             insomniaFolder +
-            ":/insomnia --network=egw-tests_default egaillardon/jmeter-plugins -n -t jmeter/" +
+            `:/insomnia --network=egw-tests_default ${jmeterDocker} -n -t jmeter/` +
             initFile +
             " -j " +
             logFile +
@@ -391,7 +390,7 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
         "-v",
         process.cwd() + ":/jmeter",
         "--network=egw-tests_default",
-        "egaillardon/jmeter-plugins",
+        jmeterDocker,
         ...(`-n -t jmeter/${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}` + (isMergedVersion ? "_merged" : "") + `.cfg`).split(" "),
     ]);
     if (stdOut.match(/Err:\s+[1-9]/g)) {
@@ -467,7 +466,7 @@ async function cleanDockers() {
 /**
  * @param {IProject} project
  */
-async function runProjectTests(project, isProjectTest, isVersion11, isMergedVersion, cmd) {
+async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, isMergedVersion, cmd) {
     let projectCode = project;
     let testFile = null;
     if (isProjectTest) {
@@ -490,6 +489,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, isMergedVers
     restStr += isVersion11 ? "-Jhost=host.docker.internal" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const rest = restStr.split(" ");
     rest.push("-Jftp_data_dir=/ftpdata");
+    rest.push("-Jinsomnia_dir=/insomnia");
     if (isVersion11 && project == EMAIL) {
         rest.push("-Jsmtp_host=smtp");
         rest.push("-Jsmtp_port=80");
@@ -503,8 +503,10 @@ async function runProjectTests(project, isProjectTest, isVersion11, isMergedVers
         process.cwd() + ":/jmeter",
         "-v",
         ftpDataDir + ":/ftpdata",
+        "-v",
+        insomniaFolder + ":/insomnia",
         "--network=egw-tests_default",
-        "egaillardon/jmeter-plugins",
+        jmeterDocker,
         ...rest,
     ];
     //console.log(params);
@@ -836,6 +838,8 @@ async function run() {
             setProjectsVersions(cmd.version);
         }
 
+        core.debugCommands = true;
+
         if (cmd.clear) {
             core.showMessage("Clearing docker...");
             for (const project of runnableProjects) {
@@ -1005,7 +1009,14 @@ async function run() {
                         });
                     } else {
                         await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
-                            report = await runProjectTests(project, isProjectTest, isVersion11, isMergedVersion, cmd);
+                            report = await runProjectTests(
+                                project,
+                                isProjectTest,
+                                isVersion11,
+                                `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`,
+                                isMergedVersion,
+                                cmd
+                            );
                         });
                     }
 
