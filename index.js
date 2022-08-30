@@ -270,6 +270,7 @@ function setProjectVersion(project, newVersion) {
         }
         let content = core.readTextFile("build.gradle");
         content = content.replace(/version '.*'/, `version '${newVersion}'`);
+        content = content.replace(/(egwLibrariesVersion\s*=\s*)".*"/, `$1"${newVersion}"`);
         core.writeTextFile("build.gradle", content);
 
         if (fs.existsSync(MR.hi + "/package.json")) {
