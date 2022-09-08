@@ -1036,6 +1036,19 @@ async function run() {
                 }
             }
 
+            core.writeTextFile(
+                `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
+                JSON.stringify(
+                    {
+                        PASSED: newPassed,
+                        FAILED_NEW: newFailed,
+                        FAILED_KNOWN: knownFailed,
+                    },
+                    null,
+                    2
+                )
+            );
+
             core.showMessage("\n\n======== TESTS SUMMARY =======\n");
 
             tests.showFailedTests(newPassed, newFailed);

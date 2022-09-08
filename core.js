@@ -197,8 +197,8 @@ class Core {
         return fs.readFileSync(file, { encoding: "utf-8" }).toString();
     }
 
-    writeTextFile(tempFile, data) {
-        fs.writeFileSync(tempFile, data, { encoding: "utf-8" });
+    writeTextFile(filePath, data) {
+        fs.writeFileSync(filePath, data, { encoding: "utf-8" });
     }
 
     async getProcessIdByPort(port) {
