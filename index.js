@@ -516,7 +516,8 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
     const knownFailed = steps.filter((step) => !step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
     const newFailed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
     const newPassed = steps.filter((step) => step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
-    return { newFailed, newPassed, knownFailed };
+    const allPassed = steps.filter((step) => step.success).map((step) => step.info);
+    return { newFailed, newPassed, knownFailed, allPassed };
 }
 
 function cloneDataGatewayForIec() {
@@ -986,6 +987,7 @@ async function run() {
             const knownFailed = {};
             const newFailed = {};
             const newPassed = {};
+            const allPassed = {};
             const projectList = [
                 ...[
                     isTestsDG ? DG : null,
@@ -1027,6 +1029,9 @@ async function run() {
                     if (report.newPassed.length) {
                         newPassed[testCode] = report.newPassed;
                     }
+                    if (report.allPassed.length) {
+                        allPassed[testCode] = report.allPassed;
+                    }
                     if (report.knownFailed.length) {
                         knownFailed[testCode] = report.knownFailed;
                     }
@@ -1036,53 +1041,7 @@ async function run() {
                 }
             }
 
-            core.writeTextFile(
-                `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
-                JSON.stringify(
-                    {
-                        PASSED: newPassed,
-                        FAILED_NEW: newFailed,
-                        FAILED_KNOWN: knownFailed,
-                    },
-                    null,
-                    2
-                )
-            );
-
-            core.showMessage("\n\n======== TESTS SUMMARY =======\n");
-
-            tests.showFailedTests(newPassed, newFailed);
-            if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
-                core.showError("Tests failed. Watch message above.");
-            }
-            if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
-                core.showSuccess("All tests passed as expected.");
-                core.showSuccess("");
-                core.showSuccess("            ████                ");
-                core.showSuccess("          ███ ██                ");
-                core.showSuccess("          ██   █                ");
-                core.showSuccess("          ██   ██               ");
-                core.showSuccess("           ██   ███             ");
-                core.showSuccess("            ██    ██            ");
-                core.showSuccess("            ██     ███          ");
-                core.showSuccess("             ██      ██         ");
-                core.showSuccess("        ███████       ██        ");
-                core.showSuccess("     █████              ███ ██  ");
-                core.showSuccess("    ██     ████          ██████ ");
-                core.showSuccess("    ██  ████  ███             ██");
-                core.showSuccess("    ██        ███             ██");
-                core.showSuccess("     ██████████ ███           ██");
-                core.showSuccess("     ██        ████           ██");
-                core.showSuccess("     ███████████  ██          ██");
-                core.showSuccess("       ██       ████     ██████ ");
-                core.showSuccess("       ██████████ ██    ███ ██  ");
-                core.showSuccess("          ██     ████ ███       ");
-                core.showSuccess("          █████████████         ");
-                core.showSuccess("");
-            }
-            if (Object.keys(knownFailed).length) {
-                core.showWarning(`Some tests are marked as failed in ${Object.keys(knownFailed).join(", ")}.`);
-            }
+            results.printReport(MR, newPassed, newFailed, knownFailed, allPassed);
         }
 
         core.showMessage("DONE");

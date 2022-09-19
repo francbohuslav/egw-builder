@@ -1,4 +1,6 @@
 const xpath = require("xpath");
+const tests = require("./classes/tests");
+const core = require("./core");
 const dom = require("xmldom").DOMParser;
 
 /**
@@ -32,6 +34,63 @@ class Results {
             })
         );
         return results;
+    }
+
+    printReport(MR, newPassed, newFailed, knownFailed, allPassed) {
+        core.writeTextFile(
+            `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
+            JSON.stringify(
+                {
+                    PASSED: newPassed,
+                    FAILED_NEW: newFailed,
+                    FAILED_KNOWN: knownFailed,
+                },
+                null,
+                2
+            )
+        );
+
+        core.showMessage("\n\n======== TESTS SUMMARY =======");
+        console.log(new Date().toLocaleString());
+
+        tests.showFailedTests(newPassed, newFailed);
+        if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
+            core.showError("Tests failed. Watch message above.");
+        }
+        if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
+            core.showSuccess("All tests passed as expected.");
+            core.showSuccess("");
+            core.showSuccess("            ████                ");
+            core.showSuccess("          ███ ██                ");
+            core.showSuccess("          ██   █                ");
+            core.showSuccess("          ██   ██               ");
+            core.showSuccess("           ██   ███             ");
+            core.showSuccess("            ██    ██            ");
+            core.showSuccess("            ██     ███          ");
+            core.showSuccess("             ██      ██         ");
+            core.showSuccess("        ███████       ██        ");
+            core.showSuccess("     █████              ███ ██  ");
+            core.showSuccess("    ██     ████          ██████ ");
+            core.showSuccess("    ██  ████  ███             ██");
+            core.showSuccess("    ██        ███             ██");
+            core.showSuccess("     ██████████ ███           ██");
+            core.showSuccess("     ██        ████           ██");
+            core.showSuccess("     ███████████  ██          ██");
+            core.showSuccess("       ██       ████     ██████ ");
+            core.showSuccess("       ██████████ ██    ███ ██  ");
+            core.showSuccess("          ██     ████ ███       ");
+            core.showSuccess("          █████████████         ");
+            core.showSuccess("");
+        }
+        core.showSuccess(`Passed: ${Object.values(allPassed).reduce((p, c) => p + c.length, 0)}`);
+        Object.entries(allPassed).forEach(([key, passed]) => {
+            core.showSuccess(` - ${key}: ${passed.length}`);
+        });
+        core.showWarning(`Failed and fix in progress: ${Object.values(knownFailed).reduce((p, c) => p + c.length, 0)}`);
+        const failedCount = Object.values(newFailed).reduce((p, c) => p + c.length, 0);
+        if (failedCount) {
+            core.showError(`New failed tests: ${failedCount}`, false);
+        }
     }
 }
 
