@@ -3,214 +3,214 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 
 class Core {
-    constructor() {
-        this.locationHistory = [];
-        this.debugCommands = false;
-    }
+  constructor() {
+    this.locationHistory = [];
+    this.debugCommands = false;
+  }
 
-    /**
-     * Ask for user input
-     * @param {string} question
-     * @param {string} defaultValue
-     * @return {string}
-     */
-    ask(question, defaultValue = null) {
-        if (defaultValue === null) {
-            question = question + " [Y/n]";
+  /**
+   * Ask for user input
+   * @param {string} question
+   * @param {string} defaultValue
+   * @return {string}
+   */
+  ask(question, defaultValue = null) {
+    if (defaultValue === null) {
+      question = question + " [Y/n]";
+    } else {
+      defaultValue = defaultValue.toUpperCase();
+      question = question + " Default=" + defaultValue;
+    }
+    let answer = prompt(question + " ");
+    if (answer === null) {
+      // CTRL + C
+      this.showError("Terminated by user");
+    }
+    answer = answer.toUpperCase();
+    if (!defaultValue) {
+      return answer === "" || answer === "Y";
+    } else {
+      answer = answer.toUpperCase();
+      if (answer === "") {
+        answer = defaultValue;
+      }
+      return answer;
+    }
+  }
+
+  showMessage(message) {
+    console.log("\x1b[36m%s\x1b[0m", message);
+    // Title
+    process.stdout.write(String.fromCharCode(27) + "]0;EB: " + message + String.fromCharCode(7));
+  }
+
+  showSuccess(message) {
+    console.log("\x1b[32m%s\x1b[0m", message);
+  }
+
+  showWarning(message) {
+    console.log("\x1b[33m%s\x1b[0m", message);
+  }
+
+  showCommand(message) {
+    console.log("\x1b[35m%s\x1b[0m", message);
+  }
+
+  showError(message, exit = true) {
+    console.log("\x1b[31m%s\x1b[0m", message);
+    //rompt("press ENTER to continue ");
+    if (exit) {
+      process.exit(1);
+    }
+  }
+
+  async delay(ms) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, ms);
+    });
+  }
+
+  /**
+   *
+   * @param {string} command
+   * @param {string[]} args
+   */
+  async runCommand(command, args, options) {
+    if (!args || args.length === 0) {
+      if (command.indexOf(" ") > -1) {
+        args = command.split(" ");
+        command = args.shift();
+      }
+    } else {
+      if (typeof args === "string") {
+        args = args.split(" ");
+      }
+    }
+    return new Promise((resolve, reject) => {
+      let stdOut = "";
+      let stdErr = "";
+      if (this.debugCommands) {
+        this.showCommand(command + " " + args.join(" "));
+      }
+      const context = spawn(command, args);
+      context.stdout.on("data", (data) => {
+        stdOut += data.toString();
+        if (!options || !options.disableStdOut) {
+          console.log(data.toString());
+        }
+      });
+
+      context.stderr.on("data", (data) => {
+        stdErr += data.toString();
+        if (!options || !options.disableStdOut) {
+          if (data.toString().toLowerCase().indexOf("warn") > -1) {
+            console.log("\x1b[33m%s\x1b[0m", data.toString());
+          } else {
+            console.log("\x1b[31m%s\x1b[0m", data.toString());
+          }
+        }
+      });
+
+      context.on("error", (error) => {
+        stdErr += error;
+        if (!options || !options.disableStdOut) {
+          console.log("\x1b[31m%s\x1b[0m", error.message);
+        }
+      });
+
+      context.on("close", (code) => {
+        if (code) {
+          reject({ code, stdOut, stdErr });
         } else {
-            defaultValue = defaultValue.toUpperCase();
-            question = question + " Default=" + defaultValue;
+          resolve({ stdOut, stdErr });
         }
-        let answer = prompt(question + " ");
-        if (answer === null) {
-            // CTRL + C
-            this.showError("Terminated by user");
-        }
-        answer = answer.toUpperCase();
-        if (!defaultValue) {
-            return answer === "" || answer === "Y";
-        } else {
-            answer = answer.toUpperCase();
-            if (answer === "") {
-                answer = defaultValue;
-            }
-            return answer;
-        }
+      });
+    });
+  }
+
+  runCommandNoWait(command, args) {
+    if (!args || args.length === 0) {
+      if (command.indexOf(" ") > -1) {
+        args = command.split(" ");
+        command = args.shift();
+      }
+    } else {
+      if (typeof args === "string") {
+        args = args.split(" ");
+      }
     }
-
-    showMessage(message) {
-        console.log("\x1b[36m%s\x1b[0m", message);
-        // Title
-        process.stdout.write(String.fromCharCode(27) + "]0;EB: " + message + String.fromCharCode(7));
+    if (this.debugCommands) {
+      this.showCommand(command + " " + args.join(" "));
     }
+    spawn(command, args, {
+      detached: true,
+      shell: true,
+      stdio: "ignore",
+    });
+  }
 
-    showSuccess(message) {
-        console.log("\x1b[32m%s\x1b[0m", message);
+  processExit(errorLevel, location) {
+    if (errorLevel) {
+      this.showError(`ERROR: ${errorLevel}` + (location ? " in " + location : ""));
     }
+  }
 
-    showWarning(message) {
-        console.log("\x1b[33m%s\x1b[0m", message);
+  async inLocationAsync(path, asyncAction) {
+    this.pushLocation(path);
+    await asyncAction();
+    this.popLocation();
+  }
+
+  /**
+   * @param {string} path
+   * @param {function} action
+   */
+  inLocation(path, action) {
+    this.pushLocation(path);
+    action();
+    this.popLocation();
+  }
+
+  pushLocation(path) {
+    const wd = process.cwd();
+    this.locationHistory.push(wd);
+    process.chdir(path);
+  }
+
+  popLocation() {
+    if (this.locationHistory.length) {
+      const wd = this.locationHistory.pop();
+      process.chdir(wd);
+      return wd;
+    } else {
+      this.showError("There is no location to pop");
     }
+  }
 
-    showCommand(message) {
-        console.log("\x1b[35m%s\x1b[0m", message);
+  /**
+   *
+   * @param {string} file
+   */
+  readTextFile(file) {
+    return fs.readFileSync(file, { encoding: "utf-8" }).toString();
+  }
+
+  writeTextFile(filePath, data) {
+    fs.writeFileSync(filePath, data, { encoding: "utf-8" });
+  }
+
+  async getProcessIdByPort(port) {
+    const data = await this.runCommand(`netstat -ano`, undefined, { disableStdOut: true });
+    const lines = data.stdOut.split(/[\r\n]+/);
+    const portLines = lines.filter((line) => line.indexOf("0.0.0.0:" + port) > -1);
+    const match = portLines[0] && portLines[0].match(/\d+$/);
+    if (match) {
+      return match[0];
     }
-
-    showError(message, exit = true) {
-        console.log("\x1b[31m%s\x1b[0m", message);
-        //rompt("press ENTER to continue ");
-        if (exit) {
-            process.exit(1);
-        }
-    }
-
-    async delay(ms) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
-    }
-
-    /**
-     *
-     * @param {string} command
-     * @param {string[]} args
-     */
-    async runCommand(command, args, options) {
-        if (!args || args.length === 0) {
-            if (command.indexOf(" ") > -1) {
-                args = command.split(" ");
-                command = args.shift();
-            }
-        } else {
-            if (typeof args === "string") {
-                args = args.split(" ");
-            }
-        }
-        return new Promise((resolve, reject) => {
-            let stdOut = "";
-            let stdErr = "";
-            if (this.debugCommands) {
-                this.showCommand(command + " " + args.join(" "));
-            }
-            const context = spawn(command, args);
-            context.stdout.on("data", (data) => {
-                stdOut += data.toString();
-                if (!options || !options.disableStdOut) {
-                    console.log(data.toString());
-                }
-            });
-
-            context.stderr.on("data", (data) => {
-                stdErr += data.toString();
-                if (!options || !options.disableStdOut) {
-                    if (data.toString().toLowerCase().indexOf("warn") > -1) {
-                        console.log("\x1b[33m%s\x1b[0m", data.toString());
-                    } else {
-                        console.log("\x1b[31m%s\x1b[0m", data.toString());
-                    }
-                }
-            });
-
-            context.on("error", (error) => {
-                stdErr += error;
-                if (!options || !options.disableStdOut) {
-                    console.log("\x1b[31m%s\x1b[0m", error.message);
-                }
-            });
-
-            context.on("close", (code) => {
-                if (code) {
-                    reject({ code, stdOut, stdErr });
-                } else {
-                    resolve({ stdOut, stdErr });
-                }
-            });
-        });
-    }
-
-    runCommandNoWait(command, args) {
-        if (!args || args.length === 0) {
-            if (command.indexOf(" ") > -1) {
-                args = command.split(" ");
-                command = args.shift();
-            }
-        } else {
-            if (typeof args === "string") {
-                args = args.split(" ");
-            }
-        }
-        if (this.debugCommands) {
-            this.showCommand(command + " " + args.join(" "));
-        }
-        spawn(command, args, {
-            detached: true,
-            shell: true,
-            stdio: "ignore",
-        });
-    }
-
-    processExit(errorLevel, location) {
-        if (errorLevel) {
-            this.showError(`ERROR: ${errorLevel}` + (location ? " in " + location : ""));
-        }
-    }
-
-    async inLocationAsync(path, asyncAction) {
-        this.pushLocation(path);
-        await asyncAction();
-        this.popLocation();
-    }
-
-    /**
-     * @param {string} path
-     * @param {function} action
-     */
-    inLocation(path, action) {
-        this.pushLocation(path);
-        action();
-        this.popLocation();
-    }
-
-    pushLocation(path) {
-        const wd = process.cwd();
-        this.locationHistory.push(wd);
-        process.chdir(path);
-    }
-
-    popLocation() {
-        if (this.locationHistory.length) {
-            const wd = this.locationHistory.pop();
-            process.chdir(wd);
-            return wd;
-        } else {
-            this.showError("There is no location to pop");
-        }
-    }
-
-    /**
-     *
-     * @param {string} file
-     */
-    readTextFile(file) {
-        return fs.readFileSync(file, { encoding: "utf-8" }).toString();
-    }
-
-    writeTextFile(filePath, data) {
-        fs.writeFileSync(filePath, data, { encoding: "utf-8" });
-    }
-
-    async getProcessIdByPort(port) {
-        const data = await this.runCommand(`netstat -ano`, undefined, { disableStdOut: true });
-        const lines = data.stdOut.split(/[\r\n]+/);
-        const portLines = lines.filter((line) => line.indexOf("0.0.0.0:" + port) > -1);
-        const match = portLines[0] && portLines[0].match(/\d+$/);
-        if (match) {
-            return match[0];
-        }
-        return false;
-    }
+    return false;
+  }
 }
 module.exports = new Core();
 

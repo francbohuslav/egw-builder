@@ -3,17 +3,17 @@
  */
 
 module.exports = {
-    folders: {
-        DG: "uu_energygateway_datagatewayg01",
-        MR: "uu_energygateway_messageregistryg01",
-        FTP: "uu_energygateway_ftpendpointg01",
-        EMAIL: "uu_energygateway_emailendpointg01",
-        ECP: "uu_energygateway_ecpendpointg01",
-        IEC62325: "uu_energygateway_iec62325endpointg01",
-        AS24: "uu_energygateway_as24endpointg01",
-        MERGED: "uu_energygateway_mergedg01",
-    },
-    JDK: {
-        11: "c:\\Users\\franc\\.jdks\\corretto-11.0.12",
-    },
+  folders: {
+    DG: "uu_energygateway_datagatewayg01",
+    MR: "uu_energygateway_messageregistryg01",
+    FTP: "uu_energygateway_ftpendpointg01",
+    EMAIL: "uu_energygateway_emailendpointg01",
+    ECP: "uu_energygateway_ecpendpointg01",
+    IEC62325: "uu_energygateway_iec62325endpointg01",
+    AS24: "uu_energygateway_as24endpointg01",
+    MERGED: "uu_energygateway_mergedg01",
+  },
+  JDK: {
+    11: "c:\\Users\\franc\\.jdks\\corretto-11.0.12",
+  },
 };
