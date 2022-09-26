@@ -13,7 +13,7 @@ class MetaModel {
       const tempFile = "metamodel-1.0.new.json";
       fs.copyFileSync("metamodel-1.0.json", tempFile);
       const addProfiles = this.getAdditionalProfiles(mainFolder, projects, project, isVersion11);
-      const cmd = `egw-metamodel-generatorg01.cmd -p profiles.json ${addProfiles} -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors`;
+      const cmd = `egw-metamodel-generatorg01.cmd -p profiles.json${addProfiles} -m metamodel-1.0.new.json --mandatory-profiles Authorities Executives Auditors`;
       //node C:\\Gateway\\_others\\egw_metamodelgeneratorg01\\egw_metamodelgeneratorg01\\cli.js
       const code = await core.runCommand(cmd);
       if (code.stdOut.indexOf("Profiles are not same !!!") > -1) {
