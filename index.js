@@ -434,6 +434,7 @@ async function killProject(project) {
 
 async function stopComposer() {
   try {
+    await core.runCommand("docker-compose kill");
     await core.runCommand("docker-compose down");
   } catch (e) {
     // Errors ignored
