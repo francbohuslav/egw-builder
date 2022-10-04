@@ -11,9 +11,9 @@ class Java {
       throw new Error(`File ${file} not found`);
     }
     const originalData = core.readTextFile(file);
-    const match = originalData.match(/^\s*targetCompatibility\s*=\s*([\d.]+)/m);
+    const match = originalData.match(/^\s*sourceCompatibility\s*=\s*([\d.]+)/m);
     if (!match) {
-      throw new Error(`Can not detect targetCompatility in ${file}`);
+      throw new Error(`Can not detect sourceCompatibility in ${file}`);
     }
     return match[1];
   }
