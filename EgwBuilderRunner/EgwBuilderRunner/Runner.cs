@@ -253,7 +253,21 @@ namespace EgwBuilderRunner
         public class Project
         {
             public string Code { get; set; }
-            public string CodeForComponent => Code == "IEC62325" ? "IEC" : Code;
+            public string CodeForComponent
+            {
+                get
+                {
+                    if (Code == "IEC62325")
+                    {
+                        return "IEC623";
+                    }
+                    if (Code == "IEC60870")
+                    {
+                        return "IEC608";
+                    }
+                    return Code;
+                }
+            }
             public bool SupportTests { get; set; }
             public string Directory { get; set; }
             public string Branch { get; set; }

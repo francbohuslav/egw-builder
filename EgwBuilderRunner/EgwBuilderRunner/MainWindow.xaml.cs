@@ -62,15 +62,20 @@ namespace EgwBuilderRunner
                     additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
                     AdditionalTestsContainer.SetVisible(additionalTestModels.Count > 0);
-                    if (!info.ContainsProject("IEC"))
+                    if (!info.ContainsProject("IEC623"))
                     {
-                        IEC.IsEnabled = false;
-                        ForProject("IEC", ch => ch.IsEnabled = false);
+                        IEC623.IsEnabled = false;
+                        ForProject("IEC623", ch => ch.IsEnabled = false);
                     }
                     if (!info.ContainsProject("AS24"))
                     {
                         AS24.IsEnabled = false;
                         ForProject("AS24", ch => ch.IsEnabled = false);
+                    }
+                    if (!info.ContainsProject("IEC608"))
+                    {
+                        IEC608.IsEnabled = false;
+                        ForProject("IEC608", ch => ch.IsEnabled = false);
                     }
                     foreach (var project in info.Projects)
                     {
@@ -206,15 +211,21 @@ namespace EgwBuilderRunner
             SetProject("ECP", Build_ECP.IsChecked != true);
         }
 
-        private void IEC_Click(object sender, RoutedEventArgs e)
+        private void IEC623_Click(object sender, RoutedEventArgs e)
         {
-            SetProject("IEC", Build_IEC.IsChecked != true);
+            SetProject("IEC623", Build_IEC623.IsChecked != true);
         }
 
         private void AS24_Click(object sender, RoutedEventArgs e)
         {
             SetProject("AS24", Build_AS24.IsChecked != true);
         }
+
+        private void IEC608_Click(object sender, RoutedEventArgs e)
+        {
+            SetProject("IEC608", Build_IEC608.IsChecked != true);
+        }
+
 
         private void SetProject(string project, bool on)
         {
@@ -262,7 +273,7 @@ namespace EgwBuilderRunner
             {
                 return;
             }
-            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC", "AS24" })
+            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC623", "AS24", "IEC608" })
             {
                 if (!MyApp.Runner.Info.ContainsProject(code))
                 {
@@ -333,8 +344,9 @@ namespace EgwBuilderRunner
                 BuildFTP = Build_FTP.IsChecked == true,
                 BuildEMAIL = Build_EMAIL.IsChecked == true,
                 BuildECP = Build_ECP.IsChecked == true,
-                BuildIEC62325 = Build_IEC.IsChecked == true,
+                BuildIEC62325 = Build_IEC623.IsChecked == true,
                 BuildAS24 = Build_AS24.IsChecked == true,
+                BuildIEC60870 = Build_IEC608.IsChecked == true,
                 BuildMERGED = Build_MERGED.IsChecked == true,
 
                 RunDG = Run_DG.IsChecked == true,
@@ -342,8 +354,9 @@ namespace EgwBuilderRunner
                 RunFTP = Run_FTP.IsChecked == true,
                 RunEMAIL = Run_EMAIL.IsChecked == true,
                 RunECP = Run_ECP.IsChecked == true,
-                RunIEC62325 = Run_IEC.IsChecked == true,
+                RunIEC62325 = Run_IEC623.IsChecked == true,
                 RunAS24 = Run_AS24.IsChecked == true,
+                RunIEC60870 = Run_IEC608.IsChecked == true,
                 RunMERGED = Run_MERGED.IsChecked == true,
 
                 InitDG = Init_DG.IsChecked == true,
@@ -351,16 +364,18 @@ namespace EgwBuilderRunner
                 InitFTP = Init_FTP.IsChecked == true,
                 InitEMAIL = Init_EMAIL.IsChecked == true,
                 InitECP = Init_ECP.IsChecked == true,
-                InitIEC62325 = Init_IEC.IsChecked == true,
+                InitIEC62325 = Init_IEC623.IsChecked == true,
                 InitAS24 = Init_AS24.IsChecked == true,
+                InitIEC60870 = Init_IEC608.IsChecked == true,
 
                 TestDG = Test_DG.IsChecked == true,
                 TestMR = Test_MR.IsChecked == true,
                 TestFTP = Test_FTP.IsChecked == true,
                 TestEMAIL = Test_EMAIL.IsChecked == true,
                 TestECP = Test_ECP.IsChecked == true,
-                TestIEC62325 = Test_IEC.IsChecked == true,
+                TestIEC62325 = Test_IEC623.IsChecked == true,
                 TestAS24 = Test_AS24.IsChecked == true,
+                TestIEC60870 = Test_IEC608.IsChecked == true,
                 AdditionalTests = additionalTestModels.Where(t => t.IsChecked).Select(t => t.Name).ToArray()
             };
             return structure;
@@ -390,8 +405,9 @@ namespace EgwBuilderRunner
             Build_FTP.IsChecked = structure.BuildFTP;
             Build_EMAIL.IsChecked = structure.BuildEMAIL;
             Build_ECP.IsChecked = structure.BuildECP;
-            Build_IEC.IsChecked = structure.BuildIEC62325;
+            Build_IEC623.IsChecked = structure.BuildIEC62325;
             Build_AS24.IsChecked = structure.BuildAS24;
+            Build_IEC608.IsChecked = structure.BuildIEC60870;
             Build_MERGED.IsChecked = structure.BuildMERGED;
 
             Run_DG.IsChecked = structure.RunDG;
@@ -399,8 +415,9 @@ namespace EgwBuilderRunner
             Run_FTP.IsChecked = structure.RunFTP;
             Run_EMAIL.IsChecked = structure.RunEMAIL;
             Run_ECP.IsChecked = structure.RunECP;
-            Run_IEC.IsChecked = structure.RunIEC62325;
+            Run_IEC623.IsChecked = structure.RunIEC62325;
             Run_AS24.IsChecked = structure.RunAS24;
+            Run_IEC608.IsChecked = structure.RunIEC60870;
             Run_MERGED.IsChecked = structure.RunMERGED;
 
             Init_DG.IsChecked = structure.InitDG;
@@ -408,16 +425,18 @@ namespace EgwBuilderRunner
             Init_FTP.IsChecked = structure.InitFTP;
             Init_EMAIL.IsChecked = structure.InitEMAIL;
             Init_ECP.IsChecked = structure.InitECP;
-            Init_IEC.IsChecked = structure.InitIEC62325;
+            Init_IEC623.IsChecked = structure.InitIEC62325;
             Init_AS24.IsChecked = structure.InitAS24;
+            Init_IEC608.IsChecked = structure.InitIEC60870;
 
             Test_DG.IsChecked = structure.TestDG;
             Test_MR.IsChecked = structure.TestMR;
             Test_FTP.IsChecked = structure.TestFTP;
             Test_EMAIL.IsChecked = structure.TestEMAIL;
             Test_ECP.IsChecked = structure.TestECP;
-            Test_IEC.IsChecked = structure.TestIEC62325;
+            Test_IEC623.IsChecked = structure.TestIEC62325;
             Test_AS24.IsChecked = structure.TestAS24;
+            Test_IEC608.IsChecked = structure.TestIEC60870;
             additionalTestModels.ForEach(a =>
             {
                 a.IsChecked = structure.AdditionalTests != null && structure.AdditionalTests.Any(t => t == a.Name);
@@ -445,8 +464,9 @@ namespace EgwBuilderRunner
                 && Build_FTP.IsChecked == false
                 && Build_EMAIL.IsChecked == false
                 && Build_ECP.IsChecked == false
-                && Build_IEC.IsChecked == false
+                && Build_IEC623.IsChecked == false
                 && Build_AS24.IsChecked == false
+                && Build_IEC608.IsChecked == false
                 )
             {
                 UnitTests.IsChecked = false;

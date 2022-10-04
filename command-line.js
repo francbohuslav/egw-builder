@@ -64,6 +64,7 @@ class CommandLine {
         this.buildECP = true;
         this.buildIEC62325 = true;
         this.buildAS24 = true;
+        this.buildIEC60870 = true;
         // merged app is not intentionally
         this.interactively = false;
         continue;
@@ -103,6 +104,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-buildiec60870") {
+        this.buildIEC60870 = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-buildmerged") {
         this.buildMERGED = true;
         this.interactively = false;
@@ -127,6 +133,7 @@ class CommandLine {
         this.runECP = true;
         this.runIEC62325 = true;
         this.runAS24 = true;
+        this.runIEC60870 = true;
         // merged app is not intentionally
         this.interactively = false;
         continue;
@@ -166,6 +173,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-runiec60870") {
+        this.runIEC60870 = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-runmerged") {
         this.runMERGED = true;
         this.interactively = false;
@@ -190,6 +202,7 @@ class CommandLine {
         this.initECP = true;
         this.initIEC62325 = true;
         this.initAS24 = true;
+        this.initIEC60870 = true;
         this.initASYNC = true;
         this.interactively = false;
         continue;
@@ -229,6 +242,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-initiec60870") {
+        this.initIEC60870 = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-initasync") {
         this.initASYNC = true;
         this.interactively = false;
@@ -248,6 +266,7 @@ class CommandLine {
         this.testECP = true;
         this.testIEC62325 = true;
         this.testAS24 = true;
+        this.testIEC60870 = true;
         this.interactively = false;
         continue;
       }
@@ -283,6 +302,11 @@ class CommandLine {
       }
       if (ar == "-testas24") {
         this.testAS24 = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar == "-testiec60870") {
+        this.testIEC60870 = true;
         this.interactively = false;
         continue;
       }

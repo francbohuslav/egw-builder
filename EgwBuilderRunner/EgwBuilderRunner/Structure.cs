@@ -23,7 +23,7 @@ namespace EgwBuilderRunner
         public bool IsMerged { get; set; }
 
         [JsonProperty("build")]
-        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED;
+        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED || BuildIEC60870;
 
         [JsonProperty("buildDG")]
         public bool BuildDG { get; set; }
@@ -46,6 +46,9 @@ namespace EgwBuilderRunner
         [JsonProperty("buildAS24")]
         public bool BuildAS24 { get; set; }
 
+        [JsonProperty("buildIEC60870")]
+        public bool BuildIEC60870 { get; set; }
+
 
         [JsonProperty("buildMERGED")]
         public bool BuildMERGED { get; set; }
@@ -54,7 +57,7 @@ namespace EgwBuilderRunner
         public bool UnitTests { get; set; }
 
         [JsonProperty("run")]
-        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24;
+        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24 || RunIEC60870;
 
         [JsonProperty("runDG")]
         public bool RunDG { get; set; }
@@ -77,6 +80,9 @@ namespace EgwBuilderRunner
         [JsonProperty("runAS24")]
         public bool RunAS24 { get; set; }
 
+        [JsonProperty("runIEC60870")]
+        public bool RunIEC60870 { get; set; }
+
         [JsonProperty("runMERGED")]
         public bool RunMERGED { get; set; }
 
@@ -84,7 +90,7 @@ namespace EgwBuilderRunner
         public bool RunInSequence { get; set; }
 
         [JsonProperty("init")]
-        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24;
+        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24 || InitIEC60870;
 
         [JsonProperty("initDG")]
         public bool InitDG { get; set; }
@@ -107,6 +113,9 @@ namespace EgwBuilderRunner
         [JsonProperty("initAS24")]
         public bool InitAS24 { get; set; }
 
+        [JsonProperty("initIEC60870")]
+        public bool InitIEC60870 { get; set; }
+
         [JsonProperty("initASYNC")]
         public bool InitASYNC { get; set; }
 
@@ -114,7 +123,7 @@ namespace EgwBuilderRunner
         public string Uid { get; set; }
 
         [JsonProperty("tests")]
-        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24;
+        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24 || TestIEC60870;
 
         [JsonProperty("testDG")]
         public bool TestDG { get; set; }
@@ -136,6 +145,9 @@ namespace EgwBuilderRunner
 
         [JsonProperty("testAS24")]
         public bool TestAS24 { get; set; }
+
+        [JsonProperty("testIEC60870")]
+        public bool TestIEC60870 { get; set; }
 
         [JsonProperty("additionalTests")]
         public string[] AdditionalTests { get; set; }

@@ -4,7 +4,6 @@ const messageBroker = require("./message-broker");
 
 class Info {
   /**
-   *
    * @param {import("..").IProject[]} projects
    * @param {import("..").IProject} MR
    */
@@ -15,6 +14,10 @@ class Info {
     console.log(JSON.stringify(info, null, 2));
   }
 
+  /**
+   * @param {import("..").IProject[]} projects
+   * @param {import("..").IProject} MR
+   */
   getTests(projects, MR) {
     const tests = fs
       .readdirSync(`${MR.folder}/${MR.server}/src/test/jmeter/`)
@@ -22,7 +25,11 @@ class Info {
       .map((t) => t.match(/^tests_(.*)\.jmx/)[1]);
     tests.push("Web");
     return {
-      projects: projects.map((p) => ({ code: p.code, supportTests: !!p.testFile, directory: p.folder })),
+      projects: projects
+        .filter((p) => {
+          return fs.existsSync(p.folder);
+        })
+        .map((p) => ({ code: p.code, supportTests: !!p.testFile, directory: p.folder })),
       additionalTests: tests,
       messageBroker: messageBroker.getActualMessageBroker(projects),
     };
