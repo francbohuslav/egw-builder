@@ -536,7 +536,16 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
   return { newFailed, newPassed, knownFailed, allPassed };
 }
 
-function cloneDataGatewayForIec() {
+/**
+ * @param {string} DGversion
+ */
+function cloneDataGatewayForIec(DGversion) {
+  const majorVersion = parseInt(DGversion.match(/^(\d+)\./)[0]);
+  if (majorVersion >= 4) {
+    // Copy is not needed
+    console.log(`IEC62325 copy is not needed for major version ${majorVersion}`);
+    return;
+  }
   const settings = core.readTextFile(`${IEC62325.folder}/settings.gradle`);
   const matches = [...settings.matchAll(new RegExp(`${DG.folder}[^\\"']*`, "g"))];
   if (!matches || matches.length == 0) {
@@ -723,6 +732,8 @@ async function run() {
     if (fs.existsSync(MERGED.folder)) {
       runnableProjects.push(MERGED);
     }
+    const DGversions = getProjectVersion(DG);
+    const DGversion = Array.isArray(DGversions) ? DGversions["build.gradle"] : DGversions;
 
     if (cmd.interactively || cmd.getVersions) {
       printProjectsVersions(cmd);
@@ -915,7 +926,7 @@ async function run() {
       for (const project of projects) {
         if (isBuildPerProject[project.code]) {
           if (project.code == IEC62325.code) {
-            cloneDataGatewayForIec();
+            cloneDataGatewayForIec(DGversion);
           }
           core.showMessage(`Building ${project.code} ...`);
           await buildProject(project, cmd.unitTests);
@@ -937,12 +948,8 @@ async function run() {
             console.log("Killed previous");
           }
           if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
-            cloneDataGatewayForIec();
+            cloneDataGatewayForIec(DGversion);
           }
-          // Commented. I can not remember reason why to do that/
-          // if (project.code == AS24.code) {
-          //     await waitForApplicationIsReady(DG);
-          // }
           if (project.code === MR.code) {
             console.log("Copying tests-uu5-environment.json to server/public");
             fs.copyFileSync(MR.folder + "/" + MR.hi + "/env/tests-uu5-environment.json", MR.folder + "/" + MR.server + "/public/uu5-environment.json");
