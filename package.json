@@ -7,7 +7,7 @@
     "start": "node ./index.js -folder ../v3_0",
     "cleanBuild": "node ./index.js -folder ../v3_0 -clear -build",
     "ask": "node ./index.js -folder ../v3_0",
-    "init": "node ./index.js -folder ../v3_0 -init 12-8835-1",
+    "init": "node ./index.js -folder ../v3_0 -init -uid 12-8835-1",
     "last": "node ./index.js -last",
     "custom": "node ./index.js -folder ../vNext -info"
   },

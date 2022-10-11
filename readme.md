@@ -130,7 +130,7 @@ Below there are some common scenarios.
 
 **Clean, build, run and init** - for the first time, or if you want to start from scratch.
 
-    node index -folder ../sprint -clear -build -runDG -runMR -init 12-8835-1
+    node index -folder ../sprint -clear -build -runDG -runMR -init -uid 12-8835-1
 
 **Run tests** - should be called before pushing of your changes to git.
 
@@ -140,4 +140,4 @@ Below there are some common scenarios.
 
 **uuCloud or Nexus** - prepare everything to deploy app.
 
-    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -run -init 12-8835-1 -test
+    node index -folder ../sprint -version 1.1.5 -clear -build -metamodel -run -init -uid 12-8835-1 -test
