@@ -784,7 +784,15 @@ async function run() {
     // Build
     const isBuild = cmd.interactively
       ? cmd.getCmdValue("build", "Build app?")
-      : cmd.buildDG || cmd.buildMR || cmd.buildFTP || cmd.buildEMAIL || cmd.buildECP || cmd.buildIEC62325 || cmd.buildAS24 || cmd.IEC60870 || cmd.buildMERGED;
+      : cmd.buildDG ||
+        cmd.buildMR ||
+        cmd.buildFTP ||
+        cmd.buildEMAIL ||
+        cmd.buildECP ||
+        cmd.buildIEC62325 ||
+        cmd.buildAS24 ||
+        cmd.buildIEC60870 ||
+        cmd.buildMERGED;
     if (!isBuild && !cmd.interactively) {
       console.log("Build app? no");
     }
