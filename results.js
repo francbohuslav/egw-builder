@@ -54,7 +54,7 @@ class Results {
     const now = new Date();
     console.log("Started:", startedDate.toLocaleString());
     console.log("Finished:", now.toLocaleString());
-    console.log("=> ", this.formatTime((now.getTime() - startedDate.getTime()) / 1000), "minutes");
+    console.log("=>", this.formatTime((now.getTime() - startedDate.getTime()) / 1000), "minutes");
 
     tests.showFailedTests(newPassed, newFailed);
     if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
