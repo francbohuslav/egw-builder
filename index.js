@@ -1021,6 +1021,7 @@ async function run() {
       }
       core.showMessage("Starting tests...");
 
+      const startedDate = new Date();
       const knownFailed = {};
       const newFailed = {};
       const newPassed = {};
@@ -1079,7 +1080,7 @@ async function run() {
         }
       }
 
-      results.printReport(MR, newPassed, newFailed, knownFailed, allPassed);
+      results.printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate);
     }
 
     core.showMessage("DONE");

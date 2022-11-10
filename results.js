@@ -36,7 +36,7 @@ class Results {
     return results;
   }
 
-  printReport(MR, newPassed, newFailed, knownFailed, allPassed) {
+  printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate) {
     core.writeTextFile(
       `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
       JSON.stringify(
@@ -51,7 +51,10 @@ class Results {
     );
 
     core.showMessage("\n\n======== TESTS SUMMARY =======");
-    console.log(new Date().toLocaleString());
+    const now = new Date();
+    console.log("Started:", startedDate.toLocaleString());
+    console.log("Finished:", now.toLocaleString());
+    console.log("=> ", this.formatTime((now.getTime() - startedDate.getTime()) / 1000), "minutes");
 
     tests.showFailedTests(newPassed, newFailed);
     if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
@@ -91,6 +94,13 @@ class Results {
     if (failedCount) {
       core.showError(`New failed tests: ${failedCount}`, false);
     }
+  }
+
+  formatTime(totalSeconds) {
+    totalSeconds = Math.round(totalSeconds);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds - minutes * 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 }
 
