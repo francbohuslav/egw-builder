@@ -23,7 +23,7 @@ namespace EgwBuilderRunner
             Process.Start(new ProcessStartInfo()
             {
                 FileName = "cmd",
-                Arguments = "/K node index -last",
+                Arguments = "/C start /MAX cmd /K node index -last",
                 WorkingDirectory = builderFolder,
             });
         }
