@@ -388,6 +388,7 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
   ];
   const { stdOut } = await core.runCommand("docker", params);
   if (stdOut.match(/Err:\s+[1-9]/g)) {
+    results.printInitReport(resultsFile);
     core.showError(`Init commands of ${projectCode} failed`);
   }
 }
@@ -410,6 +411,7 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
     ...(`-n -t jmeter/${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}` + (isMergedVersion ? "_merged" : "") + `.cfg`).split(" "),
   ]);
   if (stdOut.match(/Err:\s+[1-9]/g)) {
+    results.printInitReport(resultsFile);
     core.showError(`Init commands of ASYNC failed`);
   }
 }

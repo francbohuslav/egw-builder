@@ -36,6 +36,12 @@ class Results {
     return results;
   }
 
+  printInitReport(resultsFile) {
+    const steps = this.getSteps(core.readTextFile(resultsFile));
+    const failed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    tests.showFailedSteps(failed);
+  }
+
   printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate) {
     core.writeTextFile(
       `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
@@ -58,7 +64,7 @@ class Results {
 
     tests.showFailedTests(newPassed, newFailed);
     if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
-      core.showError("Tests failed. Watch message above.");
+      core.showError("Tests failed. Watch message above.", false);
     }
     if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
       core.showSuccess("All tests passed as expected.");

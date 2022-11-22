@@ -9,7 +9,7 @@
     "ask": "node ./index.js -folder ../v3_0",
     "init": "node ./index.js -folder ../v3_0 -init -uid 12-8835-1",
     "last": "node ./index.js -last",
-    "custom": "node ./index.js -folder ../vNext -info"
+    "custom": "node ./index.js -folder ../vNext -initAsync -uid 12-8835-1"
   },
   "author": "Bohuslav Franc",
   "license": "ISC",
