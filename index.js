@@ -327,12 +327,8 @@ function setProjectsVersions(newVersion) {
   }
 }
 
-/**
- * @param {IProject} project
- */
-async function waitForApplicationIsReady(project) {
+async function waitForApp(url) {
   const seconds = 300;
-  const url = `http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`;
   for (let counter = seconds; counter > 0; counter -= 2) {
     try {
       await requestAsync(url, { json: true });
@@ -351,6 +347,13 @@ async function waitForApplicationIsReady(project) {
   }
   process.stdout.write("\n");
   core.showError("Application is not ready");
+}
+
+/**
+ * @param {IProject} project
+ */
+async function waitForApplicationIsReady(project) {
+  await waitForApp(`http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`);
 }
 
 /**
@@ -973,6 +976,7 @@ async function run() {
     if (isRunInit) {
       core.showMessage("Starting inits...");
       if (isInitPerProject.ASYNC) {
+        await waitForApp(`http://localhost:10090/uu-asyncjobg01-main/99000000000000000000000000000000/sys/getHealth`);
         core.showMessage("Init AsyncJob");
         await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/`, async () => {
           await runInitCommandsAsyncJob(isMergedVersion, cmd);

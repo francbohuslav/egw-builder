@@ -22,7 +22,7 @@ class Tests {
     console.log("");
   }
 
-  showFailedSteps(steps) {
+  showFailedSteps(steps, withResponse = false) {
     for (const step of steps) {
       console.log("  \x1b[32m%s\x1b[0m", step.label);
       if (step.asserts) {
@@ -30,6 +30,18 @@ class Tests {
           assert = assert.replace(/^Test failed: /, "");
           console.log("    \x1b[31m%s\x1b[0m", assert.substring(0, 180) + (assert.length > 180 ? "..." : ""));
         }
+      }
+      if (withResponse) {
+        core.showMessage("    Response data");
+        console.log(
+          step.responseData
+            .replace(/\\t/g, "  ")
+            .replace(/\\r/g, "")
+            .replace(/\\n/g, "\n")
+            .split("\n")
+            .map((l) => "        " + l)
+            .join("\n")
+        );
       }
     }
   }

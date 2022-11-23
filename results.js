@@ -29,6 +29,7 @@ class Results {
             .select("./assertionResult", n)
             .filter((fn) => xpath.select1("./failure", fn).textContent == "true")
             .map((fn) => xpath.select1("./failureMessage", fn).textContent.replace(/[\r\n]+/g, " ")),
+          responseData: xpath.select1("./responseData", n).textContent,
         },
         success: n.getAttribute("s") == "true",
       })
@@ -39,7 +40,7 @@ class Results {
   printInitReport(resultsFile) {
     const steps = this.getSteps(core.readTextFile(resultsFile));
     const failed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
-    tests.showFailedSteps(failed);
+    tests.showFailedSteps(failed, true);
   }
 
   printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate) {
