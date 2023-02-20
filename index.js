@@ -166,7 +166,7 @@ const projects = [
   {
     code: "IEC60870",
     folder: config.folders.IEC60870,
-    server: "uu_energygateway_iec60870endpointg01-server",
+    server: "uu_energygateway_iec60870-5-endpointg01-server",
     port: 8100,
     webname: "uu-energygateway-iec60870endpointg01",
     testFile: "iec60870_endpoint.jmx",
