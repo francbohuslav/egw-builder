@@ -38,7 +38,7 @@ class Info {
   getEnvironments(MR) {
     return fs
       .readdirSync(`${MR.folder}/${MR.server}/src/test/jmeter/`)
-      .filter((t) => t.match(/^env_localhost_builder(_.+)?\.cfg/))
+      .filter((t) => t.match(/^env_localhost(_.+)?\.cfg/))
       .map((e) => e.replace(".cfg", ""));
   }
 

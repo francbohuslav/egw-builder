@@ -76,8 +76,10 @@ class Core {
    *
    * @param {string} command
    * @param {string[]} args
+   * @param {any} options,
+   * @param {import("child_process").SpawnOptionsWithoutStdio} spawnOptions
    */
-  async runCommand(command, args, options) {
+  async runCommand(command, args, options, spawnOptions = undefined) {
     if (!args || args.length === 0) {
       if (command.indexOf(" ") > -1) {
         args = command.split(" ");
@@ -92,9 +94,9 @@ class Core {
       let stdOut = "";
       let stdErr = "";
       if (this.debugCommands) {
-        this.showCommand(command + " " + args.join(" "));
+        this.showCommand(`${process.cwd()}> ${command} ${args.join(" ")}`);
       }
-      const context = spawn(command, args);
+      const context = spawn(command, args, spawnOptions);
       context.stdout.on("data", (data) => {
         stdOut += data.toString();
         if (!options || !options.disableStdOut) {
