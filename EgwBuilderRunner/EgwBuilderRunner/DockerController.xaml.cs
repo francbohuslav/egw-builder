@@ -109,7 +109,7 @@ namespace EgwBuilderRunner
             StartDocker(checkbox, false);
         }
 
-        private async void StartDocker(CheckBox checkbox, bool restart)
+        private async Task StartDocker(CheckBox checkbox, bool restart)
         {
 
             if (!(checkbox.DataContext is DockerContainer container))
@@ -141,7 +141,7 @@ namespace EgwBuilderRunner
             {
                 return;
             }
-            StartDocker(checkbox, true);
+            await StartDocker(checkbox, true);
         }
     }
 

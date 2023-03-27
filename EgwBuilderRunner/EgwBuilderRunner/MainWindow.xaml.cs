@@ -30,7 +30,7 @@ namespace EgwBuilderRunner
             InitializeComponent();
             Title = MyApp.AppSettings.ApplicationNameWithVersion;
             DockerInternalAddressWarningIsOk.SetVisible(false);
-            EnvironmentContainer.SetVisible(false);
+            EnvironmentContainer.Visibility = Visibility.Hidden; // Not to shift controlls after showing
 
             Clear_Click(null, null);
             lastSaver = new LastSaver(MyApp.BuilderFolder);
@@ -55,8 +55,11 @@ namespace EgwBuilderRunner
                 await Task.Delay(1);
                 try
                 {
-                    var version = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
-                    MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    var versionTask = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    var infoTask = MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
+                    var isDockerAddressOkTask = MyApp.Runner.IsDockerAddressOk(); // Waiting is below
+                    await Task.WhenAll(versionTask, infoTask);
+                    var version = await versionTask;
                     Console.Text = version + "\n\nBranches\n" + MyApp.Runner.Info.GetBranches();
                     var info = MyApp.Runner.Info;
                     additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
@@ -97,22 +100,14 @@ namespace EgwBuilderRunner
                         Environment.ItemsSource = info.GetEnvironments();
                         Environment.SelectedIndex = 0;
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.Text = "Error: " + ex.Message + "\n" + ex.StackTrace;
-                }
-                await Task.Delay(1);
-                try
-                {
-                    if (MyApp.Runner.IsDockerAddressOk())
+                    if (await isDockerAddressOkTask)
                     {
                         DockerInternalAddressWarning.SetVisible(false);
                         DockerInternalAddressWarningIsOk.SetVisible(true);
                     }
                     else
                     {
-                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + MyApp.Runner.GetDockerAddress()
+                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + await MyApp.Runner.GetDockerAddress()
                             + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
                             "Otherwise AsyncJob and other services will not work correctly.";
 

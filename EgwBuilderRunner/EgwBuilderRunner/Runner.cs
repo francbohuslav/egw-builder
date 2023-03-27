@@ -28,23 +28,9 @@ namespace EgwBuilderRunner
             });
         }
 
-        public string GetVersions(string builderFolder, string egwFolder)
+        public Task<string> GetVersions(string builderFolder, string egwFolder)
         {
-            var process = Process.Start(new ProcessStartInfo()
-            {
-                FileName = "node",
-                Arguments = "index -folder " + egwFolder + " -getversions",
-                WorkingDirectory = builderFolder,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
-            }
-            return output.ToString().Trim();
+            return ProcessRunner.RunProcessAsync("node", "index -folder " + egwFolder + " -getversions", builderFolder);
         }
 
         internal async Task<Dictionary<string, Project>> GetAllDockerContainers(string egwFolder)
@@ -87,25 +73,13 @@ namespace EgwBuilderRunner
             return services;
         }
 
-        public void RetrieveInfo(string builderFolder, string egwFolder)
+        public async Task RetrieveInfo(string builderFolder, string egwFolder)
         {
-            var process = Process.Start(new ProcessStartInfo()
-            {
-                FileName = "node",
-                Arguments = "index -folder " + egwFolder + " -info",
-                WorkingDirectory = builderFolder,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
-            }
+            var output = await ProcessRunner.RunProcessAsync("node", "index -folder " + egwFolder + " -info", builderFolder);
+
             try
             {
-                Info = JsonConvert.DeserializeObject<InfoStructure>(output.ToString().Trim());
+                Info = JsonConvert.DeserializeObject<InfoStructure>(output);
             }
             catch
             {
@@ -176,43 +150,18 @@ namespace EgwBuilderRunner
             }
         }
 
-        public string GetDockerAddress()
+        public Task<string> GetDockerAddress()
         {
-            var process = Process.Start(new ProcessStartInfo()
-            {
-                FileName = "powershell",
-                Arguments = "(Resolve-DnsName host.docker.internal).IPAddress",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
-            }
-            return output.ToString().Trim();
+            return ProcessRunner.RunProcessAsync("powershell", "(Resolve-DnsName host.docker.internal).IPAddress");
         }
 
-        public bool IsDockerAddressOk()
+        public async Task<bool> IsDockerAddressOk()
         {
-            var process = Process.Start(new ProcessStartInfo()
-            {
-                FileName = "powershell",
-                Arguments = "ipconfig | findstr (Resolve-DnsName host.docker.internal).IPAddress",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-            });
-            var output = new StringBuilder();
-            while (!process.StandardOutput.EndOfStream)
-            {
-                output.Append(process.StandardOutput.ReadLine() + "\n");
-            }
-            var text = output.ToString().Trim();
+            var text = await ProcessRunner.RunProcessAsync("powershell", "ipconfig | findstr (Resolve-DnsName host.docker.internal).IPAddress");
             // Valid return: IPv4 Address. . . . . . . . . . . : 192.168.2.4 
             return Regex.IsMatch(text, "IPv4.*\\d+\\.\\d+\\.\\d+\\.\\d+");
         }
+
     }
 
     public class InfoStructure
