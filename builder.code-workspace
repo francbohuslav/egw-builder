@@ -1,24 +1,34 @@
 {
-    "folders": [
-        {
-            "path": "."
-        }
-    ],
-    "settings": {
-        "editor.formatOnSave": true,
-        "git.enabled": true
-    },
-    "launch": {
-        "version": "0.2.0",
-        "configurations": [
-            {
-                "type": "node",
-                "request": "launch",
-                "name": "Launch Program",
-                "skipFiles": ["<node_internals>/**"],
-                "program": "index.js",
-                "args": ["-folder", "../vNext", "-tests", "Quick"]
-            }
-        ]
+  "folders": [
+    {
+      "path": "."
     }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "git.enabled": true,
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "jmeter": true,
+      "jmeter.zip": true
+    }
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Launch Program",
+        "skipFiles": ["<node_internals>/**"],
+        "program": "index.js",
+        "args": ["-folder", "../vNext", "-tests", "Quick"]
+      }
+    ]
+  }
 }

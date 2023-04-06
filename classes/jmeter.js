@@ -1,4 +1,4 @@
-const { existsSync, createWriteStream, mkdirSync } = require("fs");
+const { existsSync, createWriteStream } = require("fs");
 const axios = require("axios");
 const { join } = require("path");
 const util = require("util");
