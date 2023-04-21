@@ -25,19 +25,6 @@ let JDK = "";
 const builderDir = __dirname;
 
 /**
- * @typedef {Object} IProject Project
- * @property {string} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24, IEC60870
- * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
- * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
- * @property {string} hi folder of HI module of MR, e.g. "uu_energygateway_messageregistryg01-hi"
- * @property {string} gui folder of GUI components, e.g. "uu_energygateway_uu5lib/uu_energygateway_guig01"
- * @property {string} testFile e.g. "message-registr.jmx"
- * @property {string} port e.g. 8093
- * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
- * @property {function(string):string[]} addProfilesFromLibraries e.g. ["uu_energygateway_datagatewayg01-server-lib", ...]
- */
-
-/**
  * @type {IProject[]}
  */
 const projects = [
@@ -191,6 +178,9 @@ const projects = [
 
 const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, IEC60870, MERGED] = projects;
 
+/**
+ * @param {string | string[]} command
+ */
 function addJDKtoGradle(command, withQuotes = "") {
   if (JDK) {
     if (typeof command === "string") {
@@ -586,24 +576,21 @@ function cloneDataGatewayForIec(DGversion) {
   });
 }
 /**
- *
  * @param {IProject} project
+ * @param {CommandLine} cmd
  */
-async function runApp(project, cmd, isBuild) {
+async function runApp(project, cmd) {
   fs.mkdirSync(path.join(cmd.folder, "logs"), {
     recursive: true,
   });
+  const subAppJavaInfo = java.getSubAppJavaInfo(project);
   core.inLocation(project.folder, () => {
-    let command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
+    const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
       cmd.folder,
       "logs",
       project.code + ".log"
-    )}`;
-    // If build is present, unit tests are executed by it
-    if (!cmd.unitTests || isBuild) {
-      command += " -x test";
-    }
-    core.runCommandNoWait(addJDKtoGradle(command, '"'));
+    )} ${project.server} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
+    core.runCommandNoWait(command);
   });
 }
 
@@ -738,11 +725,11 @@ async function run() {
       return;
     }
 
-    const javaVersion = java.getJavaVersion(DG);
-    if (config.JDK && config.JDK[javaVersion]) {
-      JDK = config.JDK[javaVersion];
+    const subAppJavaInfo = java.getSubAppJavaInfo(DG);
+    if (config.JDK && config.JDK[subAppJavaInfo.javaVersion]) {
+      JDK = config.JDK[subAppJavaInfo.javaVersion] ?? "";
     }
-    java.printInfo(javaVersion, JDK);
+    java.printInfo(subAppJavaInfo, JDK);
 
     if (!cmd.environmentFile) {
       const envs = info.getEnvironments(MR);
@@ -787,6 +774,7 @@ async function run() {
     if (isBuild) {
       console.log("Which app to build?");
     }
+    /** @type {Partial<Record<IProjectCode, boolean>>} */
     const isBuildPerProject = {};
     for (const project of projects) {
       isBuildPerProject[project.code] = isBuild && cmd.getCmdValue("build" + project.code, "... " + project.code + "?");
@@ -803,6 +791,7 @@ async function run() {
     if (isRun) {
       console.log("Which app to run?");
     }
+    /** @type {Partial<Record<IProjectCode, boolean>>} */
     const isRunPerProject = {};
     for (const project of runnableProjects) {
       isRunPerProject[project.code] = isRun && cmd.getCmdValue("run" + project.code, "... " + project.code + "?");
@@ -818,6 +807,7 @@ async function run() {
     if (isRunInit) {
       console.log("Which init?");
     }
+    /** @type {Partial<Record<IProjectCodeWithAsync, boolean>>} */
     const isInitPerProject = {};
     for (const project of runnableProjects) {
       isInitPerProject[project.code] = isRunInit && cmd.getCmdValue("init" + project.code, "... " + project.code + "?");
@@ -950,7 +940,7 @@ async function run() {
             console.log("Copying tests-uu5-environment.json to server/public");
             fs.copyFileSync(MR.folder + "/" + MR.hi + "/env/tests-uu5-environment.json", MR.folder + "/" + MR.server + "/public/uu5-environment.json");
           }
-          await runApp(project, cmd, isBuild);
+          await runApp(project, cmd);
           await core.delay(1000);
           prevProject = project;
         }

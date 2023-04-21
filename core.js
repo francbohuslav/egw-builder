@@ -64,26 +64,31 @@ class Core {
     }
   }
 
+  /**
+   * @param {number} ms
+   */
   async delay(ms) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, ms);
-    });
+    return /** @type {Promise<void>} */ (
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, ms);
+      })
+    );
   }
 
   /**
    *
    * @param {string} command
-   * @param {string[]} args
-   * @param {any} options,
-   * @param {import("child_process").SpawnOptionsWithoutStdio} spawnOptions
+   * @param {string[] | string} [args]
+   * @param {any} [options],
+   * @param {import("child_process").SpawnOptionsWithoutStdio} [spawnOptions]
    */
   async runCommand(command, args, options, spawnOptions = undefined) {
     if (!args || args.length === 0) {
       if (command.indexOf(" ") > -1) {
         args = command.split(" ");
-        command = args.shift();
+        command = args.shift() ?? "";
       }
     } else {
       if (typeof args === "string") {

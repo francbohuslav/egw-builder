@@ -16,6 +16,9 @@ class CommandLine {
         continue;
       }
       if (ar == "-folder") {
+        /**
+         * @type {string}
+         */
         this.folder = pars.shift();
         continue;
       }

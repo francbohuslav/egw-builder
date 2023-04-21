@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "checkJs": true,
+    // Checks undefined values, missing types
+    "strict": true,
+    // For dynamic imports
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    // For JSON imports
+    "resolveJsonModule": true,
+    // Do not generate result files, only check syntax
+    "noEmit": true,
+    // For import Uu5TilesElements from "uu5tilesg02-elements" and others
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["*.js", "classes"]
+}

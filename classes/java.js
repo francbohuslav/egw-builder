@@ -3,28 +3,56 @@ const core = require("../core");
 
 class Java {
   /**
-   * @param {import("..").IProject} DG
+   * @param {IProject} project
+   * @returns {IJavaAppInfo}
    */
-  getJavaVersion(project) {
-    const file = `${project.folder}/${project.server}/build.gradle`;
+  getSubAppJavaInfo(project) {
+    let file = `${project.folder}/${project.server}/build.gradle`;
     if (!fs.existsSync(file)) {
       throw new Error(`File ${file} not found`);
     }
-    const originalData = core.readTextFile(file);
-    const match = originalData.match(/^\s*sourceCompatibility\s*=\s*([\d.]+)/m);
+    let originalData = core.readTextFile(file);
+    let match = originalData.match(/^\s*sourceCompatibility\s*=\s*([\d.]+)/m);
     if (!match) {
       throw new Error(`Can not detect sourceCompatibility in ${file}`);
     }
-    return match[1];
+    const javaVersion = match[1];
+
+    file = `${project.folder}/build.gradle`;
+    if (!fs.existsSync(file)) {
+      throw new Error(`File ${file} not found`);
+    }
+    originalData = core.readTextFile(file);
+    let maxMemory = "-Xmx1G";
+    // applicationDefaultJvmArgs = ["-Xmx3g"]
+    match = originalData.match(/applicationDefaultJvmArgs\s*=.*-xmx(\d+[gm])/im);
+    if (!match) {
+      core.showError(`Can not detect applicationDefaultJvmArgs, using ${maxMemory}`, false);
+    } else {
+      maxMemory = match[1];
+    }
+
+    // mainClassName = 'uu.energygateway.ftpendpoint.SubAppRunner'
+    match = originalData.match(/mainClassName\s*=.*(uu\..*\.SubAppRunner)/im);
+    if (!match) {
+      throw new Error(`Can not detect mainClassName`);
+    }
+    const mainClassName = match[1];
+    return { javaVersion, maxMemory, mainClassName };
   }
 
-  printInfo(javaVersion, JDK) {
-    let str = `Java ${javaVersion} detected`;
+  /**
+   * @param {IJavaAppInfo} javaInfo
+   * @param {string} JDK
+   */
+  printInfo(javaInfo, JDK) {
+    let str = `Java ${javaInfo.javaVersion} detected`;
     if (JDK) {
       str += `. JDK ${JDK} used.`;
     } else {
-      str += ". Default Java used";
+      str += ". Default Java used.";
     }
+    str += ` Max memory = ${javaInfo.maxMemory}`;
     console.log(str);
   }
 }
