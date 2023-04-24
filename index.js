@@ -584,12 +584,12 @@ async function runApp(project, cmd) {
     recursive: true,
   });
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
-  core.inLocation(project.folder, () => {
+  core.inLocation(path.join(project.folder, project.server), () => {
     const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
       cmd.folder,
       "logs",
       project.code + ".log"
-    )} ${project.server} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
+    )} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
     core.runCommandNoWait(command);
   });
 }
