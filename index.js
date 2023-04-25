@@ -474,7 +474,7 @@ async function cleanDockers() {
 /**
  * @param {IProject} project
  */
-async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, isMergedVersion, cmd) {
+async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, isMergedVersion, cmd) {
   await jmeter.downloadIMissing();
   let projectCode = project;
   let testFile = null;
@@ -500,6 +500,9 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
   params.push("-Jftp_data_dir=" + ftpDataDir);
   if (insomniaFolder) {
     params.push("-Jinsomnia_dir=" + insomniaFolder);
+  }
+  if (insomniaFolderDG) {
+    params.push("-Jinsomnia_dir_DG=" + insomniaFolderDG);
   }
   if (isVersion11 && project == EMAIL) {
     params.push("-Jsmtp_host=smtp");
@@ -1035,6 +1038,7 @@ async function run() {
                 isProjectTest,
                 isVersion11,
                 isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia` : null,
+                isProjectTest ? `${cmd.folder}/${DG.folder}/${DG.server}/src/test/insomnia` : null,
                 isMergedVersion,
                 cmd
               );
