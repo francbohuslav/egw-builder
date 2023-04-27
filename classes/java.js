@@ -23,7 +23,7 @@ class Java {
       throw new Error(`File ${file} not found`);
     }
     originalData = core.readTextFile(file);
-    let maxMemory = "-Xmx1G";
+    let maxMemory = "1G";
     // applicationDefaultJvmArgs = ["-Xmx3g"]
     match = originalData.match(/applicationDefaultJvmArgs\s*=.*-xmx(\d+[gm])/im);
     if (!match) {
