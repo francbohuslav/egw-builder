@@ -473,13 +473,16 @@ async function cleanDockers() {
 
 /**
  * @param {IProject} project
+ * @param {CommandLine} cmd
  */
 async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, isMergedVersion, cmd) {
   await jmeter.downloadIMissing();
   let projectCode = project;
   let testFile = null;
   if (isProjectTest) {
-    await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
+    if (!cmd.onlyShowResults) {
+      await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
+    }
     projectCode = project.code;
     testFile = project.testFile;
   } else {
@@ -487,28 +490,30 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
   }
   const resultsFile = "logs/testResults" + projectCode + ".xml";
   const logFile = "logs/testLogs" + projectCode + ".log";
-  fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
-  fs.existsSync(logFile) && fs.unlinkSync(logFile);
-  const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
-  const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
-  if (!fs.existsSync(ftpDataDir)) {
-    core.showError(ftpDataDir + " does not exists");
+  if (!cmd.onlyShowResults) {
+    fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
+    fs.existsSync(logFile) && fs.unlinkSync(logFile);
+    const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
+    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
+    if (!fs.existsSync(ftpDataDir)) {
+      core.showError(ftpDataDir + " does not exists");
+    }
+    let restStr = "-n -t " + testFile + " -j " + logFile + " ";
+    restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
+    const params = restStr.split(" ");
+    params.push("-Jftp_data_dir=" + ftpDataDir);
+    if (insomniaFolder) {
+      params.push("-Jinsomnia_dir=" + insomniaFolder);
+    }
+    if (insomniaFolderDG) {
+      params.push("-Jinsomnia_dir_DG=" + insomniaFolderDG);
+    }
+    if (isVersion11 && project == EMAIL) {
+      params.push("-Jsmtp_host=smtp");
+      params.push("-Jsmtp_port=80");
+    }
+    await core.runCommand(getJmeterBat(), params);
   }
-  let restStr = "-n -t " + testFile + " -j " + logFile + " ";
-  restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
-  const params = restStr.split(" ");
-  params.push("-Jftp_data_dir=" + ftpDataDir);
-  if (insomniaFolder) {
-    params.push("-Jinsomnia_dir=" + insomniaFolder);
-  }
-  if (insomniaFolderDG) {
-    params.push("-Jinsomnia_dir_DG=" + insomniaFolderDG);
-  }
-  if (isVersion11 && project == EMAIL) {
-    params.push("-Jsmtp_host=smtp");
-    params.push("-Jsmtp_port=80");
-  }
-  await core.runCommand(getJmeterBat(), params);
   const steps = results.getSteps(core.readTextFile(resultsFile));
   const knownFailed = steps.filter((step) => !step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
   const newFailed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
@@ -1025,7 +1030,9 @@ async function run() {
         if (project) {
           const isProjectTest = typeof project !== "string";
           const testCode = isProjectTest ? project.code : project;
-          core.showMessage(`Testing ${testCode}`);
+          if (!cmd.onlyShowResults) {
+            core.showMessage(`Testing ${testCode}`);
+          }
           let report = null;
           if (testCode.toLowerCase() == "web") {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
@@ -1059,7 +1066,10 @@ async function run() {
           }
           const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
           const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
-          tests.showFailedTests(projectPassedTests, projectFailedTests);
+
+          if (!cmd.onlyShowResults) {
+            tests.showFailedTests(projectPassedTests, projectFailedTests);
+          }
         }
       }
 

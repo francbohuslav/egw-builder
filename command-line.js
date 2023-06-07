@@ -17,7 +17,7 @@ class CommandLine {
       }
       if (ar == "-folder") {
         /**
-         * @type {string}
+         * @type {string | undefined}
          */
         this.folder = pars.shift();
         continue;
@@ -124,6 +124,11 @@ class CommandLine {
       }
       if (ar == "-metamodel") {
         this.metamodel = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar == "-results") {
+        this.onlyShowResults = true;
         this.interactively = false;
         continue;
       }
