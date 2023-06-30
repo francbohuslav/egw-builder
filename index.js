@@ -157,14 +157,24 @@ const projects = [
     port: 8100,
     webname: "uu-energygateway-iec60870endpointg01",
     testFile: "iec60870_endpoint.jmx",
-    addProfilesFromLibraries: (isVersion11) =>
-      isVersion11
-        ? {}
-        : {
-            "uu_energygateway_datagatewayg01-config": "DG",
-            "uu_energygateway_datagatewayg01-endpoint": "DG",
-            "uu_energygateway_datagatewayg01-business-territory": "DG",
-          },
+    addProfilesFromLibraries: () => ({
+      "uu_energygateway_datagatewayg01-config": "DG",
+      "uu_energygateway_datagatewayg01-endpoint": "DG",
+      "uu_energygateway_datagatewayg01-business-territory": "DG",
+    }),
+  },
+  {
+    code: "ACER",
+    folder: config.folders.ACER,
+    server: "uu_energygateway_acerendpointg01-server",
+    port: 8101,
+    webname: "uu-energygateway-acerendpointg01",
+    testFile: "acer_endpoint.jmx",
+    addProfilesFromLibraries: () => ({
+      "uu_energygateway_datagatewayg01-config": "DG",
+      "uu_energygateway_datagatewayg01-endpoint": "DG",
+      "uu_energygateway_datagatewayg01-business-territory": "DG",
+    }),
   },
   {
     code: "MERGED",
@@ -176,7 +186,7 @@ const projects = [
   },
 ];
 
-const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, IEC60870, MERGED] = projects;
+const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, IEC60870, ACER, MERGED] = projects;
 
 /**
  * @param {string | string[]} command
@@ -640,6 +650,7 @@ async function run() {
       console.log("  -buildIEC62325       - Builds IEC62325 endpoint");
       console.log("  -buildAS24           - Builds AS24 endpoint");
       console.log("  -buildIEC60870       - Builds IEC60870 endpoint");
+      console.log("  -buildACER           - Builds ACER endpoint");
       console.log("  -buildMERGED         - Builds merged application");
       console.log("");
       console.log("  -run                 - Runs all subApps");
@@ -651,6 +662,7 @@ async function run() {
       console.log("  -runIEC62325         - Runs IEC62325 endpoint");
       console.log("  -runAS24             - Runs AS24 endpoint");
       console.log("  -runIEC60870         - Runs IEC60870 endpoint");
+      console.log("  -runACER             - Runs ACER endpoint");
       console.log("  -runMERGED           - Runs merged application");
       console.log("");
       console.log("  -init                - Runs init commands of all apps (creates workspace, sets permissions)");
@@ -662,6 +674,7 @@ async function run() {
       console.log("  -initIEC62325        - Runs init commands of IEC62325 endpoint");
       console.log("  -initAS24            - Runs init commands of AS24 endpoint");
       console.log("  -initIEC60870        - Runs init commands of IEC60870 endpoint");
+      console.log("  -initACER            - Runs init commands of ACER endpoint");
       console.log("  -initASYNC           - Runs init commands of AsyncJob server");
       console.log("  -uid <your-uid>      - UID of actual user");
       console.log("");
@@ -674,6 +687,7 @@ async function run() {
       console.log("  -testIEC62325        - Tests IEC62325 endpoint by jmeter");
       console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
       console.log("  -testIEC60870        - Tests IEC60870 endpoint by jmeter");
+      console.log("  -testACER            - Tests ACER endpoint by jmeter");
       console.log("  -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)");
       console.log("");
       console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
@@ -710,6 +724,9 @@ async function run() {
     }
     if (fs.existsSync(IEC60870.folder)) {
       runnableProjects.push(IEC60870);
+    }
+    if (fs.existsSync(ACER.folder)) {
+      runnableProjects.push(ACER);
     }
 
     if (fs.existsSync(MERGED.folder)) {
@@ -775,6 +792,7 @@ async function run() {
         cmd.buildIEC62325 ||
         cmd.buildAS24 ||
         cmd.buildIEC60870 ||
+        cmd.buildACER ||
         cmd.buildMERGED;
     if (!isBuild && !cmd.interactively) {
       console.log("Build app? no");
@@ -792,7 +810,7 @@ async function run() {
     // Runs
     const isRun = cmd.interactively
       ? cmd.getCmdValue("run", "Run app?")
-      : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325 || cmd.runAS24 || cmd.runIEC60870 || cmd.runMERGED;
+      : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325 || cmd.runAS24 || cmd.runIEC60870 || cmd.runACER || cmd.runMERGED;
     if (!isRun && !cmd.interactively) {
       console.log("Run app? no");
     }
@@ -808,7 +826,16 @@ async function run() {
     // Inits
     const isRunInit = cmd.interactively
       ? cmd.getCmdValue("init", "Run init app?")
-      : cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initIEC60870 || cmd.initASYNC;
+      : cmd.initDG ||
+        cmd.initMR ||
+        cmd.initFTP ||
+        cmd.initEMAIL ||
+        cmd.initECP ||
+        cmd.initIEC62325 ||
+        cmd.initAS24 ||
+        cmd.initIEC60870 ||
+        cmd.initACER ||
+        cmd.initASYNC;
     if (!isRunInit && !cmd.interactively) {
       console.log("Run init app? no");
     }
@@ -830,7 +857,10 @@ async function run() {
       if (!cmd.uid) {
         core.showError("Terminated by user");
       }
-      if ((cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initIEC60870) && !cmd.uid) {
+      if (
+        (cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initIEC60870 || cmd.initACER) &&
+        !cmd.uid
+      ) {
         core.showError("UID must be set along with inits");
       }
     }
@@ -846,6 +876,7 @@ async function run() {
         cmd.testIEC62325 ||
         cmd.testAS24 ||
         cmd.testIEC60870 ||
+        cmd.testACER ||
         (cmd.additionalTests && cmd.additionalTests.length);
     if (!isTests && !cmd.interactively) {
       console.log("Run tests? no");
@@ -861,6 +892,7 @@ async function run() {
     const isTestsIEC62325 = isTests && cmd.getCmdValue("testIEC62325", "... IEC62325?");
     const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
     const isTestsIEC60870 = isTests && cmd.getCmdValue("testIEC60870", "... IEC60870?");
+    const isTestsACER = isTests && cmd.getCmdValue("testACER", "... ACER?");
 
     if (!cmd.last) {
       last.saveSettings(cmd);
@@ -1023,6 +1055,7 @@ async function run() {
           isTestsIEC62325 ? IEC62325 : null,
           isTestsAS24 ? AS24 : null,
           isTestsIEC60870 ? IEC60870 : null,
+          isTestsACER ? ACER : null,
         ],
         ...(cmd.additionalTests || []),
       ];

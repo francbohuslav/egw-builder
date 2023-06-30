@@ -23,7 +23,7 @@ namespace EgwBuilderRunner
         public bool IsMerged { get; set; }
 
         [JsonProperty("build")]
-        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED || BuildIEC60870;
+        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED || BuildIEC60870 || BuildACER;
 
         [JsonProperty("buildDG")]
         public bool BuildDG { get; set; }
@@ -49,6 +49,9 @@ namespace EgwBuilderRunner
         [JsonProperty("buildIEC60870")]
         public bool BuildIEC60870 { get; set; }
 
+        [JsonProperty("buildACER")]
+        public bool BuildACER { get; set; }
+
 
         [JsonProperty("buildMERGED")]
         public bool BuildMERGED { get; set; }
@@ -57,7 +60,7 @@ namespace EgwBuilderRunner
         public bool UnitTests { get; set; }
 
         [JsonProperty("run")]
-        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24 || RunIEC60870;
+        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24 || RunIEC60870 || RunACER;
 
         [JsonProperty("runDG")]
         public bool RunDG { get; set; }
@@ -83,6 +86,9 @@ namespace EgwBuilderRunner
         [JsonProperty("runIEC60870")]
         public bool RunIEC60870 { get; set; }
 
+        [JsonProperty("runACER")]
+        public bool RunACER { get; set; }
+
         [JsonProperty("runMERGED")]
         public bool RunMERGED { get; set; }
 
@@ -90,7 +96,7 @@ namespace EgwBuilderRunner
         public bool RunInSequence { get; set; }
 
         [JsonProperty("init")]
-        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24 || InitIEC60870;
+        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24 || InitIEC60870 || InitACER;
 
         [JsonProperty("initDG")]
         public bool InitDG { get; set; }
@@ -116,6 +122,9 @@ namespace EgwBuilderRunner
         [JsonProperty("initIEC60870")]
         public bool InitIEC60870 { get; set; }
 
+        [JsonProperty("initACER")]
+        public bool InitACER { get; set; }
+
         [JsonProperty("initASYNC")]
         public bool InitASYNC { get; set; }
 
@@ -123,7 +132,7 @@ namespace EgwBuilderRunner
         public string Uid { get; set; }
 
         [JsonProperty("tests")]
-        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24 || TestIEC60870;
+        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24 || TestIEC60870 || TestACER;
 
         [JsonProperty("testDG")]
         public bool TestDG { get; set; }
@@ -148,6 +157,9 @@ namespace EgwBuilderRunner
 
         [JsonProperty("testIEC60870")]
         public bool TestIEC60870 { get; set; }
+
+        [JsonProperty("testACER")]
+        public bool TestACER { get; set; }
 
         [JsonProperty("additionalTests")]
         public string[] AdditionalTests { get; set; }

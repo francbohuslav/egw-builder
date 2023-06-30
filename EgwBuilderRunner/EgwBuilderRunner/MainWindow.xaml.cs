@@ -80,6 +80,11 @@ namespace EgwBuilderRunner
                         IEC608.IsEnabled = false;
                         ForProject("IEC608", ch => ch.IsEnabled = false);
                     }
+                    if (!info.ContainsProject("ACER"))
+                    {
+                        ACER.IsEnabled = false;
+                        ForProject("ACER", ch => ch.IsEnabled = false);
+                    }
                     foreach (var project in info.Projects)
                     {
                         if (!project.SupportTests && FindName("Test_" + project.CodeForComponent) != null)
@@ -221,6 +226,11 @@ namespace EgwBuilderRunner
             SetProject("IEC608", Build_IEC608.IsChecked != true);
         }
 
+        private void ACER_Click(object sender, RoutedEventArgs e)
+        {
+            SetProject("ACER", Build_ACER.IsChecked != true);
+        }
+
 
         private void SetProject(string project, bool on)
         {
@@ -268,7 +278,7 @@ namespace EgwBuilderRunner
             {
                 return;
             }
-            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC623", "AS24", "IEC608" })
+            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC623", "AS24", "IEC608", "ACER" })
             {
                 if (!MyApp.Runner.Info.ContainsProject(code))
                 {
@@ -342,6 +352,7 @@ namespace EgwBuilderRunner
                 BuildIEC62325 = Build_IEC623.IsChecked == true,
                 BuildAS24 = Build_AS24.IsChecked == true,
                 BuildIEC60870 = Build_IEC608.IsChecked == true,
+                BuildACER = Build_ACER.IsChecked == true,
                 BuildMERGED = Build_MERGED.IsChecked == true,
 
                 RunDG = Run_DG.IsChecked == true,
@@ -352,6 +363,7 @@ namespace EgwBuilderRunner
                 RunIEC62325 = Run_IEC623.IsChecked == true,
                 RunAS24 = Run_AS24.IsChecked == true,
                 RunIEC60870 = Run_IEC608.IsChecked == true,
+                RunACER = Run_ACER.IsChecked == true,
                 RunMERGED = Run_MERGED.IsChecked == true,
 
                 InitDG = Init_DG.IsChecked == true,
@@ -362,6 +374,7 @@ namespace EgwBuilderRunner
                 InitIEC62325 = Init_IEC623.IsChecked == true,
                 InitAS24 = Init_AS24.IsChecked == true,
                 InitIEC60870 = Init_IEC608.IsChecked == true,
+                InitACER = Init_ACER.IsChecked == true,
 
                 TestDG = Test_DG.IsChecked == true,
                 TestMR = Test_MR.IsChecked == true,
@@ -371,6 +384,7 @@ namespace EgwBuilderRunner
                 TestIEC62325 = Test_IEC623.IsChecked == true,
                 TestAS24 = Test_AS24.IsChecked == true,
                 TestIEC60870 = Test_IEC608.IsChecked == true,
+                TestACER = Test_ACER.IsChecked == true,
                 AdditionalTests = additionalTestModels.Where(t => t.IsChecked).Select(t => t.Name).ToArray()
             };
             return structure;
@@ -403,6 +417,7 @@ namespace EgwBuilderRunner
             Build_IEC623.IsChecked = structure.BuildIEC62325;
             Build_AS24.IsChecked = structure.BuildAS24;
             Build_IEC608.IsChecked = structure.BuildIEC60870;
+            Build_ACER.IsChecked = structure.BuildACER;
             Build_MERGED.IsChecked = structure.BuildMERGED;
 
             Run_DG.IsChecked = structure.RunDG;
@@ -413,6 +428,7 @@ namespace EgwBuilderRunner
             Run_IEC623.IsChecked = structure.RunIEC62325;
             Run_AS24.IsChecked = structure.RunAS24;
             Run_IEC608.IsChecked = structure.RunIEC60870;
+            Run_ACER.IsChecked = structure.RunACER;
             Run_MERGED.IsChecked = structure.RunMERGED;
 
             Init_DG.IsChecked = structure.InitDG;
@@ -423,6 +439,7 @@ namespace EgwBuilderRunner
             Init_IEC623.IsChecked = structure.InitIEC62325;
             Init_AS24.IsChecked = structure.InitAS24;
             Init_IEC608.IsChecked = structure.InitIEC60870;
+            Init_ACER.IsChecked = structure.InitACER;
 
             Test_DG.IsChecked = structure.TestDG;
             Test_MR.IsChecked = structure.TestMR;
@@ -432,6 +449,7 @@ namespace EgwBuilderRunner
             Test_IEC623.IsChecked = structure.TestIEC62325;
             Test_AS24.IsChecked = structure.TestAS24;
             Test_IEC608.IsChecked = structure.TestIEC60870;
+            Test_ACER.IsChecked = structure.TestACER;
             additionalTestModels.ForEach(a =>
             {
                 a.IsChecked = structure.AdditionalTests != null && structure.AdditionalTests.Any(t => t == a.Name);
@@ -462,6 +480,7 @@ namespace EgwBuilderRunner
                 && Build_IEC623.IsChecked == false
                 && Build_AS24.IsChecked == false
                 && Build_IEC608.IsChecked == false
+                && Build_ACER.IsChecked == false
                 )
             {
                 UnitTests.IsChecked = false;

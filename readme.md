@@ -21,6 +21,7 @@ Builder supports this EGW projects, which are hosted in UU Codebase GIT reposito
 - IEC62325 endpoint
 - AS24 endpoint
 - IEC60870 endpoint
+- ACER endpoint
 
 Default folder structure:
 
@@ -33,6 +34,7 @@ Default folder structure:
 - `uu_energygateway_iec62325endpointg01` - repository of IEC62325 endpoint
 - `uu_energygateway_as24endpointg01` - repository of AS24 endpoint
 - `uu_energygateway_iec60870endpointg01` - repository of IEC60870 endpoint
+- `uu_energygateway_acerendpointg01` - repository of ACER endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
@@ -84,6 +86,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -buildIEC62325       - Builds IEC62325 endpoint
     -buildAS24           - Builds AS24 endpoint
     -buildIEC60870       - Builds IEC60870 endpoint
+    -buildACER           - Builds ACER endpoint
     -buildMERGED         - Builds merged application
 
     -run                 - Runs all subApps
@@ -95,6 +98,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -runIEC62325         - Runs IEC62325 endpoint
     -runAS24             - Runs AS24 endpoint
     -runIEC60870         - Runs IEC60870 endpoint
+    -runACER             - Runs ACER endpoint
     -runMERGED           - Runs merged application
 
     -init                - Runs init commands of all apps (creates workspace, sets permissions)
@@ -106,6 +110,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -initIEC62325        - Runs init commands of IEC62325 endpoint
     -initAS24            - Runs init commands of AS24 endpoint
     -initIEC60870        - Runs init commands of IEC60870 endpoint
+    -initACER            - Runs ACER commands of IEC60870 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
     -uid <your-uid>      - UID of actual user
 
@@ -118,6 +123,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -testIEC62325        - Tests IEC62325 endpoint by jmeter
     -testAS24            - Tests AS24 endpoint by jmeter
     -testIEC60870        - Tests IEC60870 endpoint by jmeter
+    -testACER            - Tests ACER endpoint by jmeter
     -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)
 
 You will be asked interactively if there is none of options (except folder) used on command line.
