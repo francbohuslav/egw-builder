@@ -524,12 +524,17 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
     }
     await core.runCommand(getJmeterBat(), params);
   }
-  const steps = results.getSteps(core.readTextFile(resultsFile));
-  const knownFailed = steps.filter((step) => !step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
-  const newFailed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
-  const newPassed = steps.filter((step) => step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
-  const allPassed = steps.filter((step) => step.success).map((step) => step.info);
-  return { newFailed, newPassed, knownFailed, allPassed };
+  if (fs.existsSync(resultsFile)) {
+    const steps = results.getSteps(core.readTextFile(resultsFile));
+    const knownFailed = steps.filter((step) => !step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    const newFailed = steps.filter((step) => !step.success && !step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    const newPassed = steps.filter((step) => step.success && step.info.label.match(/\sT[0-9]+$/)).map((step) => step.info);
+    const allPassed = steps.filter((step) => step.success).map((step) => step.info);
+    return { newFailed, newPassed, knownFailed, allPassed };
+  } else {
+    // Test report not generated, can happen for onlyShowResults
+    return null;
+  }
 }
 
 /**
@@ -1084,24 +1089,25 @@ async function run() {
               );
             });
           }
+          if (report) {
+            if (report.newFailed.length) {
+              newFailed[testCode] = report.newFailed;
+            }
+            if (report.newPassed.length) {
+              newPassed[testCode] = report.newPassed;
+            }
+            if (report.allPassed.length) {
+              allPassed[testCode] = report.allPassed;
+            }
+            if (report.knownFailed.length) {
+              knownFailed[testCode] = report.knownFailed;
+            }
+            const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
+            const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
 
-          if (report.newFailed.length) {
-            newFailed[testCode] = report.newFailed;
-          }
-          if (report.newPassed.length) {
-            newPassed[testCode] = report.newPassed;
-          }
-          if (report.allPassed.length) {
-            allPassed[testCode] = report.allPassed;
-          }
-          if (report.knownFailed.length) {
-            knownFailed[testCode] = report.knownFailed;
-          }
-          const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};
-          const projectFailedTests = report.newFailed.length ? { [testCode]: report.newFailed } : {};
-
-          if (!cmd.onlyShowResults) {
-            tests.showFailedTests(projectPassedTests, projectFailedTests);
+            if (!cmd.onlyShowResults) {
+              tests.showFailedTests(projectPassedTests, projectFailedTests);
+            }
           }
         }
       }
