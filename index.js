@@ -17,6 +17,8 @@ const info = require("./classes/info");
 const messageBroker = require("./classes/message-broker");
 const java = require("./classes/java");
 const jmeter = require("./classes/jmeter");
+const nodeJs = require("./classes/node");
+
 if (fs.existsSync("./config.js")) {
   config = require("./config");
 }
@@ -51,6 +53,7 @@ const projects = [
     port: 8093,
     webname: "uu-energygateway-messageregistryg01",
     hi: "uu_energygateway_messageregistryg01-hi",
+    uu5lib: "uu_energygateway_uu5lib",
     gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
     testFile: "message-registry.jmx",
     addProfilesFromLibraries: (isVersion11) =>
@@ -202,34 +205,41 @@ function addJDKtoGradle(command, withQuotes = "") {
 }
 
 /**
- *
  * @param {IProject} project
+ * @param {boolean} isUnitTests
  */
 async function buildProject(project, isUnitTests) {
   if (await killProject(project)) {
     console.log("Killed running app");
   }
+  let pathPrefix = "";
   if (project.code === "MR") {
     if (fs.existsSync(project.folder + "/" + MR.gui)) {
+      const nodeJsFolder = await nodeJs.detectAndDownload(project.folder + "/" + MR.gui);
+      pathPrefix = `set PATH=${nodeJsFolder};%PATH% &`;
+      await core.inLocationAsync(project.folder + "/" + MR.uu5lib, async () => {
+        console.log("Install NPM packages for UU5 lib");
+        await core.runCommand(`cmd /C ${pathPrefix} npm i`);
+      });
       await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
         console.log("Install NPM packages for GUI components");
-        await core.runCommand("cmd /C npm i");
+        await core.runCommand(`cmd /C ${pathPrefix} npm i`);
         console.log("Build GUI components");
-        await core.runCommand("cmd /C npm run build");
+        await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
       });
     }
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
-      await core.runCommand("cmd /C npm i");
+      await core.runCommand(`cmd /C ${pathPrefix} npm i`);
     });
   }
 
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
-      await core.runCommand("cmd /C npm i");
+      await core.runCommand(`cmd /C ${pathPrefix} npm i`);
       console.log("Build HI");
-      await core.runCommand("cmd /C npm run build");
+      await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
     });
   }
 

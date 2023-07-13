@@ -1,4 +1,4 @@
-const { existsSync, createWriteStream } = require("fs");
+const { existsSync, createWriteStream, unlinkSync } = require("fs");
 const axios = require("axios");
 const { join } = require("path");
 const util = require("util");
@@ -22,6 +22,7 @@ class JMeter {
       console.log("Unziping JMeter...");
       await decompress(tempFile, folder);
       console.log("JMeter ready");
+      unlinkSync(tempFile);
     }
   }
 }
