@@ -4,19 +4,19 @@ const messageBroker = require("./message-broker");
 
 class Info {
   /**
-   * @param {import("..").IProject[]} projects
-   * @param {import("..").IProject} MR
+   * @param {IProject[]} projects
+   * @param {IProject} MR
    */
   async getInfo(projects, MR) {
     const info = this.getTests(projects, MR);
     info.environmentFiles = this.getEnvironments(MR);
-    await this.getBranches(info, projects);
+    await this.getBranches(info);
     console.log(JSON.stringify(info, null, 2));
   }
 
   /**
-   * @param {import("..").IProject[]} projects
-   * @param {import("..").IProject} MR
+   * @param {IProject[]} projects
+   * @param {IProject} MR
    */
   getTests(projects, MR) {
     const tests = fs

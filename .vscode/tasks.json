@@ -1,49 +1,55 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "npm",
-            "script": "start",
-            "problemMatcher": [],
-            "label": "npm: start"
-        },
-        {
-            "type": "npm",
-            "script": "init",
-            "problemMatcher": [],
-            "label": "npm: init"
-        },
-        {
-            "type": "npm",
-            "script": "cleanBuild",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "npm: cleanBuild"
-        },
-        {
-            "type": "npm",
-            "script": "test",
-            "group": "test",
-            "problemMatcher": [],
-            "label": "npm: test"
-        },
-        {
-            "type": "npm",
-            "script": "custom",
-            "problemMatcher": [],
-            "label": "npm: custom"
-        },
-        {
-            "type": "npm",
-            "script": "ask",
-            "problemMatcher": [],
-            "label": "npm: ask"
-        },
-        {
-            "type": "npm",
-            "script": "last",
-            "problemMatcher": [],
-            "label": "npm: last"
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start",
+      "problemMatcher": [],
+      "label": "npm: start"
+    },
+    {
+      "type": "npm",
+      "script": "init",
+      "problemMatcher": [],
+      "label": "npm: init"
+    },
+    {
+      "type": "npm",
+      "script": "cleanBuild",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: cleanBuild"
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "npm: test"
+    },
+    {
+      "type": "npm",
+      "script": "custom",
+      "problemMatcher": [],
+      "label": "npm: custom"
+    },
+    {
+      "type": "npm",
+      "script": "ask",
+      "problemMatcher": [],
+      "label": "npm: ask"
+    },
+    {
+      "type": "npm",
+      "script": "last",
+      "problemMatcher": [],
+      "label": "npm: last"
+    },
+    {
+      "type": "npm",
+      "script": "info",
+      "problemMatcher": [],
+      "label": "npm: info"
+    }
+  ]
 }

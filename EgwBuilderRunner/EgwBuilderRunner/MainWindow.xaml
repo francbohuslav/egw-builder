@@ -60,7 +60,7 @@
             </StackPanel>
             <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                 <Label x:Name="MessageBrokerLabel" Content="Change Message Broker" HorizontalAlignment="Left" Padding="0,3,0,0" Margin="0,0,5,0" VerticalAlignment="Top" Width="135" HorizontalContentAlignment="Right"  />
-                <ComboBox x:Name="MessageBroker"  SelectedIndex="-1" HorizontalAlignment="Left" Height="21" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126" IsEditable="True" ToolTip="Changes message broker in application.properties of all apps" SelectionChanged="MessageBroker_SelectionChanged">
+                <ComboBox x:Name="MessageBroker"  SelectedIndex="-1" HorizontalAlignment="Left" Height="21" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="126" IsEditable="True" ToolTip="Changes message broker in application(-development).properties of all apps" SelectionChanged="MessageBroker_SelectionChanged">
                     <ComboBoxItem>amqp</ComboBoxItem>
                     <ComboBoxItem>kafka</ComboBoxItem>
                     <ComboBoxItem>mongodb</ComboBoxItem>
