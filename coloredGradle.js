@@ -2,6 +2,7 @@ const decode = require("html-entities").decode;
 
 const fs = require("fs");
 const os = require("os");
+const help = require("./classes/help");
 
 const stdin = process.openStdin();
 const projectCode = process.argv[2];
@@ -16,6 +17,7 @@ fs.open(logFile, "w", function (err, fd) {
   }
 
   stdin.on("data", function (chunk) {
+    /** @type {string[]} */
     const lines = chunk.toString().split(/[\r\n]+/);
     lines.forEach((line) => {
       line = line.replace(/\s+$/, "");
@@ -30,6 +32,11 @@ fs.open(logFile, "w", function (err, fd) {
       }
     });
   });
+
+  stdin.on("end", function () {
+    console.log("");
+    help.printTroubleShootHelp();
+  });
 });
 
 let isError = false;
@@ -41,9 +48,10 @@ let isRunning = false;
 let stackTraceLine = 0;
 let color = "";
 let prevLineTime = new Date().getTime();
+
 /**
- *
  * @param {string} line input line
+ * @param {number} fd
  */
 function printLine(line, fd) {
   isErrorStart = false;
@@ -107,6 +115,11 @@ function printLine(line, fd) {
   prevIsErrorToInform = isErrorToInform;
 }
 
+/**
+ *
+ * @param {string} line
+ * @returns {string}
+ */
 function updateLineFromDocker(line) {
   line = line.replace(/^\S+\s+\|/, "").trim();
   line = line.replace("TRACE_LOG", "").trim();

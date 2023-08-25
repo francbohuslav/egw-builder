@@ -18,6 +18,7 @@ const messageBroker = require("./classes/message-broker");
 const java = require("./classes/java");
 const jmeter = require("./classes/jmeter");
 const nodeJs = require("./classes/node");
+const help = require("./classes/help");
 
 if (fs.existsSync("./config.js")) {
   config = require("./config");
@@ -249,7 +250,6 @@ async function buildProject(project, isUnitTests) {
       args += " -x test";
     }
     await core.runCommand("cmd", addJDKtoGradle(args.split(" ")));
-
     if (project.code === "MR") {
       fs.copyFileSync(MR.hi + "/env/tests-uu5-environment.json", MR.server + "/public/uu5-environment.json");
     }
@@ -1127,7 +1127,9 @@ async function run() {
 
     core.showMessage("DONE");
   } catch (err) {
-    core.showError(err);
+    //core.showError(err);
+    help.printTroubleShootHelp();
+    core.showError("");
   }
 }
 
