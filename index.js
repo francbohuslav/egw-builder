@@ -1127,7 +1127,7 @@ async function run() {
 
     core.showMessage("DONE");
   } catch (err) {
-    //core.showError(err);
+    core.showError(err);
     help.printTroubleShootHelp();
     core.showError("");
   }
