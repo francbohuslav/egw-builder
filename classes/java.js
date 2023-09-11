@@ -69,14 +69,14 @@ class Java {
   async downloadIfMissing(javaInfo) {
     const folder = join(__dirname, "..", "java");
     fs.mkdirSync(folder, { recursive: true });
-    const download = { uri: "https://www.dropbox.com/s/7z9agtdakccb7uz/jdk1.8.0_211.zip?dl=1", subFolder: "jdk1.8.0_211" };
+    const download = { uri: "https://www.dropbox.com/s/7z9agtdakccb7uz/jdk1.8.0_211.zip?dl=1", removeSubFolder: true };
     if (javaInfo.javaVersion === "11") {
       download.uri = "https://www.dropbox.com/s/ofb3m5ag3cy05k6/corretto-11.0.12.zip?dl=1";
-      download.subFolder = "";
+      download.removeSubFolder = false;
     }
     if (javaInfo.javaVersion === "17") {
       download.uri = "https://cdn.azul.com/zulu/bin/zulu17.44.15-ca-jdk17.0.8-win_x64.zip";
-      download.subFolder = "zulu17.44.15-ca-jdk17.0.8-win_x64";
+      download.removeSubFolder = true;
     }
     const javaDestFolder = join(folder, javaInfo.javaVersion);
     if (!fs.existsSync(javaDestFolder)) {
@@ -89,7 +89,7 @@ class Java {
       const tempFile = join(__dirname, "..", `java.zip`);
       await pipeline(response.data, fs.createWriteStream(tempFile));
       console.log("Unzipping Java...");
-      await decompress(tempFile, javaDestFolder, { strip: download.subFolder ? 1 : 0 });
+      await decompress(tempFile, javaDestFolder, { strip: download.removeSubFolder ? 1 : 0 });
       fs.unlinkSync(tempFile);
       console.log("Java ready");
     }
