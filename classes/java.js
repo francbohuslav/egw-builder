@@ -1,5 +1,11 @@
 const fs = require("fs");
+const axios = require("axios");
+const { join } = require("path");
+const util = require("util");
+const stream = require("stream");
+const decompress = require("decompress");
 const core = require("../core");
+const pipeline = util.promisify(stream.pipeline);
 
 class Java {
   /**
@@ -16,7 +22,7 @@ class Java {
     if (!match) {
       throw new Error(`Can not detect sourceCompatibility in ${file}`);
     }
-    const javaVersion = match[1];
+    const javaVersion = /** @type {"1.8" | "11" | "17"} */ (match[1]);
 
     file = `${project.folder}/build.gradle`;
     if (!fs.existsSync(file)) {
@@ -54,6 +60,40 @@ class Java {
     }
     str += ` Max memory = ${javaInfo.maxMemory}`;
     console.log(str);
+  }
+
+  /**
+   * @param {IJavaAppInfo} javaInfo
+   * @returns {Promise<string>} path to JAVA folder
+   */
+  async downloadIfMissing(javaInfo) {
+    const folder = join(__dirname, "..", "java");
+    fs.mkdirSync(folder, { recursive: true });
+    const download = { uri: "https://www.dropbox.com/s/7z9agtdakccb7uz/jdk1.8.0_211.zip?dl=1", subFolder: "jdk1.8.0_211" };
+    if (javaInfo.javaVersion === "11") {
+      download.uri = "https://www.dropbox.com/s/ofb3m5ag3cy05k6/corretto-11.0.12.zip?dl=1";
+      download.subFolder = "";
+    }
+    if (javaInfo.javaVersion === "17") {
+      download.uri = "https://cdn.azul.com/zulu/bin/zulu17.44.15-ca-jdk17.0.8-win_x64.zip";
+      download.subFolder = "zulu17.44.15-ca-jdk17.0.8-win_x64";
+    }
+    const javaDestFolder = join(folder, javaInfo.javaVersion);
+    if (!fs.existsSync(javaDestFolder)) {
+      console.log(`Downloading Java ${javaInfo.javaVersion}...`);
+      const response = await axios({
+        method: "get",
+        url: download.uri,
+        responseType: "stream",
+      });
+      const tempFile = join(__dirname, "..", `java.zip`);
+      await pipeline(response.data, fs.createWriteStream(tempFile));
+      console.log("Unzipping Java...");
+      await decompress(tempFile, javaDestFolder, { strip: download.subFolder ? 1 : 0 });
+      fs.unlinkSync(tempFile);
+      console.log("Java ready");
+    }
+    return javaDestFolder;
   }
 }
 

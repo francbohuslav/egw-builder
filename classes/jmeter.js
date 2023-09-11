@@ -7,7 +7,7 @@ const decompress = require("decompress");
 const pipeline = util.promisify(stream.pipeline);
 
 class JMeter {
-  async downloadIMissing() {
+  async downloadIfMissing() {
     const folder = join(__dirname, "..");
     const tempFile = join(__dirname, "..", "jmeter.zip");
     if (!existsSync(join(folder, "jmeter"))) {
@@ -19,7 +19,7 @@ class JMeter {
       });
 
       await pipeline(response.data, createWriteStream(tempFile));
-      console.log("Unziping JMeter...");
+      console.log("Unzipping JMeter...");
       await decompress(tempFile, folder);
       console.log("JMeter ready");
       unlinkSync(tempFile);

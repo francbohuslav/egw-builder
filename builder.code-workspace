@@ -27,7 +27,7 @@
         "name": "Launch Program",
         "skipFiles": ["<node_internals>/**"],
         "program": "index.js",
-        "args": ["-folder", "../vNext", "-tests", "Quick"]
+        "args": ["-folder", "../v5_X", "-tests", "Quick"]
       }
     ]
   }

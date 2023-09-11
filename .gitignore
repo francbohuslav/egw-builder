@@ -9,5 +9,6 @@ node_modules
 /EgwBuilderRunner/Installer/setup-EgwBuilderRunner.exe
 /config.js
 /jmeter.zip
-/jmeter
+/jmeter/
 /nodejs/
+/java/

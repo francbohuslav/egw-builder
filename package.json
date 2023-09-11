@@ -10,7 +10,7 @@
     "init": "node ./index.js -folder ../v3_0 -init -uid 12-8835-1",
     "last": "node ./index.js -last",
     "info": "node ./index.js -folder ../v6_X -info",
-    "custom": "node ./index.js -folder ../v5_X -uid 12-8835-1 -metamodel"
+    "custom": "node ./index.js -folder ../v5_X -uid 12-8835-1 -getVersions"
   },
   "author": "Bohuslav Franc",
   "license": "ISC",

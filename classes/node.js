@@ -19,14 +19,14 @@ class NodeJs {
       core.showError(`Node.js version cannot be detected from '${requiredVersion}'`);
     }
     const nodeJsMajorVersion = match[1];
-    return await this.downloadIMissing(nodeJsMajorVersion);
+    return await this.downloadIfMissing(nodeJsMajorVersion);
   }
 
   /**
    * @param {string} nodeJsMajorVersion
    * @returns {Promise<string>} path to Node.js folder
    */
-  async downloadIMissing(nodeJsMajorVersion) {
+  async downloadIfMissing(nodeJsMajorVersion) {
     const folder = join(__dirname, "..", "nodejs");
     mkdirSync(folder, { recursive: true });
     let nodeJsVersion = "14.21.1";
@@ -43,7 +43,7 @@ class NodeJs {
       });
       const tempFile = join(__dirname, "..", `nodejs.zip`);
       await pipeline(response.data, createWriteStream(tempFile));
-      console.log("Unziping Node.js...");
+      console.log("Unzipping Node.js...");
       await decompress(tempFile, folder);
       unlinkSync(tempFile);
       renameSync(join(folder, `node-v${nodeJsVersion}-win-x64`), nodeJsFolder);

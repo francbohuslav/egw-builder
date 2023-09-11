@@ -16,6 +16,7 @@ module.exports = {
     MERGED: "uu_energygateway_mergedg01",
   },
   JDK: {
-    11: "c:\\Users\\franc\\.jdks\\corretto-11.0.12",
+    // Optional paths to JDK. Correct Java is downloaded and used automatically if not specified.
+    // 11: "c:\\Users\\franc\\.jdks\\corretto-11.0.12",
   },
 };

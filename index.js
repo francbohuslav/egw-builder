@@ -385,7 +385,7 @@ async function waitForApplicationIsReady(project) {
  * @param {CommandLine} cmd
  */
 async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
-  await jmeter.downloadIMissing();
+  await jmeter.downloadIfMissing();
   await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
 
   const projectCode = project.code;
@@ -405,7 +405,7 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
 }
 
 async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
-  await jmeter.downloadIMissing();
+  await jmeter.downloadIfMissing();
   const initFile = "inits/init_ASYNC_JOB.jmx";
   const resultsFile = "logs/initResultsASYNC.xml";
   const logFile = `logs/initLogsASYNC.log`;
@@ -496,7 +496,7 @@ async function cleanDockers() {
  * @param {CommandLine} cmd
  */
 async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, isMergedVersion, cmd) {
-  await jmeter.downloadIMissing();
+  await jmeter.downloadIfMissing();
   let projectCode = project;
   let testFile = null;
   if (isProjectTest) {
@@ -767,7 +767,9 @@ async function run() {
 
     const subAppJavaInfo = java.getSubAppJavaInfo(DG);
     if (config.JDK && config.JDK[subAppJavaInfo.javaVersion]) {
-      JDK = config.JDK[subAppJavaInfo.javaVersion] ?? "";
+      JDK = config.JDK[subAppJavaInfo.javaVersion];
+    } else {
+      JDK = await java.downloadIfMissing(subAppJavaInfo);
     }
     java.printInfo(subAppJavaInfo, JDK);
 

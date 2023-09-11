@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} IJavaAppInfo
- * @property {string} javaVersion
+ * @property {"1.8" | "11" | "17"} javaVersion
  * @property {string} maxMemory
  * @property {string} mainClassName
  */
