@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using static EgwBuilderRunner.InfoStructure;
@@ -150,16 +150,33 @@ namespace EgwBuilderRunner
             }
         }
 
-        public Task<string> GetDockerAddress()
-        {
-            return ProcessRunner.RunProcessAsync("powershell", "(Resolve-DnsName host.docker.internal).IPAddress");
-        }
 
         public async Task<bool> IsDockerAddressOk()
         {
-            var text = await ProcessRunner.RunProcessAsync("powershell", "ipconfig | findstr (Resolve-DnsName host.docker.internal).IPAddress");
-            // Valid return: IPv4 Address. . . . . . . . . . . : 192.168.2.4 
-            return Regex.IsMatch(text, "IPv4.*\\d+\\.\\d+\\.\\d+\\.\\d+");
+            try
+            {
+                var task = Task.Run(() =>
+                {
+                    var entry = Dns.GetHostEntry("host.docker.internal");
+                    if (entry.AddressList.Length > 0)
+                    {
+                        return entry.AddressList[0].ToString();
+                    }
+                    return null;
+                });
+                if (await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(2.0))) == task)
+                {
+                    return task.Result == "127.0.0.1";
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }

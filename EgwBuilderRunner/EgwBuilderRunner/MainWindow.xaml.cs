@@ -55,9 +55,20 @@ namespace EgwBuilderRunner
                 await Task.Delay(1);
                 try
                 {
+                    if (await MyApp.Runner.IsDockerAddressOk())
+                    {
+                        DockerInternalAddressWarning.SetVisible(false);
+                        DockerInternalAddressWarningIsOk.SetVisible(true);
+                    }
+                    else
+                    {
+                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal must be binded to 127.0.0.1"
+                            + ". Add line '127.0.0.1 host.docker.internal' to C:\\Windows\\System32\\drivers\\etc\\hosts and save as admin" +
+                            ". Otherwise AsyncJob and other services will not work correctly.";
+
+                    }
                     var versionTask = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
                     var infoTask = MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
-                    var isDockerAddressOkTask = MyApp.Runner.IsDockerAddressOk(); // Waiting is below
                     await Task.WhenAll(versionTask, infoTask);
                     var version = await versionTask;
                     Console.Text = version + "\n\nBranches\n" + MyApp.Runner.Info.GetBranches();
@@ -104,18 +115,6 @@ namespace EgwBuilderRunner
                         Environment.Items.Clear();
                         Environment.ItemsSource = info.GetEnvironments();
                         Environment.SelectedIndex = 0;
-                    }
-                    if (await isDockerAddressOkTask)
-                    {
-                        DockerInternalAddressWarning.SetVisible(false);
-                        DockerInternalAddressWarningIsOk.SetVisible(true);
-                    }
-                    else
-                    {
-                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal is binded to " + await MyApp.Runner.GetDockerAddress()
-                            + ", which is not address of this computer (ipconfig). Restart Docker Desktop from context menu of Docker Desktop icon in system tray. " +
-                            "Otherwise AsyncJob and other services will not work correctly.";
-
                     }
                 }
                 catch (Exception ex)
