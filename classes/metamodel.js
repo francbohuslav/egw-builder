@@ -12,7 +12,9 @@ class MetaModel {
     await core.inLocationAsync(`${project.folder}/${project.server}/src/main/resources/config`, async () => {
       console.log(project.code);
       await this._generateMetamodelVersion(mainFolder, projects, project, isVersion11, 1);
-      await this._generateMetamodelVersion(mainFolder, projects, project, false, 2);
+      if (fs.existsSync(`metamodel-2.0.json`)) {
+        await this._generateMetamodelVersion(mainFolder, projects, project, false, 2);
+      }
     });
   }
 
