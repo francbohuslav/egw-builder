@@ -33,6 +33,9 @@ class NodeJs {
     if (nodeJsMajorVersion === "16") {
       nodeJsVersion = "16.18.1";
     }
+    if (nodeJsMajorVersion === "18") {
+      nodeJsVersion = "18.18.0";
+    }
     const nodeJsFolder = join(folder, nodeJsMajorVersion);
     if (!existsSync(nodeJsFolder)) {
       console.log(`Downloading Node.js ${nodeJsVersion}...`);
