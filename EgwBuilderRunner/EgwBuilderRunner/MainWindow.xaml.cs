@@ -62,8 +62,8 @@ namespace EgwBuilderRunner
                     }
                     else
                     {
-                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal must be binded to 127.0.0.1"
-                            + ". Add line '127.0.0.1 host.docker.internal' to C:\\Windows\\System32\\drivers\\etc\\hosts and save as admin" +
+                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal must be binded to local address"
+                            + ". Add line '127.0.0.1 host.docker.internal' (or use another local ip address) to C:\\Windows\\System32\\drivers\\etc\\hosts and save as admin" +
                             ". Otherwise AsyncJob and other services will not work correctly.";
 
                     }

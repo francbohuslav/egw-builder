@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -155,6 +156,7 @@ namespace EgwBuilderRunner
         {
             try
             {
+                var localIpList = GetAllLocalIpList();
                 var task = Task.Run(() =>
                 {
                     var entry = Dns.GetHostEntry("host.docker.internal");
@@ -166,7 +168,7 @@ namespace EgwBuilderRunner
                 });
                 if (await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(2.0))) == task)
                 {
-                    return task.Result == "127.0.0.1";
+                    return localIpList.Contains(task.Result);
                 }
                 else
                 {
@@ -177,6 +179,21 @@ namespace EgwBuilderRunner
             {
                 return false;
             }
+        }
+
+        private string[] GetAllLocalIpList()
+        {
+            var addresses = new HashSet<string>();
+            addresses.Add("127.0.0.1");
+            foreach (var netInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                var ipProps = netInterface.GetIPProperties();
+                foreach (var addr in ipProps.UnicastAddresses)
+                {
+                    addresses.Add(addr.Address.ToString());
+                }
+            }
+            return addresses.OrderBy(s => s).ToArray();
         }
 
     }
