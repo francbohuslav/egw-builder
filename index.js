@@ -220,25 +220,25 @@ async function buildProject(project, isUnitTests) {
       pathPrefix = `set PATH=${nodeJsFolder};%PATH% &`;
       await core.inLocationAsync(project.folder + "/" + MR.uu5lib, async () => {
         console.log("Install NPM packages for UU5 lib");
-        await core.runCommand(`cmd /C ${pathPrefix} npm i`);
+        await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
       });
       await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
         console.log("Install NPM packages for GUI components");
-        await core.runCommand(`cmd /C ${pathPrefix} npm i`);
+        await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
         console.log("Build GUI components");
         await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
       });
     }
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
-      await core.runCommand(`cmd /C ${pathPrefix} npm i`);
+      await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
     });
   }
 
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
-      await core.runCommand(`cmd /C ${pathPrefix} npm i`);
+      await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
       console.log("Build HI");
       await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
     });
@@ -376,7 +376,8 @@ async function waitForApp(url) {
  * @param {IProject} project
  */
 async function waitForApplicationIsReady(project) {
-  await waitForApp(`http://localhost:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`);
+  // 127.0.0.1 is used instead of localhost because of IPv4
+  await waitForApp(`http://127.0.0.1:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`);
 }
 
 /**
