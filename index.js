@@ -354,7 +354,7 @@ async function waitForApp(url) {
   const seconds = 300;
   for (let counter = seconds; counter > 0; counter -= 2) {
     try {
-      await requestAsync(url, { json: true });
+      await requestAsync(url, { json: true, family: 4 });
       if (counter != seconds) {
         console.log("...ready!");
       }
