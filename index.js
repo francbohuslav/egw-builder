@@ -395,9 +395,14 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
   const logFile = "logs/initLogs" + projectCode + ".log";
   fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
   fs.existsSync(logFile) && fs.unlinkSync(logFile);
-  const params = `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}${isMergedVersion ? "_merged" : ""}.cfg -Jinsomnia_dir=${insomniaFolder} -Juid=${
-    cmd.uid
-  }`.split(" ");
+  const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
+  const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
+  if (!fs.existsSync(ftpDataDir)) {
+    core.showError(ftpDataDir + " does not exists");
+  }
+  const params = `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}${
+    isMergedVersion ? "_merged" : ""
+  }.cfg -Jinsomnia_dir=${insomniaFolder} -Jftp_data_dir=${ftpDataDir} -Juid=${cmd.uid}`.split(" ");
   const { stdOut } = await core.runCommand(getJmeterBat(), params);
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
