@@ -395,10 +395,10 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
   const logFile = "logs/initLogs" + projectCode + ".log";
   fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
   fs.existsSync(logFile) && fs.unlinkSync(logFile);
-  const keyStoreDir = path.resolve(process.cwd() + "/../../../../../" + project.folder + "/keyStore");
+  const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
   const params = `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}${
     isMergedVersion ? "_merged" : ""
-  }.cfg -Jinsomnia_dir=${insomniaFolder} -Jkey_store_dir=${keyStoreDir} -Juid=${cmd.uid}`.split(" ");
+  }.cfg -Jinsomnia_dir=${insomniaFolder} -Jproject_dir=${projectDir} -Juid=${cmd.uid}`.split(" ");
   const { stdOut } = await core.runCommand(getJmeterBat(), params);
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
@@ -494,6 +494,18 @@ async function cleanDockers() {
 }
 
 /**
+ * @returns {string}
+ */
+function getFtpDataDir() {
+  const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
+  const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
+  if (!fs.existsSync(ftpDataDir)) {
+    core.showError(ftpDataDir + " does not exists");
+  }
+  return ftpDataDir;
+}
+
+/**
  * @param {IProject} project
  * @param {CommandLine} cmd
  */
@@ -515,15 +527,10 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
   if (!cmd.onlyShowResults) {
     fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
     fs.existsSync(logFile) && fs.unlinkSync(logFile);
-    const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
-    const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
-    if (!fs.existsSync(ftpDataDir)) {
-      core.showError(ftpDataDir + " does not exists");
-    }
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const params = restStr.split(" ");
-    params.push("-Jftp_data_dir=" + ftpDataDir);
+    params.push("-Jftp_data_dir=" + getFtpDataDir());
     if (insomniaFolder) {
       params.push("-Jinsomnia_dir=" + insomniaFolder);
     }
