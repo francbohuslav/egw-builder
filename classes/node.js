@@ -29,12 +29,18 @@ class NodeJs {
   async downloadIfMissing(nodeJsMajorVersion) {
     const folder = join(__dirname, "..", "nodejs");
     mkdirSync(folder, { recursive: true });
-    let nodeJsVersion = "14.21.1";
+    let nodeJsVersion = undefined;
+    if (nodeJsMajorVersion === "12") {
+      nodeJsVersion = "14.21.1";
+    }
     if (nodeJsMajorVersion === "16") {
       nodeJsVersion = "16.18.1";
     }
     if (nodeJsMajorVersion === "18") {
       nodeJsVersion = "18.18.0";
+    }
+    if (!nodeJsVersion) {
+      core.showError(`Unsupported Node.js version '${nodeJsMajorVersion}'`);
     }
     const nodeJsFolder = join(folder, nodeJsMajorVersion);
     if (!existsSync(nodeJsFolder)) {
