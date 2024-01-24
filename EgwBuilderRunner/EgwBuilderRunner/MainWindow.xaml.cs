@@ -341,7 +341,7 @@ namespace EgwBuilderRunner
                 Uid = YourUID.Text,
                 InitASYNC = AsyncJob.IsChecked == true,
                 RunInSequence = RunInSequence.IsChecked == true,
-                EnvironmentFile = MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable ? EnvironmentHelper.LabelToFile(Environment.SelectedItem?.ToString()) : null,
+                EnvironmentFile = MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable ? EnvironmentHelper.LabelToFile(Environment.SelectedItem?.ToString()) : EnvironmentHelper.DefaultEnvironmentFile,
 
                 BuildDG = Build_DG.IsChecked == true,
                 BuildMR = Build_MR.IsChecked == true,
@@ -397,7 +397,7 @@ namespace EgwBuilderRunner
             MessageBroker.Text = structure.MessageBroker;
             if (MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable)
             {
-                Environment.SelectedItem = EnvironmentHelper.FileToLabel(structure.EnvironmentFile);
+                Environment.SelectedItem = EnvironmentHelper.FileToLabel(structure.EnvironmentFile) ?? EnvironmentHelper.DefaultEnvironmentFile;
             }
             ClearDocker.IsChecked = structure.Clear;
             Metamodel.IsChecked = structure.Metamodel;

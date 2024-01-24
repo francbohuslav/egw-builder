@@ -6,6 +6,9 @@ namespace EgwBuilderRunner.Helpers
 {
     internal static class EnvironmentHelper
     {
+
+        public const string DefaultEnvironmentFile = "env_localhost_A";
+
         public static bool ContainsNonDefault(IEnumerable<string> list)
         {
             return list != null && list.Any(e => e != "env_localhost");
