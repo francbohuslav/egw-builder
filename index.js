@@ -19,6 +19,7 @@ const java = require("./classes/java");
 const jmeter = require("./classes/jmeter");
 const nodeJs = require("./classes/node");
 const help = require("./classes/help");
+const docker = require("./classes/docker");
 
 if (fs.existsSync("./config.js")) {
   config = require("./config");
@@ -462,21 +463,21 @@ async function killProject(project) {
 
 async function stopComposer() {
   try {
-    await core.runCommand("docker-compose kill");
-    await core.runCommand("docker-compose down");
+    await docker.compose("kill");
+    await docker.compose("down");
   } catch (e) {
     // Errors ignored
   }
 }
 
 async function cleanDockers() {
-  let { stdOut } = await core.runCommand("docker container ls -a --filter name=egw-tests_mongo");
+  let { stdOut } = await docker.run("container ls -a --filter name=egw-tests_mongo");
   const containerIds = stdOut
     .split("\n")
     .slice(1) // remove header
     .map((l) => l.split(" ")[0]) // take id
     .filter((id) => id.length > 10); // remove empty line
-  stdOut = (await core.runCommand("docker container ls -a --filter name=egw-run-test")).stdOut;
+  stdOut = (await docker.run("container ls -a --filter name=egw-run-test")).stdOut;
   const testsId = stdOut
     .split("\n")
     .slice(1) // remove header
@@ -487,9 +488,9 @@ async function cleanDockers() {
   }
   for (const id of containerIds) {
     console.log("Stop docker ...");
-    await core.runCommand("docker container stop " + id);
+    await docker.run("container stop " + id);
     console.log("Remove docker ...");
-    await core.runCommand("docker container rm " + id);
+    await docker.run("container rm " + id);
   }
 }
 
@@ -950,7 +951,7 @@ async function run() {
             (isRun && isRunPerProject[MERGED.code])) &&
           fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
         ) {
-          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
+          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await docker.compose("up -d"));
         }
       }
     }

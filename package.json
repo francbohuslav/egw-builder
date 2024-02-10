@@ -4,13 +4,13 @@
   "description": "Scripts for building, testing and release EnergyGateway",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js -folder ../v3_0",
-    "cleanBuild": "node ./index.js -folder ../v3_0 -clear -build",
-    "ask": "node ./index.js -folder ../v3_0",
-    "init": "node ./index.js -folder ../v3_0 -init -uid 12-8835-1",
+    "start": "node ./index.js -folder ../v5_X",
+    "cleanBuild": "node ./index.js -folder ../v5_X -clear -build",
+    "ask": "node ./index.js -folder ../v5_X",
+    "init": "node ./index.js -folder ../v5_X -init -uid 12-8835-1",
     "last": "node ./index.js -last",
-    "info": "node ./index.js -folder ../v6_X -info",
-    "custom": "node ./index.js -folder ../v5_X -uid 12-8835-1 -getVersions"
+    "info": "node ./index.js -folder ../v5_X -info",
+    "custom": "node ./index.js -folder ../v5_X -uid 12-8835-1 -runDG"
   },
   "author": "Bohuslav Franc",
   "license": "ISC",

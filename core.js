@@ -83,6 +83,7 @@ class Core {
    * @param {string[] | string} [args]
    * @param {any} [options],
    * @param {import("child_process").SpawnOptionsWithoutStdio} [spawnOptions]
+   * @returns {Promise<{ code: any, stdOut: string, stdErr: string }>}
    */
   async runCommand(command, args, options, spawnOptions = undefined) {
     if (!args || args.length === 0) {
