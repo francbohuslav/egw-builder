@@ -462,8 +462,8 @@ async function killProject(project) {
 
 async function stopComposer() {
   try {
-    await core.runCommand("docker-compose kill");
-    await core.runCommand("docker-compose down");
+    await core.runCommand("docker compose kill");
+    await core.runCommand("docker compose down");
   } catch (e) {
     // Errors ignored
   }
@@ -950,7 +950,7 @@ async function run() {
             (isRun && isRunPerProject[MERGED.code])) &&
           fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
         ) {
-          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker-compose up -d"));
+          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker compose up -d"));
         }
       }
     }

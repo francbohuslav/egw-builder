@@ -132,8 +132,8 @@ namespace EgwBuilderRunner
             }
             var process = Process.Start(new ProcessStartInfo()
             {
-                FileName = "docker-compose",
-                Arguments = (restart ? "restart " : "up -d ") + name,
+                FileName = "docker",
+                Arguments = "compose " + (restart ? "restart " : "up -d ") + name,
                 WorkingDirectory = Path.Combine(egwFolder, directory, "docker\\egw-tests"),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
