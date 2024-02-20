@@ -15,7 +15,7 @@ namespace EgwBuilderRunner.Services
             {
                 return new List<string>();
             }
-            var output = await ProcessRunner.RunProcessAsync("docker compose", "config --services", dockerFolder);
+            var output = await ProcessRunner.RunProcessAsync("docker", "compose config --services", dockerFolder);
             return output.Split('\n').ToList();
 
         }
