@@ -530,6 +530,8 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const params = restStr.split(" ");
+    const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
+    params.push("-Jproject_dir=" + projectDir);
     params.push("-Jftp_data_dir=" + getFtpDataDir());
     if (insomniaFolder) {
       params.push("-Jinsomnia_dir=" + insomniaFolder);
