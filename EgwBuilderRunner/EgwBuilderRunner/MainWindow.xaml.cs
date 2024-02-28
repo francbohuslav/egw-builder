@@ -29,7 +29,6 @@ namespace EgwBuilderRunner
         {
             InitializeComponent();
             Title = MyApp.AppSettings.ApplicationNameWithVersion;
-            DockerInternalAddressWarningIsOk.SetVisible(false);
             EnvironmentContainer.Visibility = Visibility.Hidden; // Not to shift controlls after showing
 
             Clear_Click(null, null);
@@ -55,18 +54,6 @@ namespace EgwBuilderRunner
                 await Task.Delay(1);
                 try
                 {
-                    if (await MyApp.Runner.IsDockerAddressOk())
-                    {
-                        DockerInternalAddressWarning.SetVisible(false);
-                        DockerInternalAddressWarningIsOk.SetVisible(true);
-                    }
-                    else
-                    {
-                        DockerInternalAddressWarning.Text = "WARNING: ip address host.docker.internal must be binded to local address"
-                            + ". Add line '127.0.0.1 host.docker.internal' (or use another local ip address) to C:\\Windows\\System32\\drivers\\etc\\hosts and save as admin" +
-                            ". Otherwise AsyncJob and other services will not work correctly.";
-
-                    }
                     var versionTask = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
                     var infoTask = MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
                     await Task.WhenAll(versionTask, infoTask);

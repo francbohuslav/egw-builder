@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -150,52 +148,6 @@ namespace EgwBuilderRunner
                 output.Append(process.StandardError.ReadLine() + "\n");
             }
         }
-
-
-        public async Task<bool> IsDockerAddressOk()
-        {
-            try
-            {
-                var localIpList = GetAllLocalIpList();
-                var task = Task.Run(() =>
-                {
-                    var entry = Dns.GetHostEntry("host.docker.internal");
-                    if (entry.AddressList.Length > 0)
-                    {
-                        return entry.AddressList[0].ToString();
-                    }
-                    return null;
-                });
-                if (await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(2.0))) == task)
-                {
-                    return localIpList.Contains(task.Result);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private string[] GetAllLocalIpList()
-        {
-            var addresses = new HashSet<string>();
-            addresses.Add("127.0.0.1");
-            foreach (var netInterface in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                var ipProps = netInterface.GetIPProperties();
-                foreach (var addr in ipProps.UnicastAddresses)
-                {
-                    addresses.Add(addr.Address.ToString());
-                }
-            }
-            return addresses.OrderBy(s => s).ToArray();
-        }
-
     }
 
     public class InfoStructure
