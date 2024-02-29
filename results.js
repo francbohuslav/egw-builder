@@ -66,8 +66,7 @@ class Results {
     tests.showFailedTests(newPassed, newFailed);
     if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
       core.showError("Tests failed. Watch message above.", false);
-    }
-    if (!Object.keys(newFailed).length && !Object.keys(newPassed).length) {
+    } else {
       core.showSuccess("All tests passed as expected.");
       core.showSuccess("");
       core.showSuccess("            ████                ");
@@ -100,6 +99,31 @@ class Results {
     const failedCount = Object.values(newFailed).reduce((p, c) => p + c.length, 0);
     if (failedCount) {
       core.showError(`New failed tests: ${failedCount}`, false);
+    }
+    if (Object.keys(newFailed).length || Object.keys(newPassed).length) {
+      core.showError("", false);
+      core.showError("    █████                                        █████", false);
+      core.showError("   ███████                                      ███████", false);
+      core.showError("   ███████           ███████████████            ███████", false);
+      core.showError("    ████████       ███████████████████        ████████", false);
+      core.showError("        █████     █████████████████████     █████", false);
+      core.showError("          █████  ███████████████████████  █████", false);
+      core.showError("            ██  █████████████████████████  ██", false);
+      core.showError("               ███████    ██████    ██████", false);
+      core.showError("               ██████      ████      █████", false);
+      core.showError("               ██████      ████      █████", false);
+      core.showError("                ██████    ██████    █████", false);
+      core.showError("                 ███████████  ██████████", false);
+      core.showError("                  ██████████  █████████", false);
+      core.showError("              ██   ███████████████████   ██", false);
+      core.showError("              ████  ████ █ █ █ █ ████  ████", false);
+      core.showError("             █████   ███ █ █ █ █ ███   █████", false);
+      core.showError("           █████      █████████████      █████", false);
+      core.showError("         ████          ███████████          ████", false);
+      core.showError("      █████              ███████              █████", false);
+      core.showError("     ███████                                 ███████", false);
+      core.showError("      █████                                   █████", false);
+      core.showError("", false);
     }
   }
 
