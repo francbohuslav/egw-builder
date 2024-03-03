@@ -12,6 +12,7 @@ const last = require("./last");
 const metamodel = require("./classes/metamodel");
 const tests = require("./classes/tests");
 
+/** @type {{folders: Record<string, string>, JDK: Record<string, string>}} */
 let config = require("./config.default");
 const info = require("./classes/info");
 const messageBroker = require("./classes/message-broker");
@@ -21,6 +22,7 @@ const nodeJs = require("./classes/node");
 const help = require("./classes/help");
 
 if (fs.existsSync("./config.js")) {
+  // @ts-ignore
   config = require("./config");
 }
 let JDK = "";
@@ -384,6 +386,8 @@ async function waitForApplicationIsReady(project) {
  *
  * @param {IProject} project
  * @param {CommandLine} cmd
+ * @param {string} insomniaFolder
+ * @param {boolean} isMergedVersion
  */
 async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
   await jmeter.downloadIfMissing();
@@ -424,7 +428,7 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
 }
 
 function getJmeterBat() {
-  return path.join(__dirname, "jmeter", "bin", "jmeter.bat");
+  return path.join(__dirname, "java", "runJmeter.bat");
 }
 
 /**
@@ -780,8 +784,10 @@ async function run() {
     if (config.JDK && config.JDK[subAppJavaInfo.javaVersion]) {
       JDK = config.JDK[subAppJavaInfo.javaVersion];
     } else {
-      JDK = await java.downloadIfMissing(subAppJavaInfo);
+      JDK = await java.downloadIfMissing(subAppJavaInfo.javaVersion);
     }
+    await java.downloadIfMissingJavaForJmeter();
+
     java.printInfo(subAppJavaInfo, JDK);
 
     if (!cmd.environmentFile) {
