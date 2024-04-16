@@ -1112,7 +1112,7 @@ async function run() {
                 isProjectTest,
                 isVersion11,
                 isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia` : null,
-                isProjectTest ? `${cmd.folder}/${DG.folder}/${DG.server}/src/test/insomnia` : null,
+                `${cmd.folder}/${DG.folder}/${DG.server}/src/test/insomnia`,
                 isMergedVersion,
                 cmd
               );
