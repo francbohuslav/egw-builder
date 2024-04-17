@@ -632,6 +632,11 @@ async function runApp(project, cmd) {
     recursive: true,
   });
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
+  core.inLocation(project.folder, () => {
+    if (fs.existsSync("before-start.cmd")) {
+      core.runCommandNoWait(`before-start.cmd`);
+    }
+  });
   core.inLocation(path.join(project.folder, project.server), () => {
     const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
       cmd.folder,

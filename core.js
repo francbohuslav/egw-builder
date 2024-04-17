@@ -137,7 +137,7 @@ class Core {
     });
   }
 
-  runCommandNoWait(command, args) {
+  runCommandNoWait(command, args = []) {
     if (!args || args.length === 0) {
       if (command.indexOf(" ") > -1) {
         args = command.split(" ");
