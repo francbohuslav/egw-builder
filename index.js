@@ -513,7 +513,7 @@ function getFtpDataDir() {
  * @param {IProject} project
  * @param {CommandLine} cmd
  */
-async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, isMergedVersion, cmd) {
+async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, insomniaFolderFTP, isMergedVersion, cmd) {
   await jmeter.downloadIfMissing();
   let projectCode = project;
   let testFile = null;
@@ -534,14 +534,19 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const params = restStr.split(" ");
-    const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
-    params.push("-Jproject_dir=" + projectDir);
+    if (isProjectTest) {
+      const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
+      params.push("-Jproject_dir=" + projectDir);
+    }
     params.push("-Jftp_data_dir=" + getFtpDataDir());
     if (insomniaFolder) {
       params.push("-Jinsomnia_dir=" + insomniaFolder);
     }
     if (insomniaFolderDG) {
       params.push("-Jinsomnia_dir_DG=" + insomniaFolderDG);
+    }
+    if (insomniaFolderFTP) {
+      params.push("-Jinsomnia_dir_FTP=" + insomniaFolderFTP);
     }
     if (isVersion11 && project == EMAIL) {
       params.push("-Jsmtp_host=smtp");
@@ -1118,6 +1123,7 @@ async function run() {
                 isVersion11,
                 isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia` : null,
                 `${cmd.folder}/${DG.folder}/${DG.server}/src/test/insomnia`,
+                `${cmd.folder}/${FTP.folder}/${FTP.server}/src/test/insomnia`,
                 isMergedVersion,
                 cmd
               );
