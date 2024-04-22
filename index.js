@@ -1108,7 +1108,7 @@ async function run() {
           let report = null;
           if (testCode.toLowerCase() == "web") {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
-              report = await tests.runWebTests();
+              report = await tests.runWebTests(cmd);
             });
           } else {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
@@ -1130,10 +1130,10 @@ async function run() {
             if (report.newPassed.length) {
               newPassed[testCode] = report.newPassed;
             }
-            if (report.allPassed.length) {
+            if (report.allPassed?.length) {
               allPassed[testCode] = report.allPassed;
             }
-            if (report.knownFailed.length) {
+            if (report.knownFailed?.length) {
               knownFailed[testCode] = report.knownFailed;
             }
             const projectPassedTests = report.newPassed.length ? { [testCode]: report.newPassed } : {};

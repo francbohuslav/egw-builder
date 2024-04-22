@@ -46,19 +46,32 @@ class Tests {
     }
   }
 
-  async runWebTests() {
+  /**
+   *
+   * @param {CommandLine} cmd
+   * @returns {Promise<{newFailed: ITestResult[], newPassed: ITestResult[], knownFailed: ITestResult[], allPassed: ITestResult[]}>}
+   */
+  async runWebTests(cmd) {
     const newFailed = [];
-    try {
-      await core.runCommand(
-        "SeleniumRunner.exe -nvd -r ..\\results -w 1 -f ..\\FirefoxPortable\\ -s full.scenario.json -c ..\\test-suites\\localhost.config.json ..\\test-suites\\gui"
-      );
-    } catch ({ code }) {
-      newFailed.push({
-        label: "Web tests failed. Opening report in browser.",
-      });
-      core.runCommandNoWait(`start ..\\results\\index.html`);
+    const allPassed = [];
+    if (!cmd.onlyShowResults) {
+      try {
+        await core.runCommand(
+          "SeleniumRunner.exe -nvd -r ..\\results -w 1 -f ..\\FirefoxPortable\\ -s frontend_quick_test.scenario.json -c ..\\test-suites\\localhost.config.json ..\\test-suites\\gui"
+        );
+        allPassed.push({
+          label: "Web tests passed.",
+          success: true,
+        });
+      } catch ({ code }) {
+        newFailed.push({
+          label: "Web tests failed. Opening report in browser.",
+          success: false,
+        });
+        core.runCommandNoWait(`start ..\\results\\index.html`);
+      }
     }
-    return { newFailed, newPassed: [], knownFailed: [] };
+    return { newFailed, newPassed: [], knownFailed: [], allPassed };
   }
 }
 module.exports = new Tests();

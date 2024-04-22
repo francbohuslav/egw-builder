@@ -3,12 +3,6 @@ const tests = require("./classes/tests");
 const core = require("./core");
 const dom = require("xmldom").DOMParser;
 
-/**
- * @typedef {Object} ITestResult
- * @property {string} label
- * @property {bool} success
- */
-
 class Results {
   constructor() {}
 

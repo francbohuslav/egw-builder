@@ -30,3 +30,13 @@
  * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
  * @property {(isVersion11: boolean) => Record<string, any>} [addProfilesFromLibraries]
  */
+
+/**
+ * @typedef {Object} ITestResult
+ * @property {string} label
+ * @property {boolean} success
+ */
+
+/**
+ * @typedef {import("../command-line")} CommandLine
+ */
