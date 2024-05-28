@@ -639,7 +639,7 @@ async function runApp(project, cmd) {
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
   core.inLocation(project.folder, () => {
     if (fs.existsSync("before-start.cmd")) {
-      core.runCommandNoWait(`before-start.cmd`);
+      core.runCommandNoWait(`start before-start.cmd`);
     }
   });
   core.inLocation(path.join(project.folder, project.server), () => {
