@@ -539,6 +539,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
       params.push("-Jproject_dir=" + projectDir);
     }
     params.push("-Jftp_data_dir=" + getFtpDataDir());
+    params.push(`-Jproject_FTP=${cmd.folder}/${FTP.folder}`);
     if (insomniaFolder) {
       params.push("-Jinsomnia_dir=" + insomniaFolder);
     }
