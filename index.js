@@ -638,11 +638,6 @@ async function runApp(project, cmd) {
     recursive: true,
   });
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
-  core.inLocation(project.folder, () => {
-    if (fs.existsSync("before-start.cmd")) {
-      core.runCommandNoWait(`start before-start.cmd`);
-    }
-  });
   core.inLocation(path.join(project.folder, project.server), () => {
     const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
       cmd.folder,
@@ -969,6 +964,11 @@ async function run() {
             (isRun && isRunPerProject[MERGED.code])) &&
           fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
         ) {
+          core.inLocation(project.folder, () => {
+            if (fs.existsSync("before-start.cmd")) {
+              core.runCommandNoWait(`start before-start.cmd`);
+            }
+          });
           await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker compose up -d"));
         }
       }
