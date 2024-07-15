@@ -186,7 +186,7 @@ const projects = [
     code: "KAFKA",
     folder: config.folders.KAFKA,
     server: "uu_energygateway_kafkaendpointg01-server",
-    port: 8101,
+    port: 8102,
     webname: "uu-energygateway-kafkaendpointg01",
     testFile: "kafka_endpoint.jmx",
     addProfilesFromLibraries: () => ({
@@ -289,6 +289,12 @@ function getProjectVersion(project) {
         "-SNAPSHOT"
       );
     }
+    if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-2.0.json")) {
+      versions["metamodel-2.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-2.0.json")).version.replace(
+        "-beta",
+        "-SNAPSHOT"
+      );
+    }
     if (fs.existsSync(MR.hi + "/package.json")) {
       versions["package.json"] = JSON.parse(core.readTextFile(MR.hi + "/package.json")).version;
     }
@@ -321,6 +327,11 @@ function setProjectVersion(project, newVersion) {
       json.version = newVersion.replace("SNAPSHOT", "beta");
       core.writeTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json", JSON.stringify(json, null, 2));
     }
+    if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-2.0.json")) {
+      json = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-2.0.json"));
+      json.version = newVersion.replace("SNAPSHOT", "beta");
+      core.writeTextFile(project.server + "/src/main/resources/config/metamodel-2.0.json", JSON.stringify(json, null, 2));
+    }
     let content = core.readTextFile("build.gradle");
     content = content.replace(/version '.*'/, `version '${newVersion}'`);
     content = content.replace(/(egwLibrariesVersion\s*=\s*)".*"/, `$1"${newVersion}"`);
@@ -340,7 +351,7 @@ function printProjectsVersions(cmd) {
   } else {
     core.showMessage("Actual versions");
   }
-  const projectVersions = {};
+  const projectVersions = /** @type {Record<string, any>} */ ({});
   for (const project of projects) {
     if (fs.existsSync(project.folder)) {
       projectVersions[project.code] = getProjectVersion(project);
