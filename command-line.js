@@ -69,6 +69,7 @@ class CommandLine {
         this.buildAS24 = true;
         this.buildIEC60870 = true;
         this.buildACER = true;
+        this.buildKAFKA = true;
         // merged app is not intentionally
         this.interactively = false;
         continue;
@@ -118,6 +119,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-buildkafka") {
+        this.buildKAFKA = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-buildmerged") {
         this.buildMERGED = true;
         this.interactively = false;
@@ -149,6 +155,7 @@ class CommandLine {
         this.runAS24 = true;
         this.runIEC60870 = true;
         this.runACER = true;
+        this.runKAFKA = true;
         // merged app is not intentionally
         this.interactively = false;
         continue;
@@ -198,6 +205,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-runkafka") {
+        this.runKAFKA = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-runmerged") {
         this.runMERGED = true;
         this.interactively = false;
@@ -224,6 +236,7 @@ class CommandLine {
         this.initAS24 = true;
         this.initIEC60870 = true;
         this.initACER = true;
+        this.initKAFKA = true;
         this.initASYNC = true;
         this.interactively = false;
         continue;
@@ -273,6 +286,11 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-initkafka") {
+        this.initKAFKA = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-initasync") {
         this.initASYNC = true;
         this.interactively = false;
@@ -294,6 +312,7 @@ class CommandLine {
         this.testAS24 = true;
         this.testIEC60870 = true;
         this.testACER = true;
+        this.testKAFKA = true;
         this.interactively = false;
         continue;
       }
@@ -339,6 +358,11 @@ class CommandLine {
       }
       if (ar == "-testacer") {
         this.testACER = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar == "-testkafka") {
+        this.testKAFKA = true;
         this.interactively = false;
         continue;
       }

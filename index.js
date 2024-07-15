@@ -183,6 +183,19 @@ const projects = [
     }),
   },
   {
+    code: "KAFKA",
+    folder: config.folders.KAFKA,
+    server: "uu_energygateway_kafkaendpointg01-server",
+    port: 8101,
+    webname: "uu-energygateway-kafkaendpointg01",
+    testFile: "kafka_endpoint.jmx",
+    addProfilesFromLibraries: () => ({
+      "uu_energygateway_datagatewayg01-config": "DG",
+      "uu_energygateway_datagatewayg01-endpoint": "DG",
+      "uu_energygateway_datagatewayg01-business-territory": "DG",
+    }),
+  },
+  {
     code: "MERGED",
     folder: config.folders.MERGED,
     server: "uu_energygateway_mergedg01-server",
@@ -192,7 +205,7 @@ const projects = [
   },
 ];
 
-const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, IEC60870, ACER, MERGED] = projects;
+const [DG, MR, FTP, EMAIL, ECP, IEC62325, AS24, IEC60870, ACER, KAFKA, MERGED] = projects;
 
 /**
  * @param {string | string[]} command
@@ -687,6 +700,7 @@ async function run() {
       console.log("  -buildAS24           - Builds AS24 endpoint");
       console.log("  -buildIEC60870       - Builds IEC60870 endpoint");
       console.log("  -buildACER           - Builds ACER endpoint");
+      console.log("  -buildKAFKA          - Builds KAFKA endpoint");
       console.log("  -buildMERGED         - Builds merged application");
       console.log("");
       console.log("  -run                 - Runs all subApps");
@@ -699,6 +713,7 @@ async function run() {
       console.log("  -runAS24             - Runs AS24 endpoint");
       console.log("  -runIEC60870         - Runs IEC60870 endpoint");
       console.log("  -runACER             - Runs ACER endpoint");
+      console.log("  -runKAFKA            - Runs KAFKA endpoint");
       console.log("  -runMERGED           - Runs merged application");
       console.log("");
       console.log("  -init                - Runs init commands of all apps (creates workspace, sets permissions)");
@@ -711,6 +726,7 @@ async function run() {
       console.log("  -initAS24            - Runs init commands of AS24 endpoint");
       console.log("  -initIEC60870        - Runs init commands of IEC60870 endpoint");
       console.log("  -initACER            - Runs init commands of ACER endpoint");
+      console.log("  -initKAFKA           - Runs init commands of KAFKA endpoint");
       console.log("  -initASYNC           - Runs init commands of AsyncJob server");
       console.log("  -uid <your-uid>      - UID of actual user");
       console.log("");
@@ -724,6 +740,7 @@ async function run() {
       console.log("  -testAS24            - Tests AS24 endpoint by jmeter");
       console.log("  -testIEC60870        - Tests IEC60870 endpoint by jmeter");
       console.log("  -testACER            - Tests ACER endpoint by jmeter");
+      console.log("  -testKAFKA           - Tests KAFKA endpoint by jmeter");
       console.log("  -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)");
       console.log("");
       console.log("You will be asked interactively if there is none of option (expcept folder) used on command line.");
@@ -763,6 +780,9 @@ async function run() {
     }
     if (fs.existsSync(ACER.folder)) {
       runnableProjects.push(ACER);
+    }
+    if (fs.existsSync(KAFKA.folder)) {
+      runnableProjects.push(KAFKA);
     }
 
     if (fs.existsSync(MERGED.folder)) {
@@ -833,6 +853,7 @@ async function run() {
         cmd.buildAS24 ||
         cmd.buildIEC60870 ||
         cmd.buildACER ||
+        cmd.buildKAFKA ||
         cmd.buildMERGED;
     if (!isBuild && !cmd.interactively) {
       console.log("Build app? no");
@@ -850,7 +871,17 @@ async function run() {
     // Runs
     const isRun = cmd.interactively
       ? cmd.getCmdValue("run", "Run app?")
-      : cmd.runDG || cmd.runMR || cmd.runFTP || cmd.runEMAIL || cmd.runECP || cmd.runIEC62325 || cmd.runAS24 || cmd.runIEC60870 || cmd.runACER || cmd.runMERGED;
+      : cmd.runDG ||
+        cmd.runMR ||
+        cmd.runFTP ||
+        cmd.runEMAIL ||
+        cmd.runECP ||
+        cmd.runIEC62325 ||
+        cmd.runAS24 ||
+        cmd.runIEC60870 ||
+        cmd.runACER ||
+        cmd.runKAFKA ||
+        cmd.runMERGED;
     if (!isRun && !cmd.interactively) {
       console.log("Run app? no");
     }
@@ -875,6 +906,7 @@ async function run() {
         cmd.initAS24 ||
         cmd.initIEC60870 ||
         cmd.initACER ||
+        cmd.initKAFKA ||
         cmd.initASYNC;
     if (!isRunInit && !cmd.interactively) {
       console.log("Run init app? no");
@@ -898,7 +930,16 @@ async function run() {
         core.showError("Terminated by user");
       }
       if (
-        (cmd.initDG || cmd.initMR || cmd.initFTP || cmd.initEMAIL || cmd.initECP || cmd.initIEC62325 || cmd.initAS24 || cmd.initIEC60870 || cmd.initACER) &&
+        (cmd.initDG ||
+          cmd.initMR ||
+          cmd.initFTP ||
+          cmd.initEMAIL ||
+          cmd.initECP ||
+          cmd.initIEC62325 ||
+          cmd.initAS24 ||
+          cmd.initIEC60870 ||
+          cmd.initACER ||
+          cmd.initKAFKA) &&
         !cmd.uid
       ) {
         core.showError("UID must be set along with inits");
@@ -917,6 +958,7 @@ async function run() {
         cmd.testAS24 ||
         cmd.testIEC60870 ||
         cmd.testACER ||
+        cmd.testKAFKA ||
         (cmd.additionalTests && cmd.additionalTests.length);
     if (!isTests && !cmd.interactively) {
       console.log("Run tests? no");
@@ -933,6 +975,7 @@ async function run() {
     const isTestsAS24 = isTests && cmd.getCmdValue("testAS24", "... AS24?");
     const isTestsIEC60870 = isTests && cmd.getCmdValue("testIEC60870", "... IEC60870?");
     const isTestsACER = isTests && cmd.getCmdValue("testACER", "... ACER?");
+    const isTestsKAFKA = isTests && cmd.getCmdValue("testKAFKA", "... KAFKA?");
 
     if (!cmd.last) {
       last.saveSettings(cmd);
@@ -1101,6 +1144,7 @@ async function run() {
           isTestsAS24 ? AS24 : null,
           isTestsIEC60870 ? IEC60870 : null,
           isTestsACER ? ACER : null,
+          isTestsKAFKA ? KAFKA : null,
         ],
         ...(cmd.additionalTests || []),
       ];

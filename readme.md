@@ -22,6 +22,7 @@ Builder supports this EGW projects, which are hosted in UU Codebase GIT reposito
 - AS24 endpoint
 - IEC60870 endpoint
 - ACER endpoint
+- KAFKA endpoint
 
 Default folder structure:
 
@@ -35,6 +36,7 @@ Default folder structure:
 - `uu_energygateway_as24endpointg01` - repository of AS24 endpoint
 - `uu_energygateway_iec60870endpointg01` - repository of IEC60870 endpoint
 - `uu_energygateway_acerendpointg01` - repository of ACER endpoint
+- `uu_energygateway_kafkaendpointg01` - repository of KAFKA endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
@@ -87,6 +89,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -buildAS24           - Builds AS24 endpoint
     -buildIEC60870       - Builds IEC60870 endpoint
     -buildACER           - Builds ACER endpoint
+    -buildKAFKA          - Builds KAFKA endpoint
     -buildMERGED         - Builds merged application
 
     -run                 - Runs all subApps
@@ -99,6 +102,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -runAS24             - Runs AS24 endpoint
     -runIEC60870         - Runs IEC60870 endpoint
     -runACER             - Runs ACER endpoint
+    -runKAFKA            - Runs KAFKA endpoint
     -runMERGED           - Runs merged application
 
     -init                - Runs init commands of all apps (creates workspace, sets permissions)
@@ -111,6 +115,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -initAS24            - Runs init commands of AS24 endpoint
     -initIEC60870        - Runs init commands of IEC60870 endpoint
     -initACER            - Runs ACER commands of IEC60870 endpoint
+    -initKAFKA           - Runs KAFKA commands of IEC60870 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
     -uid <your-uid>      - UID of actual user
 
@@ -124,6 +129,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -testAS24            - Tests AS24 endpoint by jmeter
     -testIEC60870        - Tests IEC60870 endpoint by jmeter
     -testACER            - Tests ACER endpoint by jmeter
+    -testKAFKA           - Tests KAFKA endpoint by jmeter
     -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)
 
 You will be asked interactively if there is none of options (except folder) used on command line.
