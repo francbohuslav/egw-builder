@@ -49,7 +49,7 @@ namespace EgwBuilderRunner
         private void RefreshUi()
         {
             var showContainsers = myApp.AppStorage.ShowDockerContainers;
-            Enabler.Content = showContainsers ? "Docker containers (refreshed every 15s)" : "Docker containers (diabled)";
+            Enabler.Content = showContainsers ? "Docker containers (refreshed every 15s)" : "Docker containers (disabled)";
             ContainersPanel.SetVisible(showContainsers);
             if (!showContainsers)
             {
@@ -60,8 +60,6 @@ namespace EgwBuilderRunner
 
         private async Task RefreshContainers()
         {
-            Enabler.Content = myApp.AppStorage.ShowDockerContainers ? "Docker containers (refreshed every 15s)" : "Docker containers (diabled)";
-
             if (isRefreshing)
             {
                 return;
