@@ -7,10 +7,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="500" Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded">
     <Grid>
-        <StackPanel >
-            <TextBlock FontWeight="Bold" Margin="0,0,0,5">Docker containers (refreshed every 15s)</TextBlock>
-
-            
+        <StackPanel>
+            <DockPanel>
+                <CheckBox DockPanel.Dock="Left" x:Name="Enabler" FontWeight="Bold" Margin="0,0,10,5" Checked="Enabler_Changed"  Unchecked="Enabler_Changed">Docker containers (refreshed every 15s)</CheckBox>
+                <ProgressBar x:Name="Progress" VerticalAlignment="Top" Height="12" Margin="0,2,0,0" IsIndeterminate="True" />
+            </DockPanel>
             <ItemsControl x:Name="ContainersPanel">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -26,6 +27,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        <ProgressBar x:Name="Progress" Margin="240,3,0,0" VerticalAlignment="Top" Height="12" IsIndeterminate="True" />
+
     </Grid>
 </UserControl>

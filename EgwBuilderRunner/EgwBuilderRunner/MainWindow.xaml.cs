@@ -56,9 +56,14 @@ namespace EgwBuilderRunner
                 {
                     var versionTask = MyApp.Runner.GetVersions(MyApp.BuilderFolder, MyApp.EgwFolder);
                     var infoTask = MyApp.Runner.RetrieveInfo(MyApp.BuilderFolder, MyApp.EgwFolder);
-                    await Task.WhenAll(versionTask, infoTask);
+                    var healthTask = new HealthChecker().GetHealth();
+                    await Task.WhenAll(versionTask, infoTask, healthTask);
+
+                    ShowHealthStatus(await healthTask);
+
                     var version = await versionTask;
                     Console.Text = version + "\n\nBranches\n" + MyApp.Runner.Info.GetBranches();
+
                     var info = MyApp.Runner.Info;
                     additionalTestModels = info.AdditionalTests.Select(test => new AdditionalTestModel(test)).ToList();
                     AdditionalTests.ItemsSource = additionalTestModels;
@@ -169,6 +174,20 @@ namespace EgwBuilderRunner
             MyApp.ShowMessage("Link created. I am going to open target folder and you can use it. Bye.");
             Process.Start(egwFolder);
             Env.Exit(0);
+        }
+
+        private void ShowHealthStatus(string status)
+        {
+            HealthCheckInProgress.SetVisible(false);
+            if (string.IsNullOrWhiteSpace(status))
+            {
+                HealthCheckOk.SetVisible(true);
+            }
+            else
+            {
+                HealthCheckWarning.SetVisible(true);
+                HealthCheckWarning.Content = "Something is wrong\n" + status;
+            }
         }
 
         private void UpdateStatusBar()

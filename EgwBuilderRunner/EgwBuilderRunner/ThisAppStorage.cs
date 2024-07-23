@@ -26,5 +26,10 @@ namespace EgwBuilderRunner
             set { storager.SetValue("CloseApplicationAfterRun", value ? "1" : "0"); }
         }
 
+        public bool ShowDockerContainers
+        {
+            get { return storager.GetValue("ShowDockerContainers", "1") == "1"; }
+            set { storager.SetValue("ShowDockerContainers", value ? "1" : "0"); }
+        }
     }
 }

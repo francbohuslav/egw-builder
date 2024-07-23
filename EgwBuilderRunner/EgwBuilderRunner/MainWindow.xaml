@@ -29,6 +29,12 @@
             <Grid>
                 <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
                 <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,0,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
+
+                <Grid Margin="280,0,0,0">
+                    <Label x:Name="HealthCheckInProgress" Background="#FFFFC500" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FF663300">Checking the ion transformer pulse relay...</Label>
+                    <Label x:Name="HealthCheckWarning" Background="#FFFFAAAA" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFAA0000" Visibility="Collapsed">Something is wrong</Label>
+                    <Label x:Name="HealthCheckOk" Background="#FF8BFFB0" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FF007A0B" Visibility="Collapsed">Everything seems fine</Label>
+                </Grid>
             </Grid>
             <CheckBox x:Name="ClearDocker" Content="Clear Docker" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" ToolTip="Deletes Mongo, AMQP, ECP,..."/>
             <CheckBox x:Name="Metamodel" Content="Generate metamodel for Business Territory" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" />

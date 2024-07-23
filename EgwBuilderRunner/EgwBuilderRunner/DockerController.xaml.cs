@@ -1,6 +1,7 @@
 ﻿using BoganApp.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,21 +29,39 @@ namespace EgwBuilderRunner
             InitializeComponent();
             myApp = (Application.Current as App);
             runner = myApp?.Runner;
+            Enabler.IsChecked = myApp?.AppStorage.ShowDockerContainers;
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                RefreshUi();
+            }
         }
 
-        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1),
-                IsEnabled = true
+                IsEnabled = myApp?.AppStorage.ShowDockerContainers == true
             };
-            timer.Tick += (s, e2) => RefreshUi();
+            timer.Tick += (s, e2) => RefreshContainers();
+        }
+
+        private void RefreshUi()
+        {
+            var showContainsers = myApp.AppStorage.ShowDockerContainers;
+            Enabler.Content = showContainsers ? "Docker containers (refreshed every 15s)" : "Docker containers (diabled)";
+            ContainersPanel.SetVisible(showContainsers);
+            if (!showContainsers)
+            {
+                Progress.SetVisible(false);
+            }
         }
 
 
-        private async Task RefreshUi()
+        private async Task RefreshContainers()
         {
+            Enabler.Content = myApp.AppStorage.ShowDockerContainers ? "Docker containers (refreshed every 15s)" : "Docker containers (diabled)";
+
             if (isRefreshing)
             {
                 return;
@@ -50,37 +69,40 @@ namespace EgwBuilderRunner
             try
             {
                 isRefreshing = true;
-                timer.Interval = TimeSpan.FromSeconds(15);
-                if (runner.Info != null)
+                if (timer != null)
                 {
-                    Progress.SetVisible(true);
-                    if (allDockerServices == null)
+                    timer.Interval = TimeSpan.FromSeconds(15);
+                    if (runner.Info != null)
                     {
-                        allDockerServices = await runner.GetAllDockerContainers(myApp.EgwFolder);
-                        allDockerServices = allDockerServices.Where(kv => !kv.Key.Contains("mongosetup")).ToDictionary(kv => kv.Key, kv => kv.Value);
-                    }
-                    var runningContainers = await runner.GetRunningDockerContainers(myApp.EgwFolder);
+                        Progress.SetVisible(true);
+                        if (allDockerServices == null)
+                        {
+                            allDockerServices = await runner.GetAllDockerContainers(myApp.EgwFolder);
+                            allDockerServices = allDockerServices.Where(kv => !kv.Key.Contains("mongosetup")).ToDictionary(kv => kv.Key, kv => kv.Value);
+                        }
+                        var runningContainers = await runner.GetRunningDockerContainers(myApp.EgwFolder);
 
-                    var containers = allDockerServices.Keys.Select(name => new DockerContainer
-                    {
-                        Label = ToLabel(name),
-                        Name = name,
-                        IsRunning = runningContainers.Contains(name),
-                        Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
-                        IsEnabled = true,
-                        ToolTip = runningContainers.Contains(name) ? "Uncheck to restart. GUI will be freezed a while." : null
-                    }).ToList();
-                    containers.Add(new DockerContainer
-                    {
-                        Label = "Kafka",
-                        Name = KafkaName,
-                        IsRunning = runningContainers.Contains(KafkaName),
-                        Background = Brushes.Transparent,
-                        IsEnabled = true,
-                        ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
-                    });
-                    Progress.SetVisible(false);
-                    ContainersPanel.ItemsSource = containers;
+                        var containers = allDockerServices.Keys.Select(name => new DockerContainer
+                        {
+                            Label = ToLabel(name),
+                            Name = name,
+                            IsRunning = runningContainers.Contains(name),
+                            Background = runningContainers.Contains(name) ? Brushes.Transparent : Brushes.PaleVioletRed,
+                            IsEnabled = true,
+                            ToolTip = runningContainers.Contains(name) ? "Uncheck to restart. GUI will be freezed a while." : null
+                        }).ToList();
+                        containers.Add(new DockerContainer
+                        {
+                            Label = "Kafka",
+                            Name = KafkaName,
+                            IsRunning = runningContainers.Contains(KafkaName),
+                            Background = Brushes.Transparent,
+                            IsEnabled = true,
+                            ToolTip = runningContainers.Contains(KafkaName) ? "Uncheck to restart. GUI will be freezed a while." : null
+                        });
+                        Progress.SetVisible(false);
+                        ContainersPanel.ItemsSource = containers;
+                    }
                 }
             }
             catch (Exception ex)
@@ -130,7 +152,7 @@ namespace EgwBuilderRunner
             }
         }
 
-        private void UserControl_Unloaded(object sender, System.Windows.RoutedEventArgs e)
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             timer?.Stop();
         }
@@ -143,6 +165,23 @@ namespace EgwBuilderRunner
             }
             await StartDocker(checkbox, true);
         }
+
+
+        private void Enabler_Changed(object sender, RoutedEventArgs e)
+        {
+            var showDockerContainers = Enabler.IsChecked == true;
+            myApp.AppStorage.ShowDockerContainers = showDockerContainers;
+            if (showDockerContainers)
+            {
+                timer?.Start();
+            }
+            else
+            {
+                timer?.Stop();
+            }
+            RefreshUi();
+        }
+
     }
 
     internal class DockerContainer
