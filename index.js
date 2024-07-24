@@ -800,7 +800,7 @@ async function run() {
       runnableProjects.push(MERGED);
     }
     const DGversions = getProjectVersion(DG);
-    const DGversion = Array.isArray(DGversions) ? DGversions["build.gradle"] : DGversions;
+    const DGversion = DGversions["build.gradle"] ?? DGversions;
 
     if (cmd.interactively || cmd.getVersions) {
       printProjectsVersions(cmd);
