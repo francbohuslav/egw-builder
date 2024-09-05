@@ -826,6 +826,7 @@ async function run() {
     await java.downloadIfMissingJavaForJmeter();
 
     java.printInfo(subAppJavaInfo, JDK);
+    await nodeJs.printInfo();
 
     if (!cmd.environmentFile) {
       const envs = info.getEnvironments(MR);

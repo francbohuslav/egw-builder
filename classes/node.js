@@ -60,6 +60,11 @@ class NodeJs {
     }
     return nodeJsFolder;
   }
+
+  async printInfo() {
+    const nodeVersion = (await core.runCommand("node", "-v", { disableStdOut: true })).stdOut;
+    console.log("Node.js " + nodeVersion.trim());
+  }
 }
 
 module.exports = new NodeJs();
