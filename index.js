@@ -277,11 +277,19 @@ async function buildProject(project, isUnitTests) {
 function getProjectVersion(project) {
   const versions = {};
   core.inLocation(project.folder, () => {
-    versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
+    try {
+      versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
+    } catch (ex) {
+      versions["uuapp.json"] = "PARSE ERROR:  " + ex.message;
+    }
     versions["build.gradle"] = core.readTextFile("build.gradle").match(/version '(\S+)'/)[1];
     const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
     uuCloudDescriptors.forEach((uuCloudDescriptor) => {
-      versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
+      try {
+        versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
+      } catch (ex) {
+        versions[uuCloudDescriptor] = "PARSE ERROR:  " + ex.message;
+      }
     });
     if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
       versions["metamodel-1.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json")).version.replace(
