@@ -232,35 +232,35 @@ async function buildProject(project, isUnitTests) {
   if (project.code === "MR") {
     if (fs.existsSync(project.folder + "/" + MR.gui)) {
       const nodeJsFolder = await nodeJs.detectAndDownload(project.folder + "/" + MR.gui);
-      pathPrefix = `set PATH=${nodeJsFolder};%PATH% &`;
+      pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
       await core.inLocationAsync(project.folder + "/" + MR.uu5lib, async () => {
         console.log("Install NPM packages for UU5 lib");
-        await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
+        await core.runCommand(`cmd /C${pathPrefix} npm ci`);
       });
       await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
         console.log("Install NPM packages for GUI components");
-        await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
+        await core.runCommand(`cmd /C${pathPrefix} npm ci`);
         console.log("Build GUI components");
-        await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
+        await core.runCommand(`cmd /C${pathPrefix} npm run build`);
       });
     }
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
-      await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
+      await core.runCommand(`cmd /C${pathPrefix} npm ci`);
     });
   }
 
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
-      await core.runCommand(`cmd /C ${pathPrefix} npm ci`);
+      await core.runCommand(`cmd /C${pathPrefix} npm ci`);
       console.log("Build HI");
-      await core.runCommand(`cmd /C ${pathPrefix} npm run build`);
+      await core.runCommand(`cmd /C${pathPrefix} npm run build`);
     });
   }
 
   await core.inLocationAsync(project.folder, async () => {
-    let args = `/C gradlew clean build compileTestJava`;
+    let args = `/C${pathPrefix} gradlew clean build compileTestJava`;
     if (!isUnitTests) {
       args += " -x test";
     }
@@ -275,6 +275,7 @@ async function buildProject(project, isUnitTests) {
  * @param {IProject} project
  */
 function getProjectVersion(project) {
+  /** @type {Record<string, string>} */
   const versions = {};
   core.inLocation(project.folder, () => {
     try {
