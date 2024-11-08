@@ -101,6 +101,10 @@ class Java {
       download.uri = "https://cdn.azul.com/zulu/bin/zulu17.44.15-ca-jdk17.0.8-win_x64.zip";
       download.removeSubFolder = true;
     }
+    if (javaVersion === "21") {
+      download.uri = "https://cdn.azul.com/zulu/bin/zulu21.38.21-ca-jdk21.0.5-win_x64.zip";
+      download.removeSubFolder = true;
+    }
     const javaDestFolder = join(folder, javaVersion);
     if (!fs.existsSync(javaDestFolder)) {
       console.log(`Downloading Java ${javaVersion}...`);

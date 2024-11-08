@@ -1,5 +1,5 @@
 /**
- * @typedef {"1.8" | "11" | "17"} IJavaVersion
+ * @typedef {"1.8" | "11" | "17" | "21"} IJavaVersion
  */
 
 /**
