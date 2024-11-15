@@ -419,10 +419,10 @@ async function waitForApplicationIsReady(project) {
  *
  * @param {IProject} project
  * @param {CommandLine} cmd
- * @param {string} insomniaFolder
+ * @param {string} serverDir
  * @param {boolean} isMergedVersion
  */
-async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
+async function runInitCommands(project, cmd, serverDir, isMergedVersion) {
   await jmeter.downloadIfMissing();
   await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
 
@@ -435,7 +435,7 @@ async function runInitCommands(project, cmd, insomniaFolder, isMergedVersion) {
   const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
   const params = `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}${
     isMergedVersion ? "_merged" : ""
-  }.cfg -Jinsomnia_dir=${insomniaFolder} -Jproject_dir=${projectDir} -Juid=${cmd.uid}`.split(" ");
+  }.cfg -Jinsomnia_dir=${serverDir}/src/test/insomnia -Jserver_dir=${serverDir} -Jproject_dir=${projectDir} -Juid=${cmd.uid}`.split(" ");
   const { stdOut } = await core.runCommand(getJmeterBat(), params);
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
@@ -544,9 +544,15 @@ function getFtpDataDir() {
 
 /**
  * @param {IProject} project
+ * @param {boolean} isProjectTest
+ * @param {boolean} isVersion11
+ * @param {string} serverFolder
+ * @param {string} serverFolderDG
+ * @param {string} serverFolderFTP
+ * @param {boolean} isMergedVersion
  * @param {CommandLine} cmd
  */
-async function runProjectTests(project, isProjectTest, isVersion11, insomniaFolder, insomniaFolderDG, insomniaFolderFTP, isMergedVersion, cmd) {
+async function runProjectTests(project, isProjectTest, isVersion11, serverFolder, serverFolderDG, serverFolderFTP, isMergedVersion, cmd) {
   await jmeter.downloadIfMissing();
   let projectCode = project;
   let testFile = null;
@@ -573,14 +579,17 @@ async function runProjectTests(project, isProjectTest, isVersion11, insomniaFold
     }
     params.push("-Jftp_data_dir=" + getFtpDataDir());
     params.push(`-Jproject_FTP=${cmd.folder}/${FTP.folder}`);
-    if (insomniaFolder) {
-      params.push("-Jinsomnia_dir=" + insomniaFolder);
+    if (serverFolder) {
+      params.push("-Jinsomnia_dir=" + serverFolder + "/src/test/insomnia");
+      params.push("-Jserver_dir=" + serverFolder);
     }
-    if (insomniaFolderDG) {
-      params.push("-Jinsomnia_dir_DG=" + insomniaFolderDG);
+    if (serverFolderDG) {
+      params.push("-Jinsomnia_dir_DG=" + serverFolderDG + "/src/test/insomnia");
+      params.push("-Jserver_dir_DG=" + serverFolderDG);
     }
-    if (insomniaFolderFTP) {
-      params.push("-Jinsomnia_dir_FTP=" + insomniaFolderFTP);
+    if (serverFolderFTP) {
+      params.push("-Jinsomnia_dir_FTP=" + serverFolderFTP + "/src/test/insomnia");
+      params.push("-Jserver_dir_FTP=" + serverFolderFTP);
     }
     if (isVersion11 && project == EMAIL) {
       params.push("-Jsmtp_host=smtp");
@@ -1107,9 +1116,9 @@ async function run() {
       for (const project of runnableProjects) {
         if (isInitPerProject[project.code]) {
           core.showMessage("Init " + project.code);
-          // Folder mapped to docker must contain also insomnia-workspace, thus we are in upper folder
+          // Folder mapped to docker must contain also bruno or insomnia, thus we are in upper folder
           await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter`, async () => {
-            await runInitCommands(project, cmd, `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia`, isMergedVersion);
+            await runInitCommands(project, cmd, `${cmd.folder}/${project.folder}/${project.server}`, isMergedVersion);
           });
         }
       }
@@ -1187,9 +1196,9 @@ async function run() {
                 project,
                 isProjectTest,
                 isVersion11,
-                isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}/src/test/insomnia` : null,
-                `${cmd.folder}/${DG.folder}/${DG.server}/src/test/insomnia`,
-                `${cmd.folder}/${FTP.folder}/${FTP.server}/src/test/insomnia`,
+                isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}` : null,
+                `${cmd.folder}/${DG.folder}/${DG.server}`,
+                `${cmd.folder}/${FTP.folder}/${FTP.server}`,
                 isMergedVersion,
                 cmd
               );
