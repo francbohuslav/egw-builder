@@ -238,8 +238,11 @@ async function buildProject(project, isUnitTests) {
         await core.runCommand(`cmd /C${pathPrefix} npm ci`);
       });
       await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
-        console.log("Install NPM packages for GUI components");
-        await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+        // Build of GUI is not necessary for node 18
+        if (fs.existsSync(project.folder + "/" + MR.gui + "/package-lock.json")) {
+          console.log("Install NPM packages for GUI components");
+          await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+        }
         console.log("Build GUI components");
         await core.runCommand(`cmd /C${pathPrefix} npm run build`);
       });
