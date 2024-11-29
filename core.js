@@ -81,27 +81,28 @@ class Core {
    *
    * @param {string} command
    * @param {string[] | string} [args]
-   * @param {any} [options],
+   * @param {any} [options]
    * @param {import("child_process").SpawnOptionsWithoutStdio} [spawnOptions]
+   * @returns {Promise<{stdOut: string, stdErr:string}>}
    */
   async runCommand(command, args, options, spawnOptions = undefined) {
+    /** @type {string[]} */
+    let argArray = [];
     if (!args || args.length === 0) {
       if (command.indexOf(" ") > -1) {
-        args = command.split(" ");
-        command = args.shift() ?? "";
+        argArray = command.split(" ");
+        command = argArray.shift() ?? "";
       }
     } else {
-      if (typeof args === "string") {
-        args = args.split(" ");
-      }
+      argArray = typeof args === "string" ? args.split(" ") : args;
     }
     return new Promise((resolve, reject) => {
       let stdOut = "";
       let stdErr = "";
       if (this.debugCommands) {
-        this.showCommand(`${process.cwd()}> ${command} ${args.join(" ")}`);
+        this.showCommand(`${process.cwd()}> ${command} ${argArray.join(" ")}`);
       }
-      const context = spawn(command, args, spawnOptions);
+      const context = spawn(command, argArray, spawnOptions);
       context.stdout.on("data", (data) => {
         stdOut += data.toString();
         if (!options || !options.disableStdOut) {

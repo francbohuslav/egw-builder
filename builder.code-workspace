@@ -18,7 +18,8 @@
       "java": true,
       "nodejs": true,
       "jmeter.zip": true
-    }
+    },
+    "cSpell.words": ["datagatewayg", "gradlew", "jmeter", "messageregistryg", "metamodel", "uuapp", "uucloud"]
   },
   "launch": {
     "version": "0.2.0",

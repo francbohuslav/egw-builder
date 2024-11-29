@@ -38,7 +38,7 @@ const projects = [
     folder: config.folders.DG,
     server: "uu_energygateway_datagatewayg01-server",
     port: 8094,
-    webname: "uu-energygateway-datagatewayg01",
+    webName: "uu-energygateway-datagatewayg01",
     testFile: "datagateway.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -54,7 +54,7 @@ const projects = [
     folder: config.folders.MR,
     server: "uu_energygateway_messageregistryg01-server",
     port: 8093,
-    webname: "uu-energygateway-messageregistryg01",
+    webName: "uu-energygateway-messageregistryg01",
     hi: "uu_energygateway_messageregistryg01-hi",
     uu5lib: "uu_energygateway_uu5lib",
     gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
@@ -74,7 +74,7 @@ const projects = [
     folder: config.folders.FTP,
     server: "uu_energygatewayg01_ftpendpoint-server",
     port: 8095,
-    webname: "uu-energygatewayg01-ftpendpoint",
+    webName: "uu-energygatewayg01-ftpendpoint",
     testFile: "ftp_endpoint.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -92,7 +92,7 @@ const projects = [
     folder: config.folders.EMAIL,
     server: "uu_energygatewayg01_emailendpoint-server",
     port: 8096,
-    webname: "uu-energygatewayg01-emailendpoint",
+    webName: "uu-energygatewayg01-emailendpoint",
     testFile: "email_endpoint.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -110,7 +110,7 @@ const projects = [
     folder: config.folders.ECP,
     server: "uu_energygatewayg01_ecpendpoint-server",
     port: 8097,
-    webname: "uu-energygatewayg01-ecpendpoint",
+    webName: "uu-energygatewayg01-ecpendpoint",
     testFile: "ecp_endpoint.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -127,7 +127,7 @@ const projects = [
     folder: config.folders.IEC62325,
     server: "uu_energygateway_iec62325endpointg01-server",
     port: 8098,
-    webname: "uu-energygateway-iec62325endpointg01",
+    webName: "uu-energygateway-iec62325endpointg01",
     testFile: "iec62325_endpoint.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -143,7 +143,7 @@ const projects = [
     folder: config.folders.AS24,
     server: "uu_energygateway_as24endpointg01-server",
     port: 8099,
-    webname: "uu-energygateway-as24endpointg01",
+    webName: "uu-energygateway-as24endpointg01",
     testFile: "as24_endpoint.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -161,7 +161,7 @@ const projects = [
     folder: config.folders.IEC60870,
     server: "uu_energygateway_iec60870-5-endpointg01-server",
     port: 8100,
-    webname: "uu-energygateway-iec60870endpointg01",
+    webName: "uu-energygateway-iec60870endpointg01",
     testFile: "iec60870_endpoint.jmx",
     addProfilesFromLibraries: () => ({
       "uu_energygateway_datagatewayg01-config": "DG",
@@ -174,7 +174,7 @@ const projects = [
     folder: config.folders.ACER,
     server: "uu_energygateway_acerendpointg01-server",
     port: 8101,
-    webname: "uu-energygateway-acerendpointg01",
+    webName: "uu-energygateway-acerendpointg01",
     testFile: "acer_endpoint.jmx",
     addProfilesFromLibraries: () => ({
       "uu_energygateway_datagatewayg01-config": "DG",
@@ -187,7 +187,7 @@ const projects = [
     folder: config.folders.KAFKA,
     server: "uu_energygateway_kafkaendpointg01-server",
     port: 8102,
-    webname: "uu-energygateway-kafkaendpointg01",
+    webName: "uu-energygateway-kafkaendpointg01",
     testFile: "kafka_endpoint.jmx",
     addProfilesFromLibraries: () => ({
       "uu_energygateway_datagatewayg01-config": "DG",
@@ -201,7 +201,7 @@ const projects = [
     server: "uu_energygateway_mergedg01-server",
     hi: "uu_energygateway_mergedg01-hi",
     port: 8800,
-    webname: "uu-energygateway-mergedg01",
+    webName: "uu-energygateway-mergedg01",
   },
 ];
 
@@ -284,15 +284,19 @@ function getProjectVersion(project) {
     try {
       versions["uuapp.json"] = JSON.parse(core.readTextFile("uuapp.json")).version;
     } catch (ex) {
-      versions["uuapp.json"] = "PARSE ERROR:  " + ex.message;
+      versions["uuapp.json"] = "PARSE ERROR:  " + /** @type {Error} */ (ex).message;
     }
-    versions["build.gradle"] = core.readTextFile("build.gradle").match(/version '(\S+)'/)[1];
+    const match = core.readTextFile("build.gradle").match(/version '(\S+)'/);
+    if (!match) {
+      throw new Error("Cannot find version in build.gradle");
+    }
+    versions["build.gradle"] = match[1];
     const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
     uuCloudDescriptors.forEach((uuCloudDescriptor) => {
       try {
         versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
       } catch (ex) {
-        versions[uuCloudDescriptor] = "PARSE ERROR:  " + ex.message;
+        versions[uuCloudDescriptor] = "PARSE ERROR:  " + /** @type {Error} */ (ex).message;
       }
     });
     if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
@@ -357,6 +361,9 @@ function setProjectVersion(project, newVersion) {
   });
 }
 
+/**
+ * @param {CommandLine} cmd
+ */
 function printProjectsVersions(cmd) {
   if (cmd.getVersions) {
     console.log("Actual versions");
@@ -380,6 +387,9 @@ function printProjectsVersions(cmd) {
   }
 }
 
+/**
+ * @param {string} newVersion
+ */
 function setProjectsVersions(newVersion) {
   for (const project of projects) {
     if (fs.existsSync(project.folder)) {
@@ -388,10 +398,14 @@ function setProjectsVersions(newVersion) {
   }
 }
 
+/**
+ * @param {string} url
+ */
 async function waitForApp(url) {
   const seconds = 300;
   for (let counter = seconds; counter > 0; counter -= 2) {
     try {
+      // @ts-ignore
       await requestAsync(url, { json: true, family: 4 });
       if (counter != seconds) {
         console.log("...ready!");
@@ -415,7 +429,7 @@ async function waitForApp(url) {
  */
 async function waitForApplicationIsReady(project) {
   // 127.0.0.1 is used instead of localhost because of IPv4
-  await waitForApp(`http://127.0.0.1:${project.port}/${project.webname}/00000000000000000000000000000001/sys/getHealth`);
+  await waitForApp(`http://127.0.0.1:${project.port}/${project.webName}/00000000000000000000000000000001/sys/getHealth`);
 }
 
 /**
@@ -439,13 +453,18 @@ async function runInitCommands(project, cmd, serverDir, isMergedVersion) {
   const params = `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile}${
     isMergedVersion ? "_merged" : ""
   }.cfg -Jinsomnia_dir=${serverDir}/src/test/insomnia -Jserver_dir=${serverDir} -Jproject_dir=${projectDir} -Juid=${cmd.uid}`.split(" ");
-  const { stdOut } = await core.runCommand(getJmeterBat(), params);
+  const { stdOut } = await core.runCommand(getJmeterBat(), params, undefined, { shell: true });
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
     core.showError(`Init commands of ${projectCode} failed`);
   }
 }
 
+/**
+ *
+ * @param {boolean} isMergedVersion
+ * @param {CommandLine} cmd
+ */
 async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
   await jmeter.downloadIfMissing();
   const initFile = "inits/init_ASYNC_JOB.jmx";
@@ -455,7 +474,9 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
   fs.existsSync(logFile) && fs.unlinkSync(logFile);
   const { stdOut } = await core.runCommand(
     getJmeterBat(),
-    `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile + (isMergedVersion ? "_merged" : "")}.cfg`
+    `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile + (isMergedVersion ? "_merged" : "")}.cfg`,
+    undefined,
+    { shell: true }
   );
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
@@ -463,6 +484,9 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
   }
 }
 
+/**
+ * @returns {string}
+ */
 function getJmeterBat() {
   return path.join(__dirname, "java", "runJmeter.bat");
 }
@@ -486,6 +510,7 @@ async function killProject(project) {
   if (colNames[0] !== "ParentProcessId") {
     core.showError("Sorry, wrong columns", false);
   }
+  /** @type {Record<string, string>} */
   const parentIds = {};
   lines.forEach((line) => {
     const [parentId, processId] = line.trim().split(/\s+/);
@@ -537,8 +562,8 @@ async function cleanDockers() {
  * @returns {string}
  */
 function getFtpDataDir() {
-  const isMulitpleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
-  const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMulitpleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
+  const isMultipleEnv = fs.existsSync(path.resolve(process.cwd() + "/../../../../../" + FTP.folder + "/docker/egw-tests/data/data_A/incoming1/.gitkeep"));
+  const ftpDataDir = path.resolve(process.cwd() + "/../../../../../" + FTP.folder + (isMultipleEnv ? "/docker/egw-tests" : "/docker/egw-tests/data"));
   if (!fs.existsSync(ftpDataDir)) {
     core.showError(ftpDataDir + " does not exists");
   }
@@ -546,7 +571,7 @@ function getFtpDataDir() {
 }
 
 /**
- * @param {IProject} project
+ * @param {string | IProject} project
  * @param {boolean} isProjectTest
  * @param {boolean} isVersion11
  * @param {string} serverFolder
@@ -598,7 +623,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, serverFolder
       params.push("-Jsmtp_host=smtp");
       params.push("-Jsmtp_port=80");
     }
-    await core.runCommand(getJmeterBat(), params);
+    await core.runCommand(getJmeterBat(), params, undefined, { shell: true });
   }
   if (fs.existsSync(resultsFile)) {
     const steps = results.getSteps(core.readTextFile(resultsFile));

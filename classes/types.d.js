@@ -27,7 +27,7 @@
  * @property {string} [gui] folder of GUI components, e.g. "uu_energygateway_uu5lib/uu_energygateway_guig01"
  * @property {string} [testFile] e.g. "message-registr.jmx"
  * @property {number} port e.g. 8093
- * @property {string} webname e.g. "uu-energygateway-messageregistryg01"
+ * @property {string} webName e.g. "uu-energygateway-messageregistryg01"
  * @property {(isVersion11: boolean) => Record<string, any>} [addProfilesFromLibraries]
  */
 
