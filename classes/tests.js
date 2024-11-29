@@ -49,10 +49,12 @@ class Tests {
   /**
    *
    * @param {CommandLine} cmd
-   * @returns {Promise<{newFailed: ITestResult[], newPassed: ITestResult[], knownFailed: ITestResult[], allPassed: ITestResult[]}>}
+   * @returns {Promise<IProjectTestResult>}
    */
   async runWebTests(cmd) {
+    /** @type {ITestResultInfo[]} */
     const newFailed = [];
+    /** @type {ITestResultInfo[]} */
     const allPassed = [];
     if (!cmd.onlyShowResults) {
       try {
@@ -61,12 +63,14 @@ class Tests {
         );
         allPassed.push({
           label: "Web tests passed.",
-          success: true,
+          asserts: [],
+          responseData: "",
         });
-      } catch ({ code }) {
+      } catch (ex) {
         newFailed.push({
           label: "Web tests failed. Opening report in browser.",
-          success: false,
+          asserts: [],
+          responseData: "",
         });
         core.runCommandNoWait(`start ..\\results\\index.html`);
       }

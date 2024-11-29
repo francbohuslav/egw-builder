@@ -30,7 +30,7 @@
         "name": "Launch Program",
         "skipFiles": ["<node_internals>/**"],
         "program": "index.js",
-        "args": ["-folder", "../v5_X", "-runECP"]
+        "args": ["-folder", "../v5_X", "-last"]
       }
     ]
   }

@@ -4,6 +4,7 @@ const fs = require("fs");
 
 class Core {
   constructor() {
+    /** @type {string[]} */
     this.locationHistory = [];
     this.debugCommands = false;
   }
@@ -11,8 +12,8 @@ class Core {
   /**
    * Ask for user input
    * @param {string} question
-   * @param {string} defaultValue
-   * @return {string}
+   * @param {string | null} defaultValue
+   * @return {string | boolean}
    */
   ask(question, defaultValue = null) {
     if (defaultValue === null) {
@@ -38,27 +39,42 @@ class Core {
     }
   }
 
+  /**
+   * @param {string} message
+   */
   showMessage(message) {
     console.log("\x1b[36m%s\x1b[0m", message);
     // Title
     process.stdout.write(String.fromCharCode(27) + "]0;EB: " + message + String.fromCharCode(7));
   }
 
+  /**
+   * @param {string} message
+   */
   showSuccess(message) {
     console.log("\x1b[32m%s\x1b[0m", message);
   }
 
+  /**
+   * @param {string} message
+   */
   showWarning(message) {
     console.log("\x1b[33m%s\x1b[0m", message);
   }
 
+  /**
+   * @param {string} message
+   */
   showCommand(message) {
     console.log("\x1b[35m%s\x1b[0m", message);
   }
 
+  /**
+   * @param {string | Error} message
+   * @param {boolean} [exit]
+   */
   showError(message, exit = true) {
     console.log("\x1b[31m%s\x1b[0m", message);
-    //rompt("press ENTER to continue ");
     if (exit) {
       process.exit(1);
     }
@@ -78,7 +94,6 @@ class Core {
   }
 
   /**
-   *
    * @param {string} command
    * @param {string[] | string} [args]
    * @param {any} [options]
@@ -138,33 +153,45 @@ class Core {
     });
   }
 
+  /**
+   * @param {string} command
+   * @param {string[] | string} [args]
+   */
   runCommandNoWait(command, args = []) {
+    /** @type {string[]} */
+    let argArray = [];
     if (!args || args.length === 0) {
       if (command.indexOf(" ") > -1) {
-        args = command.split(" ");
-        command = args.shift();
+        argArray = command.split(" ");
+        command = argArray.shift() ?? "";
       }
     } else {
-      if (typeof args === "string") {
-        args = args.split(" ");
-      }
+      argArray = typeof args === "string" ? args.split(" ") : args;
     }
     if (this.debugCommands) {
-      this.showCommand(command + " " + args.join(" "));
+      this.showCommand(command + " " + argArray.join(" "));
     }
-    spawn(command, args, {
+    spawn(command, argArray, {
       detached: true,
       shell: true,
       stdio: "ignore",
     });
   }
 
+  /**
+   * @param {number} errorLevel
+   * @param {string} location
+   */
   processExit(errorLevel, location) {
     if (errorLevel) {
       this.showError(`ERROR: ${errorLevel}` + (location ? " in " + location : ""));
     }
   }
 
+  /**
+   * @param {string} path
+   * @param {() => Promise<void>} asyncAction
+   */
   async inLocationAsync(path, asyncAction) {
     this.pushLocation(path);
     await asyncAction();
@@ -181,6 +208,9 @@ class Core {
     this.popLocation();
   }
 
+  /**
+   * @param {string} path
+   */
   pushLocation(path) {
     const wd = process.cwd();
     this.locationHistory.push(wd);
@@ -190,6 +220,9 @@ class Core {
   popLocation() {
     if (this.locationHistory.length) {
       const wd = this.locationHistory.pop();
+      if (!wd) {
+        throw new Error("Location history is empty");
+      }
       process.chdir(wd);
       return wd;
     } else {
@@ -198,17 +231,24 @@ class Core {
   }
 
   /**
-   *
    * @param {string} file
    */
   readTextFile(file) {
     return fs.readFileSync(file, { encoding: "utf-8" }).toString();
   }
 
+  /**
+   * @param {string} filePath
+   * @param {string} data
+   */
   writeTextFile(filePath, data) {
     fs.writeFileSync(filePath, data, { encoding: "utf-8" });
   }
 
+  /**
+   * @param {number} port
+   * @returns {Promise<string | false>}
+   */
   async getProcessIdByPort(port) {
     const data = await this.runCommand(`netstat -ano`, undefined, { disableStdOut: true });
     const lines = data.stdOut.split(/[\r\n]+/);

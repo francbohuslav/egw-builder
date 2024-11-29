@@ -11,6 +11,7 @@ class Results {
    * @returns {ITestResult[]}
    */
   getSteps(content) {
+    /** @type {ITestResult[]} */
     const results = [];
     const doc = new dom().parseFromString(content);
     // https://svn.apache.org/repos/asf/jmeter/tags/v2_4/docs/usermanual/listeners.html .. format description

@@ -20,6 +20,7 @@ const java = require("./classes/java");
 const jmeter = require("./classes/jmeter");
 const nodeJs = require("./classes/node");
 const help = require("./classes/help");
+const { assertAndReturn } = require("./classes/utils");
 
 if (fs.existsSync("./config.js")) {
   // @ts-ignore
@@ -571,27 +572,28 @@ function getFtpDataDir() {
 }
 
 /**
- * @param {string | IProject} project
- * @param {boolean} isProjectTest
+ * @param {string | IProject} projectOrString
  * @param {boolean} isVersion11
- * @param {string} serverFolder
+ * @param {string | null} serverFolder
  * @param {string} serverFolderDG
  * @param {string} serverFolderFTP
  * @param {boolean} isMergedVersion
  * @param {CommandLine} cmd
+ * @returns {Promise<IProjectTestResult | null>}
  */
-async function runProjectTests(project, isProjectTest, isVersion11, serverFolder, serverFolderDG, serverFolderFTP, isMergedVersion, cmd) {
+async function runProjectTests(projectOrString, isVersion11, serverFolder, serverFolderDG, serverFolderFTP, isMergedVersion, cmd) {
   await jmeter.downloadIfMissing();
-  let projectCode = project;
+  /** @type {string} */
+  const projectCode = typeof projectOrString === "string" ? projectOrString : projectOrString.code;
+  const project = typeof projectOrString === "string" ? null : projectOrString;
   let testFile = null;
-  if (isProjectTest) {
+  if (project) {
     if (!cmd.onlyShowResults) {
       await waitForApplicationIsReady(isMergedVersion ? MERGED : project);
     }
-    projectCode = project.code;
     testFile = project.testFile;
   } else {
-    testFile = `tests_${project}.jmx`;
+    testFile = `tests_${projectCode}.jmx`;
   }
   const resultsFile = "logs/testResults" + projectCode + ".xml";
   const logFile = "logs/testLogs" + projectCode + ".log";
@@ -601,7 +603,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, serverFolder
     let restStr = "-n -t " + testFile + " -j " + logFile + " ";
     restStr += isVersion11 ? "-Jhost=localhost" : "-Jenv=" + cmd.environmentFile + (isMergedVersion ? "_merged" : "") + ".cfg";
     const params = restStr.split(" ");
-    if (isProjectTest) {
+    if (project) {
       const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
       params.push("-Jproject_dir=" + projectDir);
     }
@@ -642,7 +644,7 @@ async function runProjectTests(project, isProjectTest, isVersion11, serverFolder
  * @param {string} DGversion
  */
 function cloneDataGatewayForIec(DGversion) {
-  const majorVersion = parseInt(DGversion.match(/^(\d+)\./)[0]);
+  const majorVersion = parseInt(assertAndReturn(DGversion.match(/^(\d+)\./))[0]);
   if (majorVersion >= 4) {
     // Copy is not needed
     console.log(`IEC62325 copy is not needed for major version ${majorVersion}`);
@@ -654,12 +656,12 @@ function cloneDataGatewayForIec(DGversion) {
     core.showError(`Can not find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
     return;
   }
-  let preferedFolder = "";
+  let preferredFolder = "";
   let firstNotExistingFolder = "";
   for (let i = 0; i < matches.length; i++) {
     const folder = matches[i][0];
     if (folder == DG.folder) {
-      if (firstNotExistingFolder || preferedFolder) {
+      if (firstNotExistingFolder || preferredFolder) {
         break;
       }
       core.showError(
@@ -671,11 +673,11 @@ function cloneDataGatewayForIec(DGversion) {
     if (!firstNotExistingFolder) {
       firstNotExistingFolder = folder;
     }
-    if (!preferedFolder && fs.existsSync(folder)) {
-      preferedFolder = folder;
+    if (!preferredFolder && fs.existsSync(folder)) {
+      preferredFolder = folder;
     }
   }
-  const dgCopyFolder = preferedFolder || firstNotExistingFolder;
+  const dgCopyFolder = preferredFolder || firstNotExistingFolder;
   if (fs.existsSync(dgCopyFolder)) {
     core.showMessage(`Removing old ${dgCopyFolder}...`);
     fse.removeSync(dgCopyFolder);
@@ -699,18 +701,20 @@ function cloneDataGatewayForIec(DGversion) {
     },
   });
 }
+
 /**
  * @param {IProject} project
  * @param {CommandLine} cmd
  */
 async function runApp(project, cmd) {
-  fs.mkdirSync(path.join(cmd.folder, "logs"), {
+  const folder = assertAndReturn(cmd.folder);
+  fs.mkdirSync(path.join(folder, "logs"), {
     recursive: true,
   });
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
   core.inLocation(path.join(project.folder, project.server), () => {
     const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
-      cmd.folder,
+      folder,
       "logs",
       project.code + ".log"
     )} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
@@ -718,12 +722,16 @@ async function runApp(project, cmd) {
   });
 }
 
+/**
+ * @param {CommandLine} cmd
+ */
 async function logAsyncJob(cmd) {
-  fs.mkdirSync(path.join(cmd.folder, "logs"), {
+  const folder = assertAndReturn(cmd.folder);
+  fs.mkdirSync(path.join(folder, "logs"), {
     recursive: true,
   });
   core.inLocation(`${DG.folder}/docker/egw-tests`, () => {
-    const command = `start "AsyncJob" /MAX ${builderDir}\\asyncJobLogs.cmd ${builderDir} ${path.join(cmd.folder, "logs", "AsyncJob.log")}`;
+    const command = `start "AsyncJob" /MAX ${builderDir}\\asyncJobLogs.cmd ${builderDir} ${path.join(folder, "logs", "AsyncJob.log")}`;
     core.runCommandNoWait(command);
   });
 }
@@ -846,7 +854,7 @@ async function run() {
       runnableProjects.push(MERGED);
     }
     const DGversions = getProjectVersion(DG);
-    const DGversion = DGversions["build.gradle"] ?? DGversions;
+    const DGversion = typeof DGversions === "string" ? DGversions : DGversions["build.gradle"];
 
     if (cmd.interactively || cmd.getVersions) {
       printProjectsVersions(cmd);
@@ -1065,12 +1073,14 @@ async function run() {
             (isRun && isRunPerProject[MERGED.code])) &&
           fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")
         ) {
-          core.inLocation(project.folder, () => {
+          await core.inLocationAsync(project.folder, async () => {
             if (fs.existsSync("before-start.cmd")) {
-              core.runCommandNoWait(`start before-start.cmd`);
+              await core.runCommand(`before-start.cmd`, undefined, undefined, { shell: true });
             }
           });
-          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => await core.runCommand("docker compose up -d"));
+          await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => {
+            await core.runCommand("docker compose up -d");
+          });
         }
       }
     }
@@ -1187,9 +1197,13 @@ async function run() {
       core.showMessage("Starting tests...");
 
       const startedDate = new Date();
+      /** @type {Record<string, ITestResultInfo[]>} */
       const knownFailed = {};
+      /** @type {Record<string, ITestResultInfo[]>} */
       const newFailed = {};
+      /** @type {Record<string, ITestResultInfo[]>} */
       const newPassed = {};
+      /** @type {Record<string, ITestResultInfo[]>} */
       const allPassed = {};
       const projectList = [
         ...[
@@ -1213,7 +1227,7 @@ async function run() {
           if (!cmd.onlyShowResults) {
             core.showMessage(`Testing ${testCode}`);
           }
-          let report = null;
+          let report = /** @type {IProjectTestResult | null} */ (null);
           if (testCode.toLowerCase() == "web") {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
               report = await tests.runWebTests(cmd);
@@ -1222,7 +1236,6 @@ async function run() {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
               report = await runProjectTests(
                 project,
-                isProjectTest,
                 isVersion11,
                 isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}` : null,
                 `${cmd.folder}/${DG.folder}/${DG.server}`,
@@ -1260,7 +1273,7 @@ async function run() {
 
     core.showMessage("DONE");
   } catch (err) {
-    core.showError(err);
+    core.showError(/** @type {Error} */ (err));
     help.printTroubleShootHelp();
     core.showError("");
   }

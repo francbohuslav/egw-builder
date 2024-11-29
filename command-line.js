@@ -7,6 +7,9 @@ class CommandLine {
    */
   constructor(pars) {
     this.interactively = true;
+    this.unitTests = false;
+    this.isMerged = false;
+
     /** Output human readable text */
     this.enableConsole = true;
     while (pars.length > 0) {

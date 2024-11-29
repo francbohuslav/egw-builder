@@ -33,10 +33,25 @@
 
 /**
  * @typedef {Object} ITestResult
- * @property {string} label
  * @property {boolean} success
+ * @property {ITestResultInfo} info
+ */
+
+/**
+ * @typedef {Object} ITestResultInfo
+ * @property {string} label
+ * @property {string[]} asserts
+ * @property {string} responseData
  */
 
 /**
  * @typedef {import("../command-line")} CommandLine
+ */
+
+/**
+ * @typedef {Object} IProjectTestResult
+ * @property {ITestResultInfo[]} newFailed
+ * @property {ITestResultInfo[]} newPassed
+ * @property {ITestResultInfo[]} knownFailed
+ * @property {ITestResultInfo[]} allPassed
  */
