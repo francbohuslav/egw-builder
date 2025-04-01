@@ -92,7 +92,10 @@ class Java {
   async downloadIfMissing(javaVersion) {
     const folder = join(__dirname, "..", "java");
     fs.mkdirSync(folder, { recursive: true });
-    const download = { uri: "https://www.dropbox.com/s/7z9agtdakccb7uz/jdk1.8.0_211.zip?dl=1", removeSubFolder: true };
+    const download = {
+      uri: "https://www.dropbox.com/scl/fi/f3oj86wjrzcrdvtj5jkfs/jdk1.8.0_421.zip?rlkey=i3gk3d0d2ojtxe0w27az2y5fz&dl=1",
+      removeSubFolder: true,
+    };
     if (javaVersion === "11") {
       download.uri = "https://www.dropbox.com/s/ofb3m5ag3cy05k6/corretto-11.0.12.zip?dl=1";
       download.removeSubFolder = false;

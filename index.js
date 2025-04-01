@@ -880,7 +880,10 @@ async function run() {
     await java.downloadIfMissingJavaForJmeter();
 
     java.printInfo(subAppJavaInfo, JDK);
+    console.log((await core.runCommand("java", "-version", { disableStdOut: true }, { cwd: path.join(JDK, "bin") })).stdErr);
+
     await nodeJs.printInfo();
+    console.log("");
 
     if (!cmd.environmentFile) {
       const envs = info.getEnvironments(MR);
