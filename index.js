@@ -229,8 +229,9 @@ async function buildProject(project, isUnitTests) {
   if (await killProject(project)) {
     console.log("Killed running app");
   }
+  const buildFronted = true;
   let pathPrefix = "";
-  if (project.code === "MR") {
+  if (buildFronted && project.code === "MR") {
     if (fs.existsSync(project.folder + "/" + MR.gui)) {
       const nodeJsFolder = await nodeJs.detectAndDownload(project.folder + "/" + MR.gui);
       pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
@@ -267,6 +268,9 @@ async function buildProject(project, isUnitTests) {
     let args = `/C${pathPrefix} gradlew clean build compileTestJava`;
     if (!isUnitTests) {
       args += " -x test";
+    }
+    if (!buildFronted && project.code === "MR") {
+      args += " -Pno-build-client";
     }
     await core.runCommand("cmd", addJDKtoGradle(args.split(" ")));
     if (project.code === "MR") {
