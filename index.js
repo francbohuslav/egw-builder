@@ -296,7 +296,7 @@ function getProjectVersion(project) {
       throw new Error("Cannot find version in build.gradle");
     }
     versions["build.gradle"] = match[1];
-    const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
+    const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud"));
     uuCloudDescriptors.forEach((uuCloudDescriptor) => {
       try {
         versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
