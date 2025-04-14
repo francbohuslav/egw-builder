@@ -299,7 +299,8 @@ function getProjectVersion(project) {
     const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud"));
     uuCloudDescriptors.forEach((uuCloudDescriptor) => {
       try {
-        versions[uuCloudDescriptor] = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor)).uuSubApp.version;
+        const json = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor));
+        versions[uuCloudDescriptor] = json.uuSubApp?.version ?? json.uuAppBoxDescriptor.version;
       } catch (ex) {
         versions[uuCloudDescriptor] = "PARSE ERROR:  " + /** @type {Error} */ (ex).message;
       }
@@ -337,10 +338,14 @@ function setProjectVersion(project, newVersion) {
     let json = JSON.parse(core.readTextFile("uuapp.json"));
     json.version = newVersion;
     core.writeTextFile("uuapp.json", JSON.stringify(json, null, 2));
-    const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud-"));
+    const uuCloudDescriptors = fs.readdirSync(project.server + "/config/").filter((f) => f.startsWith("uucloud"));
     uuCloudDescriptors.forEach((uuCloudDescriptor) => {
       json = JSON.parse(core.readTextFile(project.server + "/config/" + uuCloudDescriptor));
-      json.uuSubApp.version = newVersion;
+      if (json.uuSubApp) {
+        json.uuSubApp.version = newVersion;
+      } else {
+        json.uuAppBoxDescriptor.version = newVersion;
+      }
       core.writeTextFile(project.server + "/config/" + uuCloudDescriptor, JSON.stringify(json, null, 2));
     });
     if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
