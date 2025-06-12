@@ -14,6 +14,7 @@ module.exports = {
     IEC60870: "uu_energygateway_iec60870endpointg01",
     ACER: "uu_energygateway_acerendpointg01",
     KAFKA: "uu_energygateway_kafkaendpointg01",
+    HTTP: "uu_energygateway_httpendpointg01",
     MERGED: "uu_energygateway_mergedg01",
   },
   JDK: {

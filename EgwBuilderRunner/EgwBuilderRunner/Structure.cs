@@ -23,7 +23,7 @@ namespace EgwBuilderRunner
         public bool IsMerged { get; set; }
 
         [JsonProperty("build")]
-        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED || BuildIEC60870 || BuildACER || BuildKAFKA;
+        public bool Build => BuildDG || BuildMR || BuildFTP || BuildEMAIL || BuildECP || BuildIEC62325 || BuildAS24 || BuildMERGED || BuildIEC60870 || BuildACER || BuildKAFKA || BuildHTTP;
 
         [JsonProperty("buildDG")]
         public bool BuildDG { get; set; }
@@ -55,6 +55,8 @@ namespace EgwBuilderRunner
         [JsonProperty("buildKAFKA")]
         public bool BuildKAFKA { get; set; }
 
+        [JsonProperty("buildHTTP")]
+        public bool BuildHTTP { get; set; }
 
         [JsonProperty("buildMERGED")]
         public bool BuildMERGED { get; set; }
@@ -63,7 +65,7 @@ namespace EgwBuilderRunner
         public bool UnitTests { get; set; }
 
         [JsonProperty("run")]
-        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24 || RunIEC60870 || RunACER || RunKAFKA;
+        public bool Run => RunDG || RunMR || RunFTP || RunEMAIL || RunECP || RunIEC62325 || RunAS24 || RunIEC60870 || RunACER || RunKAFKA || RunHTTP;
 
         [JsonProperty("runDG")]
         public bool RunDG { get; set; }
@@ -95,6 +97,9 @@ namespace EgwBuilderRunner
         [JsonProperty("runKAFKA")]
         public bool RunKAFKA { get; set; }
 
+        [JsonProperty("runHTTP")]
+        public bool RunHTTP { get; set; }
+
         [JsonProperty("runMERGED")]
         public bool RunMERGED { get; set; }
 
@@ -102,7 +107,7 @@ namespace EgwBuilderRunner
         public bool RunInSequence { get; set; }
 
         [JsonProperty("init")]
-        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24 || InitIEC60870 || InitACER || InitKAFKA;
+        public bool Init => InitDG || InitMR || InitFTP || InitEMAIL || InitECP || InitIEC62325 || InitAS24 || InitIEC60870 || InitACER || InitKAFKA || InitHTTP;
 
         [JsonProperty("initDG")]
         public bool InitDG { get; set; }
@@ -134,6 +139,9 @@ namespace EgwBuilderRunner
         [JsonProperty("initKAFKA")]
         public bool InitKAFKA { get; set; }
 
+        [JsonProperty("initHTTP")]
+        public bool InitHTTP { get; set; }
+
         [JsonProperty("initASYNC")]
         public bool InitASYNC { get; set; }
 
@@ -141,7 +149,7 @@ namespace EgwBuilderRunner
         public string Uid { get; set; }
 
         [JsonProperty("tests")]
-        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24 || TestIEC60870 || TestACER || TestKAFKA;
+        public bool Tests => TestDG || TestMR || TestFTP || TestEMAIL || TestECP || TestIEC62325 || TestAS24 || TestIEC60870 || TestACER || TestKAFKA || TestHTTP;
 
         [JsonProperty("testDG")]
         public bool TestDG { get; set; }
@@ -170,9 +178,11 @@ namespace EgwBuilderRunner
         [JsonProperty("testACER")]
         public bool TestACER { get; set; }
 
-
         [JsonProperty("testKAFKA")]
         public bool TestKAFKA { get; set; }
+
+        [JsonProperty("testHTTP")]
+        public bool TestHTTP { get; set; }
 
         [JsonProperty("additionalTests")]
         public string[] AdditionalTests { get; set; }

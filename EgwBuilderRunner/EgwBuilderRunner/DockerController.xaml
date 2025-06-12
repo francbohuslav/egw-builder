@@ -9,7 +9,7 @@
     <Grid>
         <StackPanel>
             <DockPanel>
-                <CheckBox DockPanel.Dock="Left" x:Name="Enabler" FontWeight="Bold" Margin="0,0,10,5" Checked="Enabler_Changed"  Unchecked="Enabler_Changed">Docker containers (refreshed every 15s)</CheckBox>
+                <CheckBox DockPanel.Dock="Left" x:Name="Enabler" FontWeight="Bold" Margin="0,0,10,5" Checked="Enabler_Changed"  Unchecked="Enabler_Changed">Docker containers</CheckBox>
                 <ProgressBar x:Name="Progress" VerticalAlignment="Top" Height="12" Margin="0,2,0,0" IsIndeterminate="True" />
             </DockPanel>
             <ItemsControl x:Name="ContainersPanel">

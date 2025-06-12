@@ -93,6 +93,11 @@ namespace EgwBuilderRunner
                         KAFKA.IsEnabled = false;
                         ForProject("KAFKA", ch => ch.IsEnabled = false);
                     }
+                    if (!info.ContainsProject("HTTP"))
+                    {
+                        HTTP.IsEnabled = false;
+                        ForProject("HTTP", ch => ch.IsEnabled = false);
+                    }
                     foreach (var project in info.Projects)
                     {
                         if (!project.SupportTests && FindName("Test_" + project.CodeForComponent) != null)
@@ -246,6 +251,10 @@ namespace EgwBuilderRunner
             SetProject("KAFKA", Build_KAFKA.IsChecked != true);
         }
 
+        private void HTTP_Click(object sender, RoutedEventArgs e)
+        {
+            SetProject("HTTP", Build_HTTP.IsChecked != true);
+        }
 
         private void SetProject(string project, bool on)
         {
@@ -293,7 +302,7 @@ namespace EgwBuilderRunner
             {
                 return;
             }
-            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC623", "AS24", "IEC608", "ACER", "KAFKA" })
+            foreach (var code in new[] { "DG", "MR", "FTP", "EMAIL", "ECP", "IEC623", "AS24", "IEC608", "ACER", "KAFKA", "HTTP" })
             {
                 if (!MyApp.Runner.Info.ContainsProject(code))
                 {
@@ -369,6 +378,7 @@ namespace EgwBuilderRunner
                 BuildIEC60870 = Build_IEC608.IsChecked == true,
                 BuildACER = Build_ACER.IsChecked == true,
                 BuildKAFKA = Build_KAFKA.IsChecked == true,
+                BuildHTTP = Build_HTTP.IsChecked == true,
                 BuildMERGED = Build_MERGED.IsChecked == true,
 
                 RunDG = Run_DG.IsChecked == true,
@@ -381,6 +391,7 @@ namespace EgwBuilderRunner
                 RunIEC60870 = Run_IEC608.IsChecked == true,
                 RunACER = Run_ACER.IsChecked == true,
                 RunKAFKA = Run_KAFKA.IsChecked == true,
+                RunHTTP = Run_HTTP.IsChecked == true,
                 RunMERGED = Run_MERGED.IsChecked == true,
 
                 InitDG = Init_DG.IsChecked == true,
@@ -393,6 +404,7 @@ namespace EgwBuilderRunner
                 InitIEC60870 = Init_IEC608.IsChecked == true,
                 InitACER = Init_ACER.IsChecked == true,
                 InitKAFKA = Init_KAFKA.IsChecked == true,
+                InitHTTP = Init_HTTP.IsChecked == true,
 
                 TestDG = Test_DG.IsChecked == true,
                 TestMR = Test_MR.IsChecked == true,
@@ -404,6 +416,7 @@ namespace EgwBuilderRunner
                 TestIEC60870 = Test_IEC608.IsChecked == true,
                 TestACER = Test_ACER.IsChecked == true,
                 TestKAFKA = Test_KAFKA.IsChecked == true,
+                TestHTTP = Test_HTTP.IsChecked == true,
                 AdditionalTests = additionalTestModels.Where(t => t.IsChecked).Select(t => t.Name).ToArray()
             };
             return structure;
@@ -438,6 +451,7 @@ namespace EgwBuilderRunner
             Build_IEC608.IsChecked = structure.BuildIEC60870;
             Build_ACER.IsChecked = structure.BuildACER;
             Build_KAFKA.IsChecked = structure.BuildKAFKA;
+            Build_HTTP.IsChecked = structure.BuildHTTP;
             Build_MERGED.IsChecked = structure.BuildMERGED;
 
             Run_DG.IsChecked = structure.RunDG;
@@ -450,6 +464,7 @@ namespace EgwBuilderRunner
             Run_IEC608.IsChecked = structure.RunIEC60870;
             Run_ACER.IsChecked = structure.RunACER;
             Run_KAFKA.IsChecked = structure.RunKAFKA;
+            Run_HTTP.IsChecked = structure.RunHTTP;
             Run_MERGED.IsChecked = structure.RunMERGED;
 
             Init_DG.IsChecked = structure.InitDG;
@@ -462,6 +477,7 @@ namespace EgwBuilderRunner
             Init_IEC608.IsChecked = structure.InitIEC60870;
             Init_ACER.IsChecked = structure.InitACER;
             Init_KAFKA.IsChecked = structure.InitKAFKA;
+            Init_HTTP.IsChecked = structure.InitHTTP;
 
             Test_DG.IsChecked = structure.TestDG;
             Test_MR.IsChecked = structure.TestMR;
@@ -473,6 +489,7 @@ namespace EgwBuilderRunner
             Test_IEC608.IsChecked = structure.TestIEC60870;
             Test_ACER.IsChecked = structure.TestACER;
             Test_KAFKA.IsChecked = structure.TestKAFKA;
+            Test_HTTP.IsChecked = structure.TestHTTP;
             additionalTestModels.ForEach(a =>
             {
                 a.IsChecked = structure.AdditionalTests != null && structure.AdditionalTests.Any(t => t == a.Name);
@@ -505,6 +522,7 @@ namespace EgwBuilderRunner
                 && Build_IEC608.IsChecked == false
                 && Build_ACER.IsChecked == false
                 && Build_KAFKA.IsChecked == false
+                && Build_HTTP.IsChecked == false
                 )
             {
                 UnitTests.IsChecked = false;

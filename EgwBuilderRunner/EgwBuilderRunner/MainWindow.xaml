@@ -11,21 +11,19 @@
         Title="EgwBuilderRunner" SizeToContent="Height" Width="1060" Loaded="BaseWindow_Loaded" ResizeMode="NoResize">
 
     <Grid>
-        <TextBlock x:Name="Folders" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Foreground="#FF87EFFF" Padding="5,5" Height="40" Width="321">
+        <TextBlock x:Name="Folders" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Foreground="#FF87EFFF" Padding="5,5" Height="40" Width="224">
             EGW: ...
             <LineBreak />
             Builder: ...
         </TextBlock>
-        <DockPanel HorizontalAlignment="Left" Margin="10,55,0,67"  Width="321">
+        <DockPanel HorizontalAlignment="Left" Margin="10,55,0,67"  Width="224">
             <local:DockerController DockPanel.Dock="Bottom"  Margin="0,10,0,0" />
-            <ScrollViewer VerticalScrollBarVisibility="Auto" >
-                <TextBlock x:Name="Console" TextWrapping="Wrap" FontFamily="Consolas" Background="Black" Text="" Foreground="#FF87FF87" Padding="5"/>
-            </ScrollViewer>
+            <TextBox x:Name="Console" TextWrapping="NoWrap" FontFamily="Consolas" Background="Black" Text="" Foreground="#FF87FF87" Padding="5" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
         </DockPanel>
 
         <CheckBox x:Name="CloseApplicationAfterRun" Content="Close application after execution" HorizontalAlignment="Left" Margin="10,0,0,36" VerticalAlignment="Bottom" Checked="CloseApplicationAfterRun_Checked" Unchecked="CloseApplicationAfterRun_Checked" />
 
-        <StackPanel Orientation="Vertical" Margin="346,10,10,36">
+        <StackPanel Orientation="Vertical" Margin="245,10,10,36">
             <Grid>
                 <Button x:Name="Clear" Content="Clear settings" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Height="29" Click="Clear_Click"/>
                 <Button x:Name="Last" Content="Load last configuration" HorizontalAlignment="Left" Margin="117,0,0,0" VerticalAlignment="Top" Width="149" Height="29" Click="Last_Click"/>
@@ -82,6 +80,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="1.1*"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="1" Margin="5,0" Click="DG_Click">DG</Button>
@@ -94,7 +93,8 @@
                 <Button x:Name="IEC608" Grid.Column="8" Margin="5,0" Content="IEC608"  Click="IEC608_Click"  />
                 <Button x:Name="ACER" Grid.Column="9" Margin="5,0" Content="ACER"  Click="ACER_Click"  />
                 <Button x:Name="KAFKA" Grid.Column="10" Margin="5,0" Content="KAFKA"  Click="KAFKA_Click"  />
-                <Button x:Name="MERGED" Grid.Column="11" Margin="5,0" Content="MERGED"  Click="MERGED_Click"  />
+                <Button x:Name="HTTP" Grid.Column="11" Margin="5,0" Content="HTTP"  Click="HTTP_Click"  />
+                <Button x:Name="MERGED" Grid.Column="12" Margin="5,0" Content="MERGED"  Click="MERGED_Click"  />
                 <Button Grid.Row="1"  Margin="0,3" Content="Build" Click="Button_Click" />
                 <Button Grid.Row="2"  Margin="0,3" Content="Run" Click="Button_Click_1" />
                 <Button Grid.Row="3"  Margin="0,3" Content="Init" Click="Button_Click_2" />
@@ -109,7 +109,8 @@
                 <CheckBox x:Name="Build_IEC608" Grid.Column="8" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_ACER" Grid.Column="9" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_KAFKA" Grid.Column="10" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
-                <CheckBox x:Name="Build_MERGED" Grid.Column="11" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_HTTP" Grid.Column="11" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Build_MERGED" Grid.Column="12" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_DG" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_MR" Grid.Column="2" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_FTP" Grid.Column="3" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
@@ -120,7 +121,8 @@
                 <CheckBox x:Name="Run_IEC608" Grid.Column="8" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_ACER" Grid.Column="9" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Run_KAFKA" Grid.Column="10" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
-                <CheckBox x:Name="Run_MERGED" Grid.Column="11" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_HTTP" Grid.Column="11" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <CheckBox x:Name="Run_MERGED" Grid.Column="12" Grid.Row="2" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Init_DG" Grid.Column="1" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center"  />
                 <CheckBox x:Name="Init_MR" Grid.Column="2" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_FTP" Grid.Column="3" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
@@ -131,7 +133,8 @@
                 <CheckBox x:Name="Init_IEC608" Grid.Column="8" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_ACER" Grid.Column="9" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Init_KAFKA" Grid.Column="10" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
-                <CheckBox x:Name="Init_MERGED" Grid.Column="11" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="MergedInit_Checked" Unchecked="MergedInit_Checked" />
+                <CheckBox x:Name="Init_HTTP" Grid.Column="11" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+                <CheckBox x:Name="Init_MERGED" Grid.Column="12" Grid.Row="3" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="MergedInit_Checked" Unchecked="MergedInit_Checked" />
                 <CheckBox x:Name="Test_DG" Grid.Column="1" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_MR" Grid.Column="2" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_FTP" Grid.Column="3" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
@@ -142,6 +145,7 @@
                 <CheckBox x:Name="Test_IEC608" Grid.Column="8" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_ACER" Grid.Column="9" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
                 <CheckBox x:Name="Test_KAFKA" Grid.Column="10" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
+                <CheckBox x:Name="Test_HTTP" Grid.Column="11" Grid.Row="4" VerticalContentAlignment="Center"  HorizontalAlignment="Center" />
             </Grid>
             <Grid Margin="0,10,0,0" x:Name="AdditionalTestsContainer">
                 <TextBlock Width="74" HorizontalAlignment="Left" >Special tests:</TextBlock>

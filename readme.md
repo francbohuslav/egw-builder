@@ -23,6 +23,7 @@ Builder supports this EGW projects, which are hosted in UU Codebase GIT reposito
 - IEC60870 endpoint
 - ACER endpoint
 - KAFKA endpoint
+- HTTP endpoint
 
 Default folder structure:
 
@@ -37,6 +38,7 @@ Default folder structure:
 - `uu_energygateway_iec60870endpointg01` - repository of IEC60870 endpoint
 - `uu_energygateway_acerendpointg01` - repository of ACER endpoint
 - `uu_energygateway_kafkaendpointg01` - repository of KAFKA endpoint
+- `uu_energygateway_httpendpointg01` - repository of HTTP endpoint
 
 Custom folder is supported. Look into `config.default.js` file and follow instructions.
 
@@ -90,6 +92,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -buildIEC60870       - Builds IEC60870 endpoint
     -buildACER           - Builds ACER endpoint
     -buildKAFKA          - Builds KAFKA endpoint
+    -buildHTTP           - Builds HTTP endpoint
     -buildMERGED         - Builds merged application
 
     -run                 - Runs all subApps
@@ -103,6 +106,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -runIEC60870         - Runs IEC60870 endpoint
     -runACER             - Runs ACER endpoint
     -runKAFKA            - Runs KAFKA endpoint
+    -runHTTP             - Runs HTTP endpoint
     -runMERGED           - Runs merged application
 
     -init                - Runs init commands of all apps (creates workspace, sets permissions)
@@ -116,6 +120,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -initIEC60870        - Runs init commands of IEC60870 endpoint
     -initACER            - Runs ACER commands of IEC60870 endpoint
     -initKAFKA           - Runs KAFKA commands of IEC60870 endpoint
+    -initHTTP            - Runs HTTP commands of IEC60870 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
     -uid <your-uid>      - UID of actual user
 
@@ -130,6 +135,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -testIEC60870        - Tests IEC60870 endpoint by jmeter
     -testACER            - Tests ACER endpoint by jmeter
     -testKAFKA           - Tests KAFKA endpoint by jmeter
+    -testHTTP            - Tests HTTP endpoint by jmeter
     -tests <t1>,<t2>,... - Runs special tests (use command -info to detect them)
 
 You will be asked interactively if there is none of options (except folder) used on command line.

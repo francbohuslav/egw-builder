@@ -10,7 +10,7 @@
  */
 
 /**
- * @typedef {"DG" | "MR" | "EMAIL" | "ECP" | "FTP" | "IEC62325" | "AS24" | "IEC60870" | "ACER" | "KAFKA" | "MERGED"} IProjectCode
+ * @typedef {"DG" | "MR" | "EMAIL" | "ECP" | "FTP" | "IEC62325" | "AS24" | "IEC60870" | "ACER" | "KAFKA" | "HTTP" | "MERGED"} IProjectCode
  */
 
 /**
@@ -19,7 +19,7 @@
 
 /**
  * @typedef {Object} IProject Project
- * @property {IProjectCode} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24, IEC60870, ACER, KAFKA
+ * @property {IProjectCode} code one of DG, MR, EMAIL, ECP, FTP, IEC62325, AS24, IEC60870, ACER, KAFKA, HTTP
  * @property {string} folder folder of project e.g. "uu_energygateway_datagatewayg01"
  * @property {string} server folder of server module e.g. "uu_energygateway_datagatewayg01-server"
  * @property {string} [hi] folder of HI module of MR, e.g. "uu_energygateway_messageregistryg01-hi"
