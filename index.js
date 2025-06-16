@@ -200,7 +200,7 @@ const projects = [
     code: "HTTP",
     folder: config.folders.HTTP,
     server: "uu_energygateway_httpendpointg01-server",
-    port: 8102,
+    port: 8103,
     webName: "uu-energygateway-httpendpointg01",
     testFile: "http_endpoint.jmx",
     addProfilesFromLibraries: () => ({
