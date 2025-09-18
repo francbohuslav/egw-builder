@@ -266,6 +266,11 @@ namespace EgwBuilderRunner
             {
                 (FindName("Test_" + project) as CheckBox).IsChecked = on;
             }
+            if (project == "MR")
+            {
+                Build_MR_Npm.IsChecked = on;
+                Build_MR_Gui.IsChecked = on;
+            }
         }
 
         private void ForProject(string project, Action<CheckBox> action)
@@ -314,6 +319,11 @@ namespace EgwBuilderRunner
                     continue;
                 }
                (FindName(operation + "_" + code) as CheckBox).IsChecked = on;
+                if (code == "MR" && operation == "Build")
+                {
+                    Build_MR_Npm.IsChecked = on;
+                    Build_MR_Gui.IsChecked = on;
+                }
             }
         }
 
@@ -370,6 +380,8 @@ namespace EgwBuilderRunner
 
                 BuildDG = Build_DG.IsChecked == true,
                 BuildMR = Build_MR.IsChecked == true,
+                BuildNpm = Build_MR_Npm.IsChecked == true,
+                BuildGui = Build_MR_Gui.IsChecked == true,
                 BuildFTP = Build_FTP.IsChecked == true,
                 BuildEMAIL = Build_EMAIL.IsChecked == true,
                 BuildECP = Build_ECP.IsChecked == true,
@@ -443,6 +455,8 @@ namespace EgwBuilderRunner
 
             Build_DG.IsChecked = structure.BuildDG;
             Build_MR.IsChecked = structure.BuildMR;
+            Build_MR_Npm.IsChecked = structure.BuildNpm;
+            Build_MR_Gui.IsChecked = structure.BuildGui;
             Build_FTP.IsChecked = structure.BuildFTP;
             Build_EMAIL.IsChecked = structure.BuildEMAIL;
             Build_ECP.IsChecked = structure.BuildECP;
@@ -539,6 +553,11 @@ namespace EgwBuilderRunner
             if (Build_MERGED.IsChecked == true || Run_MERGED.IsChecked == true || Init_MERGED.IsChecked == true)
             {
                 IsMerged.IsChecked = true;
+            }
+            if (sender == Build_MR)
+            {
+                Build_MR_Npm.IsChecked = Build_MR.IsChecked;
+                Build_MR_Gui.IsChecked = Build_MR.IsChecked;
             }
         }
 

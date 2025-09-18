@@ -100,7 +100,11 @@
                 <Button Grid.Row="3"  Margin="0,3" Content="Init" Click="Button_Click_2" />
                 <Button Grid.Row="4"  Margin="0,3" Content="Test" Click="Button_Click_3" />
                 <CheckBox x:Name="Build_DG" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
-                <CheckBox x:Name="Build_MR" Grid.Column="2" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
+                <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <CheckBox x:Name="Build_MR" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" ToolTip="Java" />
+                    <CheckBox x:Name="Build_MR_Npm" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" ToolTip="Node modules - not needed if already builded" />
+                    <CheckBox x:Name="Build_MR_Gui" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" ToolTip="GUI components" />
+                </StackPanel>
                 <CheckBox x:Name="Build_FTP" Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_EMAIL" Grid.Column="4" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />
                 <CheckBox x:Name="Build_ECP" Grid.Column="5" Grid.Row="1" VerticalContentAlignment="Center"  HorizontalAlignment="Center" Checked="UpdateAfterChecked" Unchecked="UpdateAfterChecked" />

@@ -235,39 +235,54 @@ function addJDKtoGradle(command, withQuotes = "") {
 }
 
 /**
- * @param {IProject} project
- * @param {boolean} isUnitTests
+ *
+ * @param {CommandLine} cmd
  */
-async function buildProject(project, isUnitTests) {
-  if (await killProject(project)) {
-    console.log("Killed running app");
-  }
-  const buildFronted = true;
+async function buildGui(cmd) {
   let pathPrefix = "";
-  if (buildFronted && project.code === "MR") {
-    if (fs.existsSync(project.folder + "/" + MR.gui)) {
-      const nodeJsFolder = await nodeJs.detectAndDownload(project.folder + "/" + MR.gui);
-      pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
-      await core.inLocationAsync(project.folder + "/" + MR.uu5lib, async () => {
+  if (fs.existsSync(MR.folder + "/" + MR.gui)) {
+    const nodeJsFolder = await nodeJs.detectAndDownload(MR.folder + "/" + MR.gui);
+    pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
+
+    if (cmd.buildNpm) {
+      await core.inLocationAsync(MR.folder + "/" + MR.uu5lib, async () => {
         console.log("Install NPM packages for UU5 lib");
         await core.runCommand(`cmd /C${pathPrefix} npm ci`);
       });
-      await core.inLocationAsync(project.folder + "/" + MR.gui, async () => {
+    }
+
+    await core.inLocationAsync(MR.folder + "/" + MR.gui, async () => {
+      if (cmd.buildNpm) {
         // Build of GUI is not necessary for node 18
-        if (fs.existsSync(project.folder + "/" + MR.gui + "/package-lock.json")) {
+        if (fs.existsSync(MR.folder + "/" + MR.gui + "/package-lock.json")) {
           console.log("Install NPM packages for GUI components");
           await core.runCommand(`cmd /C${pathPrefix} npm ci`);
         }
+      }
+      if (cmd.buildGui) {
         console.log("Build GUI components");
         await core.runCommand(`cmd /C${pathPrefix} npm run build`);
-      });
-    }
+      }
+    });
+  }
+  if (cmd.buildNpm) {
     console.log("Install NPM packages for HI");
-    await core.inLocationAsync(project.folder + "/" + MR.hi, async () => {
+    await core.inLocationAsync(MR.folder + "/" + MR.hi, async () => {
       await core.runCommand(`cmd /C${pathPrefix} npm ci`);
     });
   }
+}
 
+/**
+ * @param {IProject} project
+ * @param {CommandLine} cmd
+ */
+async function buildProject(project, cmd) {
+  if (await killProject(project)) {
+    console.log("Killed running app");
+  }
+  const nodeJsFolder = await nodeJs.detectAndDownload(MR.folder + "/" + MR.gui);
+  const pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
@@ -279,10 +294,10 @@ async function buildProject(project, isUnitTests) {
 
   await core.inLocationAsync(project.folder, async () => {
     let args = `/C${pathPrefix} gradlew clean build compileTestJava`;
-    if (!isUnitTests) {
+    if (!cmd.unitTests) {
       args += " -x test";
     }
-    if (!buildFronted && project.code === "MR") {
+    if (project.code === "MR" && !cmd.buildNpm && !cmd.buildGui) {
       args += " -Pno-build-client";
     }
     await core.runCommand("cmd", addJDKtoGradle(args.split(" ")));
@@ -779,7 +794,10 @@ async function run() {
       console.log("");
       console.log("  -build               - Builds all apps by gradle");
       console.log("  -buildDG             - Builds Datagateway");
-      console.log("  -buildMR             - Builds Message Registry");
+      console.log("  -buildMRAll          - Builds Message Registry backend and frontend");
+      console.log("  -buildMR             - Builds Message Registry backend");
+      console.log("  -buildNpm            - Install node modules");
+      console.log("  -buildGui            - Builds GUI components");
       console.log("  -buildFTP            - Builds FTP endpoint");
       console.log("  -buildEMAIL          - Builds E-mail endpoint");
       console.log("  -buildECP            - Builds ECP endpoint");
@@ -944,6 +962,8 @@ async function run() {
       ? cmd.getCmdValue("build", "Build app?")
       : cmd.buildDG ||
         cmd.buildMR ||
+        cmd.buildNpm ||
+        cmd.buildGui ||
         cmd.buildFTP ||
         cmd.buildEMAIL ||
         cmd.buildECP ||
@@ -1144,12 +1164,15 @@ async function run() {
     if (isBuild) {
       core.showMessage("Building apps...");
       for (const project of projects) {
+        if (project === MR && (cmd.buildNpm || cmd.buildGui)) {
+          await buildGui(cmd);
+        }
         if (isBuildPerProject[project.code]) {
           if (project.code == IEC62325.code) {
             cloneDataGatewayForIec(DGversion);
           }
           core.showMessage(`Building ${project.code} ...`);
-          await buildProject(project, cmd.unitTests);
+          await buildProject(project, cmd);
           core.showMessage(`${project.code} - build ok`);
         }
       }

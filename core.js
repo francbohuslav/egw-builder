@@ -117,6 +117,8 @@ class Core {
       if (this.debugCommands) {
         this.showCommand(`${process.cwd()}> ${command} ${argArray.join(" ")}`);
       }
+      // resolve({ stdErr: "", stdOut: "" });
+      // return;
       const context = spawn(command, argArray, spawnOptions);
       context.stdout.on("data", (data) => {
         stdOut += data.toString();

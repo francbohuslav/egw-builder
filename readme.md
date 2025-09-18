@@ -83,7 +83,10 @@ Run command `node index`. It is recommended to create bat files for repeated tas
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway
-    -buildMR             - Builds Message Registry
+    -buildMRAll          - Builds Message Registry backend and frontend
+    -buildMR             - Builds Message Registry backend
+    -buildNpm            - Install node modules
+    -buildGui            - Builds GUI components
     -buildFTP            - Builds FTP endpoint
     -buildEMAIL          - Builds E-mail endpoint
     -buildECP            - Builds ECP endpoint

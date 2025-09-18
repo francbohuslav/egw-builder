@@ -65,6 +65,8 @@ class CommandLine {
       if (ar == "-build") {
         this.buildDG = true;
         this.buildMR = true;
+        this.buildNpm = true;
+        this.buildGui = true;
         this.buildFTP = true;
         this.buildEMAIL = true;
         this.buildECP = true;
@@ -83,8 +85,25 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
+      if (ar == "-buildmrall") {
+        this.buildMR = true;
+        this.buildNpm = true;
+        this.buildGui = true;
+        this.interactively = false;
+        continue;
+      }
       if (ar == "-buildmr") {
         this.buildMR = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar == "-buildnpm") {
+        this.buildNpm = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar == "-buildgui") {
+        this.buildGui = true;
         this.interactively = false;
         continue;
       }

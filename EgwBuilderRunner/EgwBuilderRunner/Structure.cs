@@ -31,6 +31,12 @@ namespace EgwBuilderRunner
         [JsonProperty("buildMR")]
         public bool BuildMR { get; set; }
 
+        [JsonProperty("buildNpm")]
+        public bool BuildNpm { get; set; }
+
+        [JsonProperty("buildGui")]
+        public bool BuildGui { get; set; }
+
         [JsonProperty("buildFTP")]
         public bool BuildFTP { get; set; }
 
