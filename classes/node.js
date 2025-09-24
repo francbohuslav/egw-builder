@@ -8,6 +8,10 @@ const core = require("../core");
 const pipeline = util.promisify(stream.pipeline);
 
 class NodeJs {
+  constructor() {
+    this.npm_ci = "npx uu-safe-clean-install";
+  }
+
   /**
    * @param {string} guiFolder
    * @returns {Promise<string>} path to Node.js folder

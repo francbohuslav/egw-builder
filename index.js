@@ -21,6 +21,7 @@ const jmeter = require("./classes/jmeter");
 const nodeJs = require("./classes/node");
 const help = require("./classes/help");
 const { assertAndReturn } = require("./classes/utils");
+const node = require("./classes/node");
 
 if (fs.existsSync("./config.js")) {
   // @ts-ignore
@@ -247,7 +248,7 @@ async function buildGui(cmd) {
     if (cmd.buildNpm) {
       await core.inLocationAsync(MR.folder + "/" + MR.uu5lib, async () => {
         console.log("Install NPM packages for UU5 lib");
-        await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+        await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
       });
     }
 
@@ -256,7 +257,7 @@ async function buildGui(cmd) {
         // Build of GUI is not necessary for node 18
         if (fs.existsSync(MR.folder + "/" + MR.gui + "/package-lock.json")) {
           console.log("Install NPM packages for GUI components");
-          await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+          await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
         }
       }
       if (cmd.buildGui) {
@@ -268,7 +269,7 @@ async function buildGui(cmd) {
   if (cmd.buildNpm) {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(MR.folder + "/" + MR.hi, async () => {
-      await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+      await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
     });
   }
 }
@@ -286,7 +287,7 @@ async function buildProject(project, cmd) {
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
     await core.inLocationAsync(project.folder + "/" + MERGED.hi, async () => {
-      await core.runCommand(`cmd /C${pathPrefix} npm ci`);
+      await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
       console.log("Build HI");
       await core.runCommand(`cmd /C${pathPrefix} npm run build`);
     });
