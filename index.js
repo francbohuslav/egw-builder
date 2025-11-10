@@ -647,6 +647,7 @@ async function runProjectTests(projectOrString, isVersion11, serverFolder, serve
     }
     params.push("-Jftp_data_dir=" + getFtpDataDir());
     params.push(`-Jproject_FTP=${cmd.folder}/${FTP.folder}`);
+    params.push(`-Jecp_data_dir=${cmd.folder}/${ECP.folder}/docker/egw-tests/ecp2`);
     if (serverFolder) {
       params.push("-Jinsomnia_dir=" + serverFolder + "/src/test/insomnia");
       params.push("-Jserver_dir=" + serverFolder);
