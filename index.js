@@ -1331,8 +1331,15 @@ async function run() {
           }
         }
       }
-
-      results.printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate);
+      results.printReport(
+        MR,
+        newPassed,
+        newFailed,
+        knownFailed,
+        allPassed,
+        startedDate,
+        projectList.filter((p) => p !== null)
+      );
     }
 
     core.showMessage("DONE");

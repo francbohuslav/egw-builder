@@ -38,7 +38,17 @@ class Results {
     tests.showFailedSteps(failed, true);
   }
 
-  printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate) {
+  /**
+   *
+   * @param {IProject} MR
+   * @param {Record<string, ITestResultInfo[]>} newPassed
+   * @param {Record<string, ITestResultInfo[]>} newFailed
+   * @param {Record<string, ITestResultInfo[]>} knownFailed
+   * @param {Record<string, ITestResultInfo[]>} allPassed
+   * @param {Date} startedDate
+   * @param {(IProject | string)[]} projectList
+   */
+  printReport(MR, newPassed, newFailed, knownFailed, allPassed, startedDate, projectList) {
     core.writeTextFile(
       `${MR.folder}/${MR.server}/src/test/jmeter/logs/testResults.json`,
       JSON.stringify(
@@ -51,6 +61,8 @@ class Results {
         2
       )
     );
+
+    const jmxLastModifiedDates = tests.getJmxLastModifiedDates(projectList, `${MR.folder}/${MR.server}/src/test/jmeter/`);
 
     core.showMessage("\n\n======== TESTS SUMMARY =======");
     const now = new Date();
@@ -88,7 +100,7 @@ class Results {
     }
     core.showSuccess(`Passed: ${Object.values(allPassed).reduce((p, c) => p + c.length, 0)}`);
     Object.entries(allPassed).forEach(([key, passed]) => {
-      core.showSuccess(` - ${key}: ${passed.length}`);
+      core.showSuccess(` - ${key}: ${passed.length}`.padEnd(30) + jmxLastModifiedDates[key]?.toLocaleString());
     });
     core.showWarning(`Failed and fix in progress: ${Object.values(knownFailed).reduce((p, c) => p + c.length, 0)}`);
     const failedCount = Object.values(newFailed).reduce((p, c) => p + c.length, 0);

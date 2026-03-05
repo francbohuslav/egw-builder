@@ -1,0 +1,2 @@
+node index -last
+pause

@@ -1,4 +1,6 @@
 const core = require("../core");
+const fs = require("fs");
+const path = require("path");
 
 class Tests {
   showFailedTests(newPassed, newFailed) {
@@ -44,6 +46,35 @@ class Tests {
         );
       }
     }
+  }
+
+  /**
+   * Returns a map of project code to last modification Date of the project's JMX file.
+   * Only projects with existing testFile and existing file on disk are included.
+   * When an item is a string instead of IProject, it is used as the key and the filename is that string + ".jmx".
+   *
+   * @param {(IProject | string)[]} projects
+   * @param {string} baseDir directory where JMX files are located
+   * @returns {Record<string, Date>}
+   */
+  getJmxLastModifiedDates(projects, baseDir) {
+    /** @type {Record<string, Date>} */
+    const result = {};
+    for (const item of projects) {
+      const isString = typeof item === "string";
+      const code = isString ? item : item.code;
+      const fileName = `testResults${code}.xml`;
+      if (!fileName) {
+        continue;
+      }
+      const filePath = path.join(baseDir, "logs", fileName);
+      if (!fs.existsSync(filePath)) {
+        continue;
+      }
+      const stat = fs.statSync(filePath);
+      result[code] = stat.mtime;
+    }
+    return result;
   }
 
   /**
