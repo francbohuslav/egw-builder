@@ -337,13 +337,13 @@ function getProjectVersion(project) {
     if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-1.0.json")) {
       versions["metamodel-1.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-1.0.json")).version.replace(
         "-beta",
-        "-SNAPSHOT"
+        "-SNAPSHOT",
       );
     }
     if (fs.existsSync(project.server + "/src/main/resources/config/metamodel-2.0.json")) {
       versions["metamodel-2.0.json"] = JSON.parse(core.readTextFile(project.server + "/src/main/resources/config/metamodel-2.0.json")).version.replace(
         "-beta",
-        "-SNAPSHOT"
+        "-SNAPSHOT",
       );
     }
     if (fs.existsSync(MR.hi + "/package.json")) {
@@ -515,7 +515,7 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
     getJmeterBat(),
     `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile + (isMergedVersion ? "_merged" : "")}.cfg`,
     undefined,
-    { shell: true }
+    { shell: true },
   );
   if (stdOut.match(/Err:\s+[1-9]/g)) {
     results.printInitReport(resultsFile);
@@ -542,7 +542,7 @@ async function killProject(project) {
   const res = await core.runCommand(
     "wmic",
     ["process", "where", "Name='java.exe' or Name='cmd.exe' or Name='conhost.exe'", "Get", "ProcessId,ParentProcessId"],
-    { disableStdOut: true }
+    { disableStdOut: true },
   );
   const lines = res.stdOut.split(/[\r\n]+/);
   const colNames = lines[0].trim().split(/\s+/);
@@ -619,7 +619,7 @@ function getFtpDataDir() {
  * @param {CommandLine} cmd
  * @returns {Promise<IProjectTestResult | null>}
  */
-async function runProjectTests(projectOrString, isVersion11, serverFolder, serverFolderDG, serverFolderFTP, isMergedVersion, cmd) {
+async function runProjectTests(projectOrString, isVersion11, serverFolder, serverFolderDG, serverFolderFTP, serverFolderEMAIL, isMergedVersion, cmd) {
   await jmeter.downloadIfMissing();
   /** @type {string} */
   const projectCode = typeof projectOrString === "string" ? projectOrString : projectOrString.code;
@@ -645,6 +645,7 @@ async function runProjectTests(projectOrString, isVersion11, serverFolder, serve
       const projectDir = path.resolve(process.cwd() + "/../../../../../" + project.folder);
       params.push("-Jproject_dir=" + projectDir);
     }
+    params.push("-Juid=" + cmd.uid);
     params.push("-Jftp_data_dir=" + getFtpDataDir());
     params.push(`-Jproject_FTP=${cmd.folder}/${FTP.folder}`);
     params.push(`-Jecp_data_dir=${cmd.folder}/${ECP.folder}/docker/egw-tests/ecp2`);
@@ -660,10 +661,17 @@ async function runProjectTests(projectOrString, isVersion11, serverFolder, serve
       params.push("-Jinsomnia_dir_FTP=" + serverFolderFTP + "/src/test/insomnia");
       params.push("-Jserver_dir_FTP=" + serverFolderFTP);
     }
+    if (serverFolderEMAIL) {
+      params.push("-Jinsomnia_dir_EMAIL=" + serverFolderEMAIL + "/src/test/insomnia");
+      params.push("-Jserver_dir_EMAIL=" + serverFolderEMAIL);
+    }
     if (isVersion11 && project == EMAIL) {
       params.push("-Jsmtp_host=smtp");
       params.push("-Jsmtp_port=80");
     }
+
+    jmeter.validateRequiredProperties(assertAndReturn(testFile), params);
+
     await core.runCommand(getJmeterBat(), params, undefined, { shell: true });
   }
   if (fs.existsSync(resultsFile)) {
@@ -705,7 +713,7 @@ function cloneDataGatewayForIec(DGversion) {
       }
       core.showError(
         `File ${IEC62325.folder}/settings.gradle leads to original DG folder. Copy of DG for IEC62325 will not be not created.\n` +
-          `Modify path to DG in ${IEC62325.folder}/settings.gradle and builder creates copy of DG for you. Condition to copy of DG must be before original DG folder.`
+          `Modify path to DG in ${IEC62325.folder}/settings.gradle and builder creates copy of DG for you. Condition to copy of DG must be before original DG folder.`,
       );
       return;
     }
@@ -755,7 +763,7 @@ async function runApp(project, cmd) {
     const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
       folder,
       "logs",
-      project.code + ".log"
+      project.code + ".log",
     )} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
     core.runCommandNoWait(command);
   });
@@ -1304,8 +1312,9 @@ async function run() {
                 isProjectTest ? `${cmd.folder}/${project.folder}/${project.server}` : null,
                 `${cmd.folder}/${DG.folder}/${DG.server}`,
                 `${cmd.folder}/${FTP.folder}/${FTP.server}`,
+                `${cmd.folder}/${EMAIL.folder}/${EMAIL.server}`,
                 isMergedVersion,
-                cmd
+                cmd,
               );
             });
           }
@@ -1338,7 +1347,7 @@ async function run() {
         knownFailed,
         allPassed,
         startedDate,
-        projectList.filter((p) => p !== null)
+        projectList.filter((p) => p !== null),
       );
     }
 
