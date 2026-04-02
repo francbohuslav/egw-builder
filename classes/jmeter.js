@@ -27,51 +27,62 @@ class JMeter {
   }
 
   /**
-   * Validate that all __P(name,...) properties used in JMX are provided via params as -Jname=value arguments.
+   * Reads property names from `__P(...)` in the JMX; every name except `ignoredProperties` must be passed as `-Jname=value`.
+   * Surplus `-J...` entries that do not match any name from the JMX are removed from `params`.
    *
    * @param {string} testFile
-   * @param {string[]} params
+   * @param {string[]} params mutated in place
    */
   validateRequiredProperties(testFile, params) {
+    /** Property names that may appear in JMX `__P(...)` but need not be passed as `-J` (defaults in JMX are enough). */
     const ignoredProperties = new Set(["big_file_size_kb", "enableAsyncJob"]);
 
     if (!existsSync(testFile)) {
       throw new Error(`JMeter test file "${testFile}" does not exist, can not validate required __P(...) parameters.`);
     }
 
+    const jmx = readFileSync(testFile, { encoding: "utf-8" }).toString();
     /** @type {Set<string>} */
-    const providedPropertyNames = new Set();
+    const referencedInJmx = new Set();
+    for (const match of jmx.matchAll(/__P\(\s*([^,)\s]+)\s*(?:,|\))/g)) {
+      if (match[1]) {
+        referencedInJmx.add(match[1]);
+      }
+    }
+
+    /** @type {Set<string>} */
+    const provided = new Set();
     for (const param of params) {
-      const match = param.match(/^-J([^=\s]+)=/);
-      if (match && match[1]) {
-        providedPropertyNames.add(match[1]);
+      const m = param.match(/^-J([^=\s]+)=/);
+      if (m && m[1]) {
+        provided.add(m[1]);
       }
     }
 
-    const testFileContent = readFileSync(testFile, { encoding: "utf-8" }).toString();
-    /** @type {Set<string>} */
-    const requiredProperties = new Set();
-    for (const match of testFileContent.matchAll(/__P\(\s*([^,)\s]+)\s*(?:,|\))/g)) {
-      if (match[1] && !ignoredProperties.has(match[1])) {
-        requiredProperties.add(match[1]);
+    /** @type {string[]} */
+    const missing = [];
+    for (const name of referencedInJmx) {
+      if (!ignoredProperties.has(name) && !provided.has(name)) {
+        missing.push(name);
       }
     }
-
-    const missingProperties = [];
-    for (const requiredProperty of requiredProperties) {
-      if (!providedPropertyNames.has(requiredProperty)) {
-        missingProperties.push(requiredProperty);
-      }
-    }
-    if (missingProperties.length > 0) {
-      missingProperties.sort();
-      console.log("Provided properties: " + Array.from(providedPropertyNames).join(", "));
-      console.log("Required properties: " + Array.from(requiredProperties).join(", "));
+    if (missing.length > 0) {
+      missing.sort();
       throw new Error(
-        `Missing JMeter properties for ${testFile}: ${missingProperties.join(", ")}. ` +
-          `Required properties are taken from __P(...) occurrences in the JMX file and must be passed via -Jname=value.`,
+        `Missing JMeter properties for ${testFile}: ${missing.join(", ")}. ` + `Pass them as -Jname=value (names come from __P(...) in the JMX).`,
       );
     }
+
+    /** @type {string[]} */
+    const kept = [];
+    for (const param of params) {
+      const m = param.match(/^-J([^=\s]+)=/);
+      if (m && m[1] && !referencedInJmx.has(m[1])) {
+        continue;
+      }
+      kept.push(param);
+    }
+    params.splice(0, params.length, ...kept);
   }
 }
 
