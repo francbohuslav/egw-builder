@@ -22,6 +22,7 @@ const nodeJs = require("./classes/node");
 const help = require("./classes/help");
 const { assertAndReturn } = require("./classes/utils");
 const node = require("./classes/node");
+const fileStructure = require("./classes/fileStructure");
 
 if (fs.existsSync("./config.js")) {
   // @ts-ignore
@@ -615,6 +616,7 @@ function getFtpDataDir() {
  * @param {string | null} serverFolder
  * @param {string} serverFolderDG
  * @param {string} serverFolderFTP
+ * @param {string} serverFolderEMAIL
  * @param {boolean} isMergedVersion
  * @param {CommandLine} cmd
  * @returns {Promise<IProjectTestResult | null>}
@@ -886,6 +888,8 @@ async function run() {
     if (isVersion11 && cmd.enableConsole) {
       core.showMessage("This is 1.1.* version, apps will be restarted after init.");
     }
+
+    fileStructure.fixG01LocationInPaths(projects);
 
     const runnableProjects = [DG, MR, FTP, EMAIL, ECP];
     if (fs.existsSync(IEC62325.folder)) {
