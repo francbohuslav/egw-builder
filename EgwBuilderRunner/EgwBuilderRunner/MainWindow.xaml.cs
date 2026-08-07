@@ -334,6 +334,7 @@ namespace EgwBuilderRunner
             IsMerged.IsChecked = false;
             Setversion.Text = "";
             MessageBroker.Text = MyApp.Runner.Info != null ? MyApp.Runner.Info.MessageBroker : "";
+            PayloadPersistenceStrategy.SelectedIndex = 0;
             SetOperation("Build", false);
             SetOperation("Run", false);
             SetOperation("Init", false);
@@ -369,6 +370,7 @@ namespace EgwBuilderRunner
                 Folder = MyApp.EgwFolder,
                 Version = Setversion.Text,
                 MessageBroker = MessageBroker.Text,
+                PayloadPersistenceStrategy = PayloadPersistenceStrategy.Text,
                 Clear = ClearDocker.IsChecked == true,
                 Metamodel = Metamodel.IsChecked == true,
                 IsMerged = IsMerged.IsChecked == true,
@@ -440,6 +442,7 @@ namespace EgwBuilderRunner
             UpdateStatusBar();
             Setversion.Text = structure.Version;
             MessageBroker.Text = structure.MessageBroker;
+            PayloadPersistenceStrategy.Text = structure.PayloadPersistenceStrategy;
             if (MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable)
             {
                 Environment.SelectedItem = EnvironmentHelper.FileToLabel(structure.EnvironmentFile) ?? EnvironmentHelper.DefaultEnvironmentFile;
@@ -591,6 +594,11 @@ namespace EgwBuilderRunner
         {
             MessageBrokerLabel.Foreground = SystemColors.ActiveCaptionTextBrush;
             MessageBrokerLabel.ToolTip = null;
+        }
+
+        private void PayloadPersistenceStrategy_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PayloadPersistenceStrategyLabel.Foreground = PayloadPersistenceStrategy.SelectedIndex == 0 ? SystemColors.ActiveCaptionTextBrush : new SolidColorBrush(Colors.Red);
         }
     }
 

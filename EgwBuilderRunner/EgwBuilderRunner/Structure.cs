@@ -195,5 +195,8 @@ namespace EgwBuilderRunner
 
         [JsonProperty("environmentFile")]
         public string EnvironmentFile { get; set; }
+
+        [JsonProperty("payloadPersistenceStrategy")]
+        public string PayloadPersistenceStrategy { get; set; }
     }
 }

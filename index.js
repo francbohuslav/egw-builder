@@ -567,8 +567,8 @@ async function killProject(project) {
 
 async function stopComposer() {
   try {
-    await core.runCommand("docker compose kill");
-    await core.runCommand("docker compose down");
+    await core.runCommand(`docker compose --profile S3 --profile Azure --profile BSg02 kill`);
+    await core.runCommand(`docker compose --profile S3 --profile Azure --profile BSg02 down`);
   } catch (e) {
     // Errors ignored
   }
@@ -762,11 +762,16 @@ async function runApp(project, cmd) {
   });
   const subAppJavaInfo = java.getSubAppJavaInfo(project);
   core.inLocation(path.join(project.folder, project.server), () => {
-    const command = `start "${project.code}" /MIN ${builderDir}\\coloredGradle ${builderDir} ${project.code} ${path.join(
-      folder,
-      "logs",
-      project.code + ".log",
-    )} ${subAppJavaInfo.mainClassName} ${JDK || "default"} -Xmx${subAppJavaInfo.maxMemory}`;
+    const logFile = path.join(folder, "logs", `${project.code}.log`);
+    const command =
+      `start "${project.code}" /MIN ${builderDir}\\coloredGradle` +
+      ` ${builderDir}` +
+      ` ${project.code}` +
+      ` ${logFile}` +
+      ` ${subAppJavaInfo.mainClassName}` +
+      ` ${JDK || "default"}` +
+      ` -Xmx${subAppJavaInfo.maxMemory}` +
+      (cmd.payloadPersistenceStrategy && cmd.payloadPersistenceStrategy !== "BSg01" ? ` "-DpayloadPersistenceStrategy=${cmd.payloadPersistenceStrategy}"` : "");
     core.runCommandNoWait(command);
   });
 }
@@ -803,6 +808,7 @@ async function run() {
       console.log("  -runInSequence       - SubApps are started gradually.");
       console.log("  -isMerged            - Merged application will be used for inits, tests, etc.");
       console.log("  -environmentFile <f> - Environment file <f> will be used. Default: env_localhost_builder");
+      console.log("  -payloadPersistenceStrategy <s> - Sets payload persistence strategy.");
       console.log("");
       console.log("  -build               - Builds all apps by gradle");
       console.log("  -buildDG             - Builds Datagateway");
@@ -1151,7 +1157,7 @@ async function run() {
             }
           });
           await core.inLocationAsync(`${project.folder}/docker/egw-tests`, async () => {
-            await core.runCommand("docker compose up -d");
+            await core.runCommand(`docker compose --profile ${cmd.payloadPersistenceStrategy || "BSg01"} up -d`);
           });
         }
       }
@@ -1233,33 +1239,6 @@ async function run() {
           await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter`, async () => {
             await runInitCommands(project, cmd, `${cmd.folder}/${project.folder}/${project.server}`, isMergedVersion);
           });
-        }
-      }
-      if (isVersion11) {
-        core.showMessage("Killing apps...");
-        const killedApps = [];
-        for (const project of [FTP, EMAIL, ECP]) {
-          if (isInitPerProject[project.code]) {
-            core.showMessage(`Killing ${project.code}`);
-            if (await killProject(project)) {
-              killedApps.push(project);
-            }
-          }
-        }
-        if (killedApps.length) {
-          core.showMessage("Starting killed apps again...");
-          for (const project of killedApps) {
-            core.showMessage(`Starting ${project.code}`);
-            core.inLocation(project.folder, () => {
-              let command = `start "${project.code}" /MIN gradlew start`;
-              // If build or run is present, unit tests are executed by it
-              if (!cmd.unitTests || isBuild || isRun) {
-                command += " -x test";
-              }
-              core.runCommandNoWait(command);
-            });
-            await core.delay(1000);
-          }
         }
       }
     }

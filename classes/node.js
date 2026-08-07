@@ -9,7 +9,7 @@ const pipeline = util.promisify(stream.pipeline);
 
 class NodeJs {
   constructor() {
-    this.npm_ci = "npx uu-safe-clean-install";
+    this.npm_ci = "npm ci";
   }
 
   /**

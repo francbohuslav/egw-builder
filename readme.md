@@ -80,6 +80,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -runInSequence       - SubApps are started gradually.
     -isMerged            - Merged application will be used for inits, tests, etc.
     -environmentFile <f> - Environment file <f> will be used. Default: env_localhost_builder
+    -payloadPersistenceStrategy <s> - Sets payload persistence strategy.
 
     -build               - Builds all apps by gradle
     -buildDG             - Builds Datagateway

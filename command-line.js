@@ -57,7 +57,11 @@ class CommandLine {
         this.environmentFile = pars.shift();
         continue;
       }
-      if (ar == "-clear") {
+      if (ar === "-payloadpersistencestrategy") {
+        this.payloadPersistenceStrategy = pars.shift();
+        continue;
+      }
+      if (ar === "-clear") {
         this.clear = true;
         this.interactively = false;
         continue;
