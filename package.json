@@ -11,7 +11,7 @@
     "last": "node ./index.js -last",
     "info": "node ./index.js -folder ../v6_X -info",
     "custom6x": "node ./index.js -folder ../v6_X -uid 12-8835-1 -getversions",
-    "custom64": "node ./index.js -folder ../v6_4 -uid 12-8835-1 -runDG",
+    "custom64": "node ./index.js -folder ../v6_4 -uid 3167-3373-3998-0000 -clear -runDG -initBSg02 -payloadPersistenceStrategy BSg02",
     "buildmr": "node ./index.js -folder ../v6_X -uid 12-8835-1 -buildMRAll"
   },
   "author": "Bohuslav Franc",

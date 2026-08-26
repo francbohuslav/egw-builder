@@ -126,6 +126,7 @@ Run command `node index`. It is recommended to create bat files for repeated tas
     -initKAFKA           - Runs KAFKA commands of IEC60870 endpoint
     -initHTTP            - Runs HTTP commands of IEC60870 endpoint
     -initASYNC           - Runs init commands of AsyncJob server
+    -initBSg02           - Runs init commands of BSg02
     -uid <your-uid>      - UID of actual user
 
     -test                - Tests all subApps by jmeter

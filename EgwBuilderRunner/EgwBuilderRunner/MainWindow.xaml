@@ -113,7 +113,10 @@
 
             <DockPanel Margin="0,15,0,0" VerticalAlignment="Top">
                 <CheckBox x:Name="IsMerged" Content="Run as merged app" DockPanel.Dock="Right" />
-                <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" />
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="AsyncJob" Content="Init AsyncJob" />
+                    <CheckBox x:Name="BSg02" Content="Init BSg02" Margin="20,0,0,0" Checked="BSg02_Checked" />
+                </StackPanel>
             </DockPanel>
             <Grid Height="140" Margin="0,10,0,0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>

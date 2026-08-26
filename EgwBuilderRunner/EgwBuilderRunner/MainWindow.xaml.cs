@@ -340,6 +340,7 @@ namespace EgwBuilderRunner
             SetOperation("Init", false);
             SetOperation("Test", false);
             AsyncJob.IsChecked = false;
+            BSg02.IsChecked = false;
             additionalTestModels.ForEach(a => a.IsChecked = false);
             UpdateAfterChecked(null, null);
         }
@@ -377,6 +378,7 @@ namespace EgwBuilderRunner
                 UnitTests = UnitTests.IsChecked == true,
                 Uid = YourUID.Text,
                 InitASYNC = AsyncJob.IsChecked == true,
+                InitBSg02 = BSg02.IsChecked == true,
                 RunInSequence = RunInSequence.IsChecked == true,
                 EnvironmentFile = MyApp.Runner.Info != null && MyApp.Runner.Info.IsEnvironmentsShowable ? EnvironmentHelper.LabelToFile(Environment.SelectedItem?.ToString()) : EnvironmentHelper.DefaultEnvironmentFile,
 
@@ -454,6 +456,7 @@ namespace EgwBuilderRunner
             YourUID.Text = structure.Uid;
             YourUID_LostFocus(null, null);
             AsyncJob.IsChecked = structure.InitASYNC;
+            BSg02.IsChecked = structure.InitBSg02;
             RunInSequence.IsChecked = structure.RunInSequence;
 
             Build_DG.IsChecked = structure.BuildDG;
@@ -599,6 +602,15 @@ namespace EgwBuilderRunner
         private void PayloadPersistenceStrategy_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             PayloadPersistenceStrategyLabel.Foreground = PayloadPersistenceStrategy.SelectedIndex == 0 ? SystemColors.ActiveCaptionTextBrush : new SolidColorBrush(Colors.Red);
+            // During init BSg01 is not ready
+            if (BSg02 != null) { 
+                BSg02.IsChecked = PayloadPersistenceStrategy.SelectedIndex == 1;
+            }
+        }
+
+        private void BSg02_Checked(object sender, RoutedEventArgs e)
+        {
+            PayloadPersistenceStrategy.SelectedIndex = 1;
         }
     }
 

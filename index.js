@@ -525,6 +525,30 @@ async function runInitCommandsAsyncJob(isMergedVersion, cmd) {
 }
 
 /**
+ * @param {boolean} isMergedVersion
+ * @param {CommandLine} cmd
+ */
+async function runInitCommandsBSg02(isMergedVersion, cmd) {
+  await jmeter.downloadIfMissing();
+
+  const initFile = "inits/init_BS.jmx";
+  const resultsFile = "logs/initResultsBS.xml";
+  const logFile = "logs/initLogsBS.log";
+  fs.existsSync(resultsFile) && fs.unlinkSync(resultsFile);
+  fs.existsSync(logFile) && fs.unlinkSync(logFile);
+  const { stdOut } = await core.runCommand(
+    getJmeterBat(),
+    `-n -t ${initFile} -j ${logFile} -Jenv=${cmd.environmentFile + (isMergedVersion ? "_merged" : "")}.cfg`,
+    undefined,
+    { shell: true },
+  );
+  if (stdOut.match(/Err:\s+[1-9]/g)) {
+    results.printInitReport(resultsFile);
+    core.showError(`Init commands of BSg02 failed`);
+  }
+}
+
+/**
  * @returns {string}
  */
 function getJmeterBat() {
@@ -854,6 +878,7 @@ async function run() {
       console.log("  -initKAFKA           - Runs init commands of KAFKA endpoint");
       console.log("  -initHTTP            - Runs init commands of HTTP endpoint");
       console.log("  -initASYNC           - Runs init commands of AsyncJob server");
+      console.log("  -initBSg02           - Runs init commands of BSg02");
       console.log("  -uid <your-uid>      - UID of actual user");
       console.log("");
       console.log("  -test                - Tests all subApps by jmeter");
@@ -1048,7 +1073,8 @@ async function run() {
         cmd.initACER ||
         cmd.initKAFKA ||
         cmd.initHTTP ||
-        cmd.initASYNC;
+        cmd.initASYNC ||
+        cmd.initBSg02;
     if (!isRunInit && !cmd.interactively) {
       console.log("Run init app? no");
     }
@@ -1061,6 +1087,7 @@ async function run() {
       isInitPerProject[project.code] = isRunInit && cmd.getCmdValue("init" + project.code, "... " + project.code + "?");
     }
     isInitPerProject.ASYNC = isRunInit && cmd.getCmdValue("initASYNC", "... AsyncJob server?");
+    isInitPerProject.BSg02 = isRunInit && cmd.getCmdValue("initBSg02", "... BSg02?");
 
     if (isRunInit) {
       if (cmd.uid) {
@@ -1081,7 +1108,8 @@ async function run() {
           cmd.initIEC60870 ||
           cmd.initACER ||
           cmd.initKAFKA ||
-          cmd.initHTTP) &&
+          cmd.initHTTP ||
+          cmd.initBSg02) &&
         !cmd.uid
       ) {
         core.showError("UID must be set along with inits");
@@ -1230,6 +1258,13 @@ async function run() {
         core.showMessage("Init AsyncJob");
         await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
           await runInitCommandsAsyncJob(isMergedVersion, cmd);
+        });
+      }
+      if (isInitPerProject.BSg02) {
+        await waitForApp(`http://localhost:10091/`);
+        core.showMessage("Init BSg02");
+        await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/jmeter/`, async () => {
+          await runInitCommandsBSg02(isMergedVersion, cmd);
         });
       }
       for (const project of runnableProjects) {

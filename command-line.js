@@ -277,10 +277,11 @@ class CommandLine {
         this.initKAFKA = true;
         this.initHTTP = true;
         this.initASYNC = true;
+        this.initBSg02 = true;
         this.interactively = false;
         continue;
       }
-      if (ar == "-initdg") {
+      if (ar === "-initdg") {
         this.initDG = true;
         this.interactively = false;
         continue;
@@ -335,12 +336,17 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
-      if (ar == "-initasync") {
+      if (ar === "-initasync") {
         this.initASYNC = true;
         this.interactively = false;
         continue;
       }
-      if (ar == "-uid") {
+      if (ar === "-initbsg02") {
+        this.initBSg02 = true;
+        this.interactively = false;
+        continue;
+      }
+      if (ar === "-uid") {
         this.uid = pars.shift();
         this.interactively = false;
         continue;

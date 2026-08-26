@@ -14,7 +14,7 @@
  */
 
 /**
- * @typedef {IProjectCode | "ASYNC"} IProjectCodeWithAsync
+ * @typedef {IProjectCode | "ASYNC" | "BSg02"} IProjectCodeWithAsync
  */
 
 /**

@@ -151,6 +151,9 @@ namespace EgwBuilderRunner
         [JsonProperty("initASYNC")]
         public bool InitASYNC { get; set; }
 
+        [JsonProperty("initBSg02")]
+        public bool InitBSg02 { get; set; }
+
         [JsonProperty("uid")]
         public string Uid { get; set; }
 
