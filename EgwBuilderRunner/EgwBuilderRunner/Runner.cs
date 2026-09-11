@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 using static EgwBuilderRunner.InfoStructure;
 
 namespace EgwBuilderRunner
@@ -154,6 +155,8 @@ namespace EgwBuilderRunner
     {
         public List<Project> Projects { get; set; }
 
+        public Project Gui { get; set; }
+
         public List<string> AdditionalTests { get; set; }
 
         public List<string> EnvironmentFiles { get; set; }
@@ -173,17 +176,29 @@ namespace EgwBuilderRunner
             {
                 return "not supported";
             }
-            if (validProjects.All(p => p.Branch == validProjects[0].Branch))
+            else
             {
-                var line = "All: " + validProjects[0].Branch.Replace("feature/", "");
-                return line.Substring(0, Math.Min(47, line.Length));
+                var output = "";
+                if (validProjects.All(p => p.Branch == validProjects[0].Branch))
+                {
+                    var line = "All: " + validProjects[0].Branch.Replace("feature/", "");
+                    output = line.Substring(0, Math.Min(47, line.Length));
+                }
+                else
+                {
+                    var codeLength = validProjects.Select(p => p.Code.Length).Max();
+                    output = string.Join("\n", validProjects.Select(p =>
+                    {
+                        var line = p.Code.PadLeft(codeLength, ' ') + ": " + p.Branch.Replace("feature/", "");
+                        return line.Substring(0, Math.Min(47, line.Length));
+                    }));
+                }
+                if (!string.IsNullOrWhiteSpace(Gui?.Branch))
+                {
+                    output += "\nGUI: " + Gui.Branch.Replace("feature/", "");
+                }
+                return output;
             }
-            var codeLength = validProjects.Select(p => p.Code.Length).Max();
-            return string.Join("\n", validProjects.Select(p =>
-            {
-                var line = p.Code.PadLeft(codeLength, ' ') + ": " + p.Branch.Replace("feature/", "");
-                return line.Substring(0, Math.Min(47, line.Length));
-            }));
         }
         public class Project
         {

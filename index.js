@@ -25,7 +25,6 @@ const node = require("./classes/node");
 const fileStructure = require("./classes/fileStructure");
 
 if (fs.existsSync("./config.js")) {
-  // @ts-ignore
   config = require("./config");
 }
 let JDK = "";
@@ -59,8 +58,9 @@ const projects = [
     port: 8093,
     webName: "uu-energygateway-messageregistryg01",
     hi: "uu_energygateway_messageregistryg01-hi",
-    uu5lib: "uu_energygateway_uu5lib",
-    gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
+    //TODO: BF: tyhle adresare se musi detekovat pdole existence folderu GUI v MR adresari, aby GUI folder mohl byt nastaven vzdy
+    uu5lib: path.join(config.folders.GUI ?? config.folders.MR, "uu_energygateway_uu5lib"),
+    gui: path.join(config.folders.GUI ?? config.folders.MR, "uu_energygateway_uu5lib/uu_energygateway_guig01"),
     testFile: "message-registry.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -242,21 +242,22 @@ function addJDKtoGradle(command, withQuotes = "") {
  */
 async function buildGui(cmd) {
   let pathPrefix = "";
-  if (fs.existsSync(MR.folder + "/" + MR.gui)) {
-    const nodeJsFolder = await nodeJs.detectAndDownload(MR.folder + "/" + MR.gui);
+  const guiFolder = assertAndReturn(MR.gui);
+  if (fs.existsSync(guiFolder)) {
+    const nodeJsFolder = await nodeJs.detectAndDownload(guiFolder);
     pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
 
     if (cmd.buildNpm) {
-      await core.inLocationAsync(MR.folder + "/" + MR.uu5lib, async () => {
+      await core.inLocationAsync(assertAndReturn(MR.uu5lib), async () => {
         console.log("Install NPM packages for UU5 lib");
         await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
       });
     }
 
-    await core.inLocationAsync(MR.folder + "/" + MR.gui, async () => {
+    await core.inLocationAsync(guiFolder, async () => {
       if (cmd.buildNpm) {
         // Build of GUI is not necessary for node 18
-        if (fs.existsSync(MR.folder + "/" + MR.gui + "/package-lock.json")) {
+        if (fs.existsSync(path.join(guiFolder, "package-lock.json"))) {
           console.log("Install NPM packages for GUI components");
           await core.runCommand(`cmd /C${pathPrefix} ${node.npm_ci}`);
         }
@@ -283,7 +284,7 @@ async function buildProject(project, cmd) {
   if (await killProject(project)) {
     console.log("Killed running app");
   }
-  const nodeJsFolder = await nodeJs.detectAndDownload(MR.folder + "/" + MR.gui);
+  const nodeJsFolder = await nodeJs.detectAndDownload(assertAndReturn(MR.gui));
   const pathPrefix = ` set PATH=${nodeJsFolder};%PATH% &`;
   if (project.code === "MERGED") {
     console.log("Install NPM packages for HI");
@@ -416,13 +417,22 @@ function printProjectsVersions(cmd) {
       projectVersions[project.code] = getProjectVersion(project);
     }
   }
+  let maxCodeLength = 0;
   const uniqueVersions = Object.values(projectVersions).filter((value, index, self) => self.indexOf(value) == index);
   if (uniqueVersions.length === 1) {
     console.log("All:", uniqueVersions[0]);
   } else {
-    const maxCodeLength = projects.map((p) => p.code.length).reduce((p, c) => Math.max(p, c));
+    maxCodeLength = projects.map((p) => p.code.length).reduce((p, c) => Math.max(p, c));
     for (const project of projects) {
-      console.log(project.code.padStart(maxCodeLength, " ") + ":", projectVersions[project.code]);
+      console.log(`${project.code.padStart(maxCodeLength, " ")}:`, projectVersions[project.code]);
+    }
+  }
+
+  if (MR.gui && fs.existsSync(MR.gui)) {
+    const packageJson = path.join(MR.gui, "package.json");
+    if (fs.existsSync(packageJson)) {
+      const version = JSON.parse(core.readTextFile(packageJson)).version;
+      console.log(`${"GUI".padStart(maxCodeLength, " ")}: ${version}`);
     }
   }
 }

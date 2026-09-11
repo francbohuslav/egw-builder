@@ -14,46 +14,45 @@ class CommandLine {
     this.enableConsole = true;
     while (pars.length > 0) {
       const ar = pars.shift().toLowerCase();
-      if (ar == "-last") {
+      if (ar === "-last") {
         this.last = true;
         continue;
       }
-      if (ar == "-folder") {
+      if (ar === "-folder") {
         /**
          * @type {string | undefined}
          */
         this.folder = pars.shift();
         continue;
       }
-      if (ar == "-version") {
+      if (ar === "-version") {
         this.version = pars.shift().replace(/^"/, "").replace(/"$/, "");
         this.interactively = false;
         continue;
       }
-      //TODO: BF: casem lze smazat az budou mit vsichni aktualni Runner
-      if (ar == "-getversions") {
+      if (ar === "-getversions") {
         this.getVersions = true;
         this.interactively = false;
         this.enableConsole = false;
         continue;
       }
-      if (ar == "-info") {
+      if (ar === "-info") {
         this.getInfo = true;
         this.interactively = false;
         this.enableConsole = false;
         continue;
       }
-      if (ar == "-logasyncjob") {
+      if (ar === "-logasyncjob") {
         this.logAsyncJob = true;
         this.interactively = false;
         continue;
       }
-      if (ar == "-ismerged") {
+      if (ar === "-ismerged") {
         this.isMerged = true;
         this.interactively = false;
         continue;
       }
-      if (ar == "-environmentfile") {
+      if (ar === "-environmentfile") {
         this.environmentFile = pars.shift();
         continue;
       }
@@ -66,7 +65,7 @@ class CommandLine {
         this.interactively = false;
         continue;
       }
-      if (ar == "-build") {
+      if (ar === "-build") {
         this.buildDG = true;
         this.buildMR = true;
         this.buildNpm = true;
