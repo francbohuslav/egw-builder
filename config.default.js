@@ -15,6 +15,7 @@ module.exports = {
     ACER: "uu_energygateway_acerendpointg01",
     KAFKA: "uu_energygateway_kafkaendpointg01",
     HTTP: "uu_energygateway_httpendpointg01",
+    GUI: "uu_energygateway_guig01",
     MERGED: "uu_energygateway_mergedg01",
   },
   JDK: {

@@ -1,4 +1,7 @@
 const fs = require("fs");
+const path = require("path");
+const { assertAndReturn } = require("./utils");
+const assert = require("assert");
 
 class FileStructure {
   /**
@@ -34,6 +37,25 @@ class FileStructure {
       if (!fs.existsSync(serverFolder)) {
         throw new Error(`Server folder ${serverFolder} neither ${originalServerFolder} does not exist`);
       }
+    }
+  }
+
+  /**
+   * Add the folder path prefix according to the GUI package.json
+   *
+   * @param {IProject} MR
+   * @param {Record<string, string>} folders
+   */
+  addGuiPrefixToPaths(MR, folders) {
+    assert(MR.uu5lib);
+    assert(MR.gui);
+    const packageJson = path.join(MR.folder, assertAndReturn(MR.gui), "package.json");
+    if (fs.existsSync(packageJson)) {
+      MR.uu5lib = path.join(folders.MR, MR.uu5lib);
+      MR.gui = path.join(folders.MR, MR.gui);
+    } else {
+      MR.uu5lib = path.join(folders.GUI, MR.uu5lib);
+      MR.gui = path.join(folders.GUI, MR.gui);
     }
   }
 }

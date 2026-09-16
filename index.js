@@ -58,9 +58,10 @@ const projects = [
     port: 8093,
     webName: "uu-energygateway-messageregistryg01",
     hi: "uu_energygateway_messageregistryg01-hi",
-    //TODO: BF: tyhle adresare se musi detekovat pdole existence folderu GUI v MR adresari, aby GUI folder mohl byt nastaven vzdy
-    uu5lib: path.join(config.folders.GUI ?? config.folders.MR, "uu_energygateway_uu5lib"),
-    gui: path.join(config.folders.GUI ?? config.folders.MR, "uu_energygateway_uu5lib/uu_energygateway_guig01"),
+    // Full path prefix is added later
+    uu5lib: "uu_energygateway_uu5lib",
+    // Full path prefix is added later
+    gui: "uu_energygateway_uu5lib/uu_energygateway_guig01",
     testFile: "message-registry.jmx",
     addProfilesFromLibraries: (isVersion11) =>
       isVersion11
@@ -352,7 +353,7 @@ function getProjectVersion(project) {
       versions["package.json"] = JSON.parse(core.readTextFile(MR.hi + "/package.json")).version;
     }
   });
-  const uniqueVersions = Object.values(versions).filter((value, index, self) => self.indexOf(value) == index);
+  const uniqueVersions = Object.values(versions).filter((value, index, self) => self.indexOf(value) === index);
   if (uniqueVersions.length === 1) {
     return uniqueVersions[0];
   } else {
@@ -418,7 +419,7 @@ function printProjectsVersions(cmd) {
     }
   }
   let maxCodeLength = 0;
-  const uniqueVersions = Object.values(projectVersions).filter((value, index, self) => self.indexOf(value) == index);
+  const uniqueVersions = Object.values(projectVersions).filter((value, index, self) => self.indexOf(value) === index);
   if (uniqueVersions.length === 1) {
     console.log("All:", uniqueVersions[0]);
   } else {
@@ -457,14 +458,14 @@ async function waitForApp(url) {
     try {
       // @ts-ignore
       await requestAsync(url, { json: true, family: 4 });
-      if (counter != seconds) {
+      if (counter !== seconds) {
         console.log("...ready!");
       }
       return;
     } catch (err) {
       // Do not care
     }
-    if (counter == seconds) {
+    if (counter === seconds) {
       console.log("Pinging url " + url);
     }
     process.stdout.write(".");
@@ -701,7 +702,7 @@ async function runProjectTests(projectOrString, isVersion11, serverFolder, serve
       params.push("-Jinsomnia_dir_EMAIL=" + serverFolderEMAIL + "/src/test/insomnia");
       params.push("-Jserver_dir_EMAIL=" + serverFolderEMAIL);
     }
-    if (isVersion11 && project == EMAIL) {
+    if (isVersion11 && project === EMAIL) {
       params.push("-Jsmtp_host=smtp");
       params.push("-Jsmtp_port=80");
     }
@@ -735,7 +736,7 @@ function cloneDataGatewayForIec(DGversion) {
   }
   const settings = core.readTextFile(`${IEC62325.folder}/settings.gradle`);
   const matches = [...settings.matchAll(new RegExp(`${DG.folder}[^\\"']*`, "g"))];
-  if (!matches || matches.length == 0) {
+  if (!matches || matches.length === 0) {
     core.showError(`Can not find path to datagateway in ${IEC62325.folder}/settings.gradle, thus copy of DG for IEC62325 will not be created.`);
     return;
   }
@@ -743,7 +744,7 @@ function cloneDataGatewayForIec(DGversion) {
   let firstNotExistingFolder = "";
   for (let i = 0; i < matches.length; i++) {
     const folder = matches[i][0];
-    if (folder == DG.folder) {
+    if (folder === DG.folder) {
       if (firstNotExistingFolder || preferredFolder) {
         break;
       }
@@ -827,7 +828,7 @@ async function logAsyncJob(cmd) {
 async function run() {
   try {
     let cmd = new CommandLine(process.argv.slice(2));
-    if (process.argv.length == 2) {
+    if (process.argv.length === 2) {
       core.showMessage("Syntaxe");
       console.log(process.argv.join(" ") + " [OPTIONS]");
       console.log("Options:");
@@ -931,6 +932,7 @@ async function run() {
     }
 
     fileStructure.fixG01LocationInPaths(projects);
+    fileStructure.addGuiPrefixToPaths(MR, config.folders);
 
     const runnableProjects = [DG, MR, FTP, EMAIL, ECP];
     if (fs.existsSync(IEC62325.folder)) {
@@ -974,7 +976,7 @@ async function run() {
     }
 
     const subAppJavaInfo = java.getSubAppJavaInfo(DG);
-    if (config.JDK && config.JDK[subAppJavaInfo.javaVersion]) {
+    if (config.JDK?.[subAppJavaInfo.javaVersion]) {
       JDK = config.JDK[subAppJavaInfo.javaVersion];
     } else {
       JDK = await java.downloadIfMissing(subAppJavaInfo.javaVersion);
@@ -1175,7 +1177,7 @@ async function run() {
         if (fs.existsSync(project.folder + "/docker/egw-tests/docker-compose.yml")) {
           await core.inLocationAsync(`${project.folder}/docker/egw-tests`, stopComposer);
         }
-        if (project.code == "DG") {
+        if (project.code === "DG") {
           await cleanDockers();
         }
       }
@@ -1226,7 +1228,7 @@ async function run() {
           await buildGui(cmd);
         }
         if (isBuildPerProject[project.code]) {
-          if (project.code == IEC62325.code) {
+          if (project.code === IEC62325.code) {
             cloneDataGatewayForIec(DGversion);
           }
           core.showMessage(`Building ${project.code} ...`);
@@ -1248,7 +1250,7 @@ async function run() {
           if (await killProject(project)) {
             console.log("Killed previous");
           }
-          if (project.code == IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
+          if (project.code === IEC62325.code && !(isBuild && isBuildPerProject[IEC62325.code])) {
             cloneDataGatewayForIec(DGversion);
           }
           if (project.code === MR.code) {
@@ -1328,7 +1330,7 @@ async function run() {
             core.showMessage(`Testing ${testCode}`);
           }
           let report = /** @type {IProjectTestResult | null} */ (null);
-          if (testCode.toLowerCase() == "web") {
+          if (testCode.toLowerCase() === "web") {
             await core.inLocationAsync(`${MR.folder}/${MR.server}/src/test/web/bin`, async () => {
               report = await tests.runWebTests(cmd);
             });

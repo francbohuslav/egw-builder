@@ -14,5 +14,5 @@
     // For import Uu5TilesElements from "uu5tilesg02-elements" and others
     "allowSyntheticDefaultImports": true
   },
-  "include": ["*.js", "classes"]
+  "include": ["*.js", "*.ts", "classes"]
 }
