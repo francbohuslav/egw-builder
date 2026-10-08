@@ -35,12 +35,6 @@
     },
     {
       "type": "npm",
-      "script": "ask",
-      "problemMatcher": [],
-      "label": "npm: ask"
-    },
-    {
-      "type": "npm",
       "script": "last",
       "problemMatcher": [],
       "label": "npm: last"
