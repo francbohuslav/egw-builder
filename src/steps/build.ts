@@ -22,8 +22,6 @@ async function runWithNode(nodeFolder: string | undefined, cwd: string, ...comma
 /**
  * Installs npm packages and builds the GUI components of Message Registry (`-buildNpm`, `-buildGui`).
  *
- * `npm ci` of the GUI components folder is deliberately not run: the previous implementation never got to it (the check for
- * `package-lock.json` used a path relative to a wrong folder) and the build of the components is not necessary for Node.js 18.
  */
 export async function buildGui(ctx: RunContext): Promise<void> {
   const { ws, options } = ctx;

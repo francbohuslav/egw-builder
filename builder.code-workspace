@@ -30,7 +30,7 @@
         "name": "Launch Program",
         "skipFiles": ["<node_internals>/**"],
         "program": "index.js",
-        "args": ["-folder", "../v6_4", "-getversions", "-verbose"],
+        "args": ["-folder", "../v6_4", "-buildNpm", "-buildGui"],
       },
     ],
   },
