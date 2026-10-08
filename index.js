@@ -575,9 +575,15 @@ async function killProject(project) {
     //console.log(`Application ${project.code} is not running. Nothing to kill, maybe tomorrow.`);
     return false;
   }
+  // wmic is removed from new Windows 11 versions, the same output (header + "ParentProcessId ProcessId" lines) is produced by PowerShell
   const res = await core.runCommand(
-    "wmic",
-    ["process", "where", "Name='java.exe' or Name='cmd.exe' or Name='conhost.exe'", "Get", "ProcessId,ParentProcessId"],
+    "powershell",
+    [
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "'ParentProcessId ProcessId'; Get-CimInstance Win32_Process | Where-Object { @('java.exe','cmd.exe','conhost.exe') -contains $_.Name } | ForEach-Object { '{0} {1}' -f $_.ParentProcessId, $_.ProcessId }",
+    ],
     { disableStdOut: true },
   );
   const lines = res.stdOut.split(/[\r\n]+/);
