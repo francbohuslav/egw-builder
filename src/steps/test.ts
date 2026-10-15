@@ -52,6 +52,7 @@ export function buildTestParams(ctx: RunContext, target: TestTarget, testFile: s
   if (options.uid) {
     params.push(`-Juid=${options.uid}`);
   }
+  params.push(`-Jrepository_base_path=${root}/`);
   params.push(`-Jftp_data_dir=${getFtpDataDir(ctx)}`);
   params.push(`-Jproject_FTP=${root}/${folderOf("FTP")}`);
   params.push(`-Jecp_data_dir=${root}/${folderOf("ECP")}/docker/egw-tests/ecp2`);
